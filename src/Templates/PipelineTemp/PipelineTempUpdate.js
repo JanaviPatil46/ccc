@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Typography, Container, Paper, Autocomplete, TextField, InputLabel, Switch, FormControlLabel, Divider, IconButton, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, Drawer, Checkbox, Chip, Menu, MenuItem, Card, CardContent, Typography, Container, Paper, Autocomplete, TextField, InputLabel, Switch, FormControlLabel, Divider, IconButton, useMediaQuery, useTheme } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { LuPlusCircle, LuPenLine } from "react-icons/lu";
 import { RxDragHandleDots2 } from "react-icons/rx";
 import { toast } from "react-toastify";
+import { AiOutlineSearch } from "react-icons/ai";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
 const PipelineTempUpdate = () => {
+  const EMAIL_API = process.env.REACT_APP_EMAIL_TEMP_URL;
+  const INVOICE_API = process.env.REACT_APP_INVOICE_TEMP_URL;
   const PIPELINE_API = process.env.REACT_APP_PIPELINE_TEMP_URL;
   const JOBS_API = process.env.REACT_APP_JOBS_TEMP_URL;
   const USER_API = process.env.REACT_APP_USER_URL;
@@ -129,11 +133,11 @@ const PipelineTempUpdate = () => {
 
   //Default Jobt template get
   const [Defaulttemp, setDefaultTemp] = useState([]);
-  const [selectedtemp, setselectedTemp] = useState(() => {
+  const [selectedJobtemp, setselectedJobTemp] = useState(() => {
     return localStorage.getItem("selectedtemp") || null;
   });
-  const handletemp = async (event, selectedtemp) => {
-    setselectedTemp(selectedtemp);
+  const handleJobtemp = async (event, selectedtemp) => {
+    setselectedJobTemp(selectedtemp);
   };
   useEffect(() => {
     fetchtemp();
@@ -185,7 +189,7 @@ const PipelineTempUpdate = () => {
       pipelineName: piplineName,
       availableto: combinedValues,
       sortjobsby: selectedSortByJob.value,
-      defaultjobtemplate: selectedtemp.value,
+      defaultjobtemplate: selectedJobtemp.value,
       accountId: Account_id,
       description: Description,
       duedate: Due_date,
@@ -227,7 +231,7 @@ const PipelineTempUpdate = () => {
       pipelineName: piplineName,
       availableto: combinedValues,
       sortjobsby: selectedSortByJob.value,
-      defaultjobtemplate: selectedtemp.value,
+      defaultjobtemplate: selectedJobtemp.value,
       accountId: Account_id,
       description: Description,
       duedate: Due_date,
@@ -305,7 +309,7 @@ const PipelineTempUpdate = () => {
             label: data.pipelineTemplate.defaultjobtemplate.templatename,
           };
 
-          setselectedTemp(defaultjobtemplateData);
+          setselectedJobTemp(defaultjobtemplateData);
         }
         setPipeLineName(data.pipelineTemplate.pipelineName);
         setAccount_id(data.pipelineTemplate.accountId);
@@ -346,7 +350,7 @@ const PipelineTempUpdate = () => {
   useEffect(() => {
     // Check if form is filled
     const checkIfFormFilled = () => {
-      if (piplineName || selectedUser || selectedSortByJob || selectedtemp || Account_id || Days_on_stage || Account_tags || startDate || Name || Due_date || Description || Assignees || Priority || stages) {
+      if (piplineName || selectedUser || selectedSortByJob || selectedJobtemp || Account_id || Days_on_stage || Account_tags || startDate || Name || Due_date || Description || Assignees || Priority || stages) {
         setIsFormFilled(true);
       } else {
         setIsFormFilled(false);
@@ -354,8 +358,385 @@ const PipelineTempUpdate = () => {
     };
 
     checkIfFormFilled();
-  }, [piplineName, selectedUser, selectedSortByJob, selectedtemp, Account_id, Days_on_stage, Account_tags, startDate, Name, Due_date, Description, Assignees, Priority, stages]);
+  }, [piplineName, selectedUser, selectedSortByJob, selectedJobtemp, Account_id, Days_on_stage, Account_tags, startDate, Name, Due_date, Description, Assignees, Priority, stages]);
 
+
+
+
+  //Automation code
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick = (event, index) => {
+    setAnchorEl(event.currentTarget);
+    SetStageSelected(index);  // Save the selected stage index
+    console.log(index)
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [automationSelect, SetAutomationSelect] = useState();
+  const [stageSelected, SetStageSelected] = useState();
+  const handleDrawerOpen = (option, index) => {
+    setIsDrawerOpen(true);
+    SetAutomationSelect(option);
+    SetStageSelected(index);
+    console.log(index)
+  };
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false);
+  }
+  const handleAddAutomation = (stageSelected, option) => {
+    // Handle option action here
+    console.log("Adding automation to stage index:", stageSelected);
+    console.log("automation  clicked!");
+    // const newStages = [...stages]; // Create a copy of the stages array
+    // newStages[stageSelected].automations.push(option); // Append the new option
+    // setStages(newStages); // Update the state with the modified stages array
+    // console.log(newStages)
+    console.log("Added automation to stage", stageSelected, option);
+    handleDrawerOpen(option, stageSelected);
+    handleClose();
+  };
+
+
+
+  const [addEmailTemplates, setAddEmailTemplates] = useState([]);
+  const [addInvoiceTemplates, setAddInvoiceTemplates] = useState([]);
+  useEffect(() => {
+    fetchEmailTemplates();
+    fectInvoiceTemplates();
+  }, []);
+  const fetchEmailTemplates = async () => {
+    try {
+      const url = `${EMAIL_API}/workflow/emailtemplate`;
+      const response = await fetch(url);
+      const data = await response.json();
+      setAddEmailTemplates(data.emailTemplate);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  const emailTemplateOptions = addEmailTemplates.map((temp) => ({
+    value: temp._id,
+    label: temp.templatename,
+  }));
+  const fectInvoiceTemplates = async () => {
+    try {
+      const url = `${INVOICE_API}/workflow/invoicetemp/invoicetemplate`;
+      const response = await fetch(url);
+      const data = await response.json();
+      setAddInvoiceTemplates(data.invoiceTemplate);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  const invoiceTemplateOptions = addInvoiceTemplates.map((temp) => ({
+    value: temp._id,
+    label: temp.templatename,
+  }));
+  const [selectedtemp, setselectedTemp] = useState();
+  const handletemp = (selectedOptions) => {
+    setselectedTemp(selectedOptions);
+  };
+
+  // condition tags
+  const TAGS_API = process.env.REACT_APP_TAGS_TEMP_URL;
+  const [isConditionsFormOpen, setIsConditionsFormOpen] = useState(false);
+  const [isAnyCheckboxChecked, setIsAnyCheckboxChecked] = useState(false);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [tempSelectedTags, setTempSelectedTags] = useState([]);
+  const handleAddConditions = () => {
+    setIsConditionsFormOpen(!isConditionsFormOpen);
+  };
+
+  const handleGoBack = () => {
+    setIsConditionsFormOpen(false);
+  };
+
+  const handleCheckboxChange = (tag) => {
+    const updatedSelectedTags = tempSelectedTags.includes(tag) ? tempSelectedTags.filter((t) => t._id !== tag._id) : [...tempSelectedTags, tag];
+    setTempSelectedTags(updatedSelectedTags);
+    setIsAnyCheckboxChecked(updatedSelectedTags.length > 0);
+  };
+
+  const handleAddTags = () => {
+    setSelectedTags([...selectedTags, ...tempSelectedTags.filter((tag) => !selectedTags.some((t) => t._id === tag._id))]);
+    setIsConditionsFormOpen(false);
+    setTempSelectedTags([]);
+  };
+  const [tags, setTags] = useState([]);
+  console.log(selectedTags)
+  useEffect(() => {
+    fetchTags();
+  }, []);
+
+  const fetchTags = async () => {
+    try {
+      const url = `${TAGS_API}/tags`;
+      const response = await fetch(url);
+      const data = await response.json();
+      setTags(data.tags);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const calculateWidth = (label) => Math.min(label.length * 8, 200);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+  const filteredTags = tags.filter((tag) => tag.tagName.toLowerCase().includes(searchTerm.toLowerCase()));
+  const selectedTagElements = selectedTags.map((tag) => (
+    <Box
+      key={tag._id}
+      sx={{
+        backgroundColor: tag.tagColour,
+        borderRadius: "20px",
+        color: "#fff",
+        fontSize: "12px",
+        fontWeight: "600",
+        textAlign: "center",
+        padding: "3px",
+        marginBottom: "5px",
+        marginRight: "5px",
+        display: "inline-block",
+        width: `${calculateWidth(tag.tagName)}px`,
+      }}
+    >
+      {tag.tagName}
+    </Box>
+  ));
+  // Function to render content based on action
+  const renderActionContent = (automationSelect, index) => {
+    switch (automationSelect) {
+      case "Send Invoice":
+        return (
+          <>
+
+            <Grid item ml={2}>
+              <Typography mb={1}>Select template</Typography>
+              <Autocomplete
+                options={invoiceTemplateOptions}
+                getOptionLabel={(option) => option.label}
+                value={selectedtemp}
+                onChange={(event, newValue) => handletemp(newValue)}
+                isOptionEqualToValue={(option, value) =>
+                  option.value === value.value
+                }
+                renderOption={(props, option) => (
+                  <Box
+                    component="li"
+                    {...props}
+                    sx={{ cursor: "pointer", margin: "5px 10px" }} // Add cursor pointer style
+                  >
+                    {option.label}
+                  </Box>
+                )}
+                renderInput={(params) => (
+                  <>
+                    <TextField
+                      {...params}
+                      // helperText={templateError}
+                      sx={{ backgroundColor: "#fff" }}
+                      placeholder="Select Template"
+                      variant="outlined"
+                      size="small"
+                    />
+                  </>
+                )}
+                sx={{ width: "100%", marginTop: "8px" }}
+                clearOnEscape // Enable clearable functionality
+              />
+              {selectedTags.length > 0 && (
+                <Grid container alignItems="center" gap={1}>
+                  <Typography>Only for:</Typography>
+                  <Grid item>{selectedTagElements}</Grid>
+                </Grid>
+              )}
+              <Button variant="text" onClick={handleAddConditions}>Add Conditions</Button>
+
+
+              <Button variant="contained" onClick={handleSaveAutomation(index)}>
+                Save Automation
+              </Button>
+            </Grid>
+            <Drawer anchor="right" open={isConditionsFormOpen} onClose={handleGoBack} PaperProps={{ sx: { width: "550px", padding: 2 } }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <IconButton onClick={handleGoBack}>
+                  <IoMdArrowRoundBack fontSize="large" color="blue" />
+                </IconButton>
+                <Typography variant="h6">Add conditions</Typography>
+              </Box>
+
+              <Box sx={{ padding: 2 }}>
+                <Typography variant="body1">Apply automation only for accounts with these tags</Typography>
+                <TextField
+                  fullWidth
+                  size="small"
+                  variant="outlined"
+                  placeholder="Search..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  InputProps={{
+                    startAdornment: <AiOutlineSearch style={{ marginRight: 8 }} />,
+                  }}
+                  sx={{ marginTop: 2 }}
+                />
+
+                <Box sx={{ marginTop: 2 }}>
+                  {filteredTags.map((tag) => (
+                    <Box key={tag._id} sx={{ display: "flex", alignItems: "center", gap: 3, borderBottom: "1px solid grey", paddingBottom: 1 }}>
+                      <Checkbox checked={tempSelectedTags.includes(tag)} onChange={() => handleCheckboxChange(tag)} />
+                      <Chip label={tag.tagName} sx={{ backgroundColor: tag.tagColour, color: "#fff", fontWeight: "500", borderRadius: "20px", marginRight: 1 }} />
+                    </Box>
+                  ))}
+                </Box>
+
+                <Box sx={{ display: "flex", gap: 2, marginTop: 2 }}>
+                  <Button variant="contained" color="primary" disabled={!isAnyCheckboxChecked} onClick={handleAddTags}>
+                    Add
+                  </Button>
+                  <Button variant="outlined" color="primary" onClick={handleGoBack}>
+                    Cancel
+                  </Button>
+                </Box>
+              </Box>
+            </Drawer>
+          </>
+        );
+      case "Create organizer":
+        return (
+          <>
+            <Box ml={2}>Account tags updated</Box>
+          </>
+        );
+      case "Send Email":
+        return (
+          <>
+            <Box p={2}>
+              <Grid item >
+                <Typography mb={1}>Select template</Typography>
+                <Autocomplete
+                  options={emailTemplateOptions}
+                  getOptionLabel={(option) => option.label}
+                  value={selectedtemp}
+                  onChange={(event, newValue) => handletemp(newValue)}
+                  isOptionEqualToValue={(option, value) =>
+                    option.value === value.value
+                  }
+                  renderOption={(props, option) => (
+                    <Box
+                      component="li"
+                      {...props}
+                      sx={{ cursor: "pointer", margin: "5px 10px" }} // Add cursor pointer style
+                    >
+                      {option.label}
+                    </Box>
+                  )}
+                  renderInput={(params) => (
+                    <>
+                      <TextField
+                        {...params}
+                        // helperText={templateError}
+                        sx={{ backgroundColor: "#fff" }}
+                        placeholder="Select Template"
+                        variant="outlined"
+                        size="small"
+                      />
+                    </>
+                  )}
+                  sx={{ width: "100%", marginTop: "8px" }}
+                  clearOnEscape // Enable clearable functionality
+                />
+                {selectedTags.length > 0 && (
+                  <Grid container alignItems="center" gap={1}>
+                    <Typography>Only for:</Typography>
+                    <Grid item>{selectedTagElements}</Grid>
+                  </Grid>
+                )}
+                <Button variant="text" onClick={handleAddConditions}>Add Conditions</Button>
+
+
+
+              </Grid>
+              <Button variant="contained" onClick={handleSaveAutomation(stageSelected)}>
+                Save Automation
+              </Button>
+            </Box>
+            {/* Condition tags for automation */}
+            <Drawer anchor="right" open={isConditionsFormOpen} onClose={handleGoBack} PaperProps={{ sx: { width: "550px", padding: 2 } }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <IconButton onClick={handleGoBack}>
+                  <IoMdArrowRoundBack fontSize="large" color="blue" />
+                </IconButton>
+                <Typography variant="h6">Add conditions</Typography>
+              </Box>
+
+              <Box sx={{ padding: 2 }}>
+                <Typography variant="body1">Apply automation only for accounts with these tags</Typography>
+                <TextField
+                  fullWidth
+                  size="small"
+                  variant="outlined"
+                  placeholder="Search..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  InputProps={{
+                    startAdornment: <AiOutlineSearch style={{ marginRight: 8 }} />,
+                  }}
+                  sx={{ marginTop: 2 }}
+                />
+
+                <Box sx={{ marginTop: 2 }}>
+                  {filteredTags.map((tag) => (
+                    <Box key={tag._id} sx={{ display: "flex", alignItems: "center", gap: 3, borderBottom: "1px solid grey", paddingBottom: 1 }}>
+                      <Checkbox checked={tempSelectedTags.includes(tag)} onChange={() => handleCheckboxChange(tag)} />
+                      <Chip label={tag.tagName} sx={{ backgroundColor: tag.tagColour, color: "#fff", fontWeight: "500", borderRadius: "20px", marginRight: 1 }} />
+                    </Box>
+                  ))}
+                </Box>
+
+                <Box sx={{ display: "flex", gap: 2, marginTop: 2 }}>
+                  <Button variant="contained" color="primary" disabled={!isAnyCheckboxChecked} onClick={handleAddTags}>
+                    Add
+                  </Button>
+                  <Button variant="outlined" color="primary" onClick={handleGoBack}>
+                    Cancel
+                  </Button>
+                </Box>
+              </Box>
+            </Drawer>
+          </>
+        );
+      // Add cases for other actions here
+      default:
+        return null;
+    }
+  };
+  const handleSaveAutomation = (index) => {
+    return () => {
+      const updatedStages = [...stages];
+      const selectedAutomation = {
+        type: automationSelect, // The type of automation (e.g., "Send Email")
+        template: selectedtemp ? { label: selectedtemp.label, value: selectedtemp.value } : null, // Store label and value of selected template
+        tags: selectedTags.map(tag => ({ // Map selectedTags to include necessary tag data
+          _id: tag._id,
+          tagName: tag.tagName,
+          tagColour: tag.tagColour,
+        })),
+      };
+      updatedStages[index].automations.push(selectedAutomation);
+      setStages(updatedStages);
+      console.log("Automation saved for stage:", index, selectedAutomation);
+      setselectedTemp(null); // Clear the selected template after saving
+      setSelectedTags([])
+      setIsAnyCheckboxChecked(false)
+      handleDrawerClose();
+    };
+  };
   return (
     <Container>
       <Box sx={{ mt: 2 }}></Box>
@@ -428,8 +809,8 @@ const PipelineTempUpdate = () => {
                     <Autocomplete
                       className="select-dropdown"
                       options={optiontemp}
-                      value={selectedtemp}
-                      onChange={handletemp}
+                      value={selectedJobtemp}
+                      onChange={handleJobtemp}
                       getOptionLabel={(option) => option.label || ""}
                       renderOption={(props, option) => (
                         <Box component="li" {...props} sx={{ cursor: "pointer", margin: "5px 10px" }}>
@@ -558,9 +939,103 @@ const PipelineTempUpdate = () => {
                             Automations
                           </Typography>
                           <Typography variant="body2">Triggered when job enters stage</Typography>
-                          <Typography variant="body2" sx={{ cursor: "pointer", color: "blue", fontWeight: "bold", mt: 2 }}>
-                            Added automation
+                          <Typography onClick={(e) => handleClick(e, index)} variant="body2" sx={{ cursor: "pointer", color: "blue", fontWeight: "bold", mt: 2 }}>
+                            Add automation
                           </Typography>
+                          <Menu
+                              anchorEl={anchorEl}
+                              open={Boolean(anchorEl)}
+                              onClose={handleClose}
+                            >
+                              <MenuItem
+                                onClick={() =>
+                                  handleAddAutomation(stageSelected, "Send Email")
+                                }
+                              >
+                                Send Email
+                              </MenuItem>
+                              <MenuItem
+                                onClick={() =>
+                                  handleAddAutomation(stageSelected, "Send Invoice")
+                                }
+                              >
+                                Send Invoice
+                              </MenuItem>
+                            </Menu>
+
+                            <Drawer
+                              anchor="right"
+                              open={isDrawerOpen}
+                              onClose={handleDrawerClose}
+                              PaperProps={{
+                                id: "tag-drawer",
+                                sx: {
+                                  borderRadius: isSmallScreen
+                                    ? "0"
+                                    : "10px 0 0 10px",
+                                  width: isSmallScreen ? "100%" : 500,
+                                  maxWidth: "100%",
+                                  [theme.breakpoints.down("sm")]: {
+                                    width: "100%",
+                                  },
+                                },
+                              }}
+                            >
+                              {automationSelect}
+
+
+                              {renderActionContent(automationSelect, index)}
+
+                              <Box
+                                sx={{ borderRadius: isSmallScreen ? "0" : "15px" }}
+                                role="presentation"
+                              ></Box>
+                            </Drawer>
+
+
+                          <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', gap: 2 }}>
+                              {stage.automations.length > 0 && (
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
+                                  {stage.automations.map((automation, idx) => (
+                                    <Card key={idx} sx={{ width: '100%', }}>
+                                      <CardContent>
+                                        <Typography variant="h6" component="div">
+                                          <b>{automation.type}</b>
+                                        </Typography>
+                                        {automation.template && (
+                                          <Typography color="text.secondary">
+                                            {automation.template.label}
+                                          </Typography>
+                                        )}
+                                        {/* Display tags with tag color and name */}
+                                        {automation.tags && automation.tags.length > 0 && (
+                                          <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", marginTop: 2 }}>
+                                            <Typography variant="body2">Conditions:</Typography>
+                                            {automation.tags.map((tag) => (
+                                              <Box
+                                                key={tag._id}
+                                                sx={{
+                                                  backgroundColor: tag.tagColour,
+                                                  color: "#fff",
+                                                  fontSize: "12px",
+                                                  fontWeight: "600",
+                                                  textAlign: "center",
+                                                  padding: "3px 8px",
+                                                  borderRadius: "12px",
+                                                  marginBottom: "4px",
+                                                }}
+                                              >
+                                                {tag.tagName}
+                                              </Box>
+                                            ))}
+                                          </Box>
+                                        )}
+                                      </CardContent>
+                                    </Card>
+                                  ))}
+                                </Box>
+                              )}
+                            </Box>
                           <Typography variant="h6" sx={{ fontSize: "15px", mt: 2, fontWeight: "bold" }}>
                             Automove
                           </Typography>

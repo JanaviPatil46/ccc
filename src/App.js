@@ -81,6 +81,10 @@ import InvoiceUpdate from "./Billing/invoiceUpdate.js";
 import AccountOrganizer from "./nested-navbar/NewPages/AccountOrganizer";
 
 import Inboxplus from './Inboxplus/Inboxplus.js';
+
+import AccountWiseProposal from "./nested-navbar/Proposals/PrposalTempUpdate.js"
+import AccountWiseProposalUpdate from "./nested-navbar/Proposals/ProposalAccWiseUpdate.js"
+import ProposalsELS from './Billing/Proposals&ELS/ProposalsEls.js'
 const App = () => {
   return (
     <BrowserRouter>
@@ -100,6 +104,7 @@ const App = () => {
           <Route path="addJobs" element={<CreateJob />} />
           <Route path="billing/Invoices" element={<Invoices />} />
           <Route path="billing/Invoices/Updateinvoice/:_id" element={<InvoiceUpdate />} />
+          <Route path='billing/proposalsandels' element={<ProposalsELS/>}/>
           <Route path="workflow/tasks" element={<WorkflowTask />} />
           <Route path="workflow/jobs" element={<Jobs />} />
           <Route path="workflow/pipelines" element={<Pipeline />} />
@@ -170,6 +175,8 @@ const App = () => {
               <Route path="sent" element={<Sent />} />
             </Route>
             <Route path="proposals/:data" element={<Proposals />} />
+            <Route path="proposals/:data/new" element={<AccountWiseProposal/>}/>
+          <Route path="proposals/:data/update/:_id" element={<AccountWiseProposalUpdate/>}/>
             <Route path="notes/:data" element={<Notes />} />
 
             <Route path="workflow/:data" element={<Workflow />}>

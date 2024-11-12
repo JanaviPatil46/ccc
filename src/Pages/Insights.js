@@ -16,7 +16,8 @@ import {
   useMediaQuery,
   useTheme,
   Drawer,
-  Autocomplete,
+  Autocomplete, Checkbox,
+  Chip
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -24,6 +25,8 @@ import { LuPlusCircle, LuPenLine } from "react-icons/lu";
 import { RxDragHandleDots2 } from "react-icons/rx";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { AiOutlineSearch } from "react-icons/ai";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -142,6 +145,76 @@ const PipelineTemp = () => {
   const handletemp = (selectedOptions) => {
     setselectedTemp(selectedOptions);
   };
+
+  // condition tags
+  const TAGS_API = process.env.REACT_APP_TAGS_TEMP_URL;
+  const [isConditionsFormOpen, setIsConditionsFormOpen] = useState(false);
+  const [isAnyCheckboxChecked, setIsAnyCheckboxChecked] = useState(false);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [tempSelectedTags, setTempSelectedTags] = useState([]);
+  const handleAddConditions = () => {
+    setIsConditionsFormOpen(!isConditionsFormOpen);
+  };
+
+  const handleGoBack = () => {
+    setIsConditionsFormOpen(false);
+  };
+
+  const handleCheckboxChange = (tag) => {
+    const updatedSelectedTags = tempSelectedTags.includes(tag) ? tempSelectedTags.filter((t) => t._id !== tag._id) : [...tempSelectedTags, tag];
+    setTempSelectedTags(updatedSelectedTags);
+    setIsAnyCheckboxChecked(updatedSelectedTags.length > 0);
+  };
+
+  const handleAddTags = () => {
+    setSelectedTags([...selectedTags, ...tempSelectedTags.filter((tag) => !selectedTags.some((t) => t._id === tag._id))]);
+    setIsConditionsFormOpen(false);
+    setTempSelectedTags([]);
+  };
+  const [tags, setTags] = useState([]);
+  console.log(selectedTags)
+  useEffect(() => {
+    fetchTags();
+  }, []);
+
+  const fetchTags = async () => {
+    try {
+      const url = `${TAGS_API}/tags`;
+      const response = await fetch(url);
+      const data = await response.json();
+      setTags(data.tags);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const calculateWidth = (label) => Math.min(label.length * 8, 200);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+  const filteredTags = tags.filter((tag) => tag.tagName.toLowerCase().includes(searchTerm.toLowerCase()));
+  const selectedTagElements = selectedTags.map((tag) => (
+    <Box
+      key={tag._id}
+      sx={{
+        backgroundColor: tag.tagColour,
+        borderRadius: "20px",
+        color: "#fff",
+        fontSize: "12px",
+        fontWeight: "600",
+        textAlign: "center",
+        padding: "3px",
+        marginBottom: "5px",
+        marginRight: "5px",
+        display: "inline-block",
+        width: `${calculateWidth(tag.tagName)}px`,
+      }}
+    >
+      {tag.tagName}
+    </Box>
+  ));
   // Function to render content based on action
   const renderActionContent = (automationSelect, index) => {
     switch (automationSelect) {
@@ -183,12 +256,61 @@ const PipelineTemp = () => {
                 sx={{ width: "100%", marginTop: "8px" }}
                 clearOnEscape // Enable clearable functionality
               />
+              {selectedTags.length > 0 && (
+                <Grid container alignItems="center" gap={1}>
+                  <Typography>Only for:</Typography>
+                  <Grid item>{selectedTagElements}</Grid>
+                </Grid>
+              )}
+              <Button variant="text" onClick={handleAddConditions}>Add Conditions</Button>
+
 
               <Button variant="contained" onClick={handleSaveAutomation(index)}>
                 Save Automation
               </Button>
             </Grid>
+            <Drawer anchor="right" open={isConditionsFormOpen} onClose={handleGoBack} PaperProps={{ sx: { width: "550px", padding: 2 } }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <IconButton onClick={handleGoBack}>
+                  <IoMdArrowRoundBack fontSize="large" color="blue" />
+                </IconButton>
+                <Typography variant="h6">Add conditions</Typography>
+              </Box>
 
+              <Box sx={{ padding: 2 }}>
+                <Typography variant="body1">Apply automation only for accounts with these tags</Typography>
+                <TextField
+                  fullWidth
+                  size="small"
+                  variant="outlined"
+                  placeholder="Search..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  InputProps={{
+                    startAdornment: <AiOutlineSearch style={{ marginRight: 8 }} />,
+                  }}
+                  sx={{ marginTop: 2 }}
+                />
+
+                <Box sx={{ marginTop: 2 }}>
+                  {filteredTags.map((tag) => (
+                    <Box key={tag._id} sx={{ display: "flex", alignItems: "center", gap: 3, borderBottom: "1px solid grey", paddingBottom: 1 }}>
+                      <Checkbox checked={tempSelectedTags.includes(tag)} onChange={() => handleCheckboxChange(tag)} />
+                      <Chip label={tag.tagName} sx={{ backgroundColor: tag.tagColour, color: "#fff", fontWeight: "500", borderRadius: "20px", marginRight: 1 }} />
+                    </Box>
+                  ))}
+                </Box>
+
+                <Box sx={{ display: "flex", gap: 2, marginTop: 2 }}>
+                  <Button variant="contained" color="primary" disabled={!isAnyCheckboxChecked} onClick={handleAddTags}>
+                    Add
+                  </Button>
+                  <Button variant="outlined" color="primary" onClick={handleGoBack}>
+                    Cancel
+                  </Button>
+                </Box>
+              </Box>
+            </Drawer>
           </>
         );
       case "Create organizer":
@@ -200,50 +322,99 @@ const PipelineTemp = () => {
       case "Send Email":
         return (
           <>
-
-            <Grid item ml={2}>
-              <Typography mb={1}>Select template</Typography>
-              <Autocomplete
-                options={emailTemplateOptions}
-                getOptionLabel={(option) => option.label}
-                value={selectedtemp}
-                onChange={(event, newValue) => handletemp(newValue)}
-                isOptionEqualToValue={(option, value) =>
-                  option.value === value.value
-                }
-                renderOption={(props, option) => (
-                  <Box
-                    component="li"
-                    {...props}
-                    sx={{ cursor: "pointer", margin: "5px 10px" }} // Add cursor pointer style
-                  >
-                    {option.label}
-                  </Box>
+            <Box p={2}>
+              <Grid item >
+                <Typography mb={1}>Select template</Typography>
+                <Autocomplete
+                  options={emailTemplateOptions}
+                  getOptionLabel={(option) => option.label}
+                  value={selectedtemp}
+                  onChange={(event, newValue) => handletemp(newValue)}
+                  isOptionEqualToValue={(option, value) =>
+                    option.value === value.value
+                  }
+                  renderOption={(props, option) => (
+                    <Box
+                      component="li"
+                      {...props}
+                      sx={{ cursor: "pointer", margin: "5px 10px" }} // Add cursor pointer style
+                    >
+                      {option.label}
+                    </Box>
+                  )}
+                  renderInput={(params) => (
+                    <>
+                      <TextField
+                        {...params}
+                        // helperText={templateError}
+                        sx={{ backgroundColor: "#fff" }}
+                        placeholder="Select Template"
+                        variant="outlined"
+                        size="small"
+                      />
+                    </>
+                  )}
+                  sx={{ width: "100%", marginTop: "8px" }}
+                  clearOnEscape // Enable clearable functionality
+                />
+                {selectedTags.length > 0 && (
+                  <Grid container alignItems="center" gap={1}>
+                    <Typography>Only for:</Typography>
+                    <Grid item>{selectedTagElements}</Grid>
+                  </Grid>
                 )}
-                renderInput={(params) => (
-                  <>
-                    <TextField
-                      {...params}
-                      // helperText={templateError}
-                      sx={{ backgroundColor: "#fff" }}
-                      placeholder="Select Template"
-                      variant="outlined"
-                      size="small"
-                    />
-                  </>
-                )}
-                sx={{ width: "100%", marginTop: "8px" }}
-                clearOnEscape // Enable clearable functionality
-              />
+                <Button variant="text" onClick={handleAddConditions}>Add Conditions</Button>
 
 
-              
 
+              </Grid>
               <Button variant="contained" onClick={handleSaveAutomation(stageSelected)}>
                 Save Automation
               </Button>
-            </Grid>
+            </Box>
+            {/* Condition tags for automation */}
+            <Drawer anchor="right" open={isConditionsFormOpen} onClose={handleGoBack} PaperProps={{ sx: { width: "550px", padding: 2 } }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <IconButton onClick={handleGoBack}>
+                  <IoMdArrowRoundBack fontSize="large" color="blue" />
+                </IconButton>
+                <Typography variant="h6">Add conditions</Typography>
+              </Box>
 
+              <Box sx={{ padding: 2 }}>
+                <Typography variant="body1">Apply automation only for accounts with these tags</Typography>
+                <TextField
+                  fullWidth
+                  size="small"
+                  variant="outlined"
+                  placeholder="Search..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  InputProps={{
+                    startAdornment: <AiOutlineSearch style={{ marginRight: 8 }} />,
+                  }}
+                  sx={{ marginTop: 2 }}
+                />
+
+                <Box sx={{ marginTop: 2 }}>
+                  {filteredTags.map((tag) => (
+                    <Box key={tag._id} sx={{ display: "flex", alignItems: "center", gap: 3, borderBottom: "1px solid grey", paddingBottom: 1 }}>
+                      <Checkbox checked={tempSelectedTags.includes(tag)} onChange={() => handleCheckboxChange(tag)} />
+                      <Chip label={tag.tagName} sx={{ backgroundColor: tag.tagColour, color: "#fff", fontWeight: "500", borderRadius: "20px", marginRight: 1 }} />
+                    </Box>
+                  ))}
+                </Box>
+
+                <Box sx={{ display: "flex", gap: 2, marginTop: 2 }}>
+                  <Button variant="contained" color="primary" disabled={!isAnyCheckboxChecked} onClick={handleAddTags}>
+                    Add
+                  </Button>
+                  <Button variant="outlined" color="primary" onClick={handleGoBack}>
+                    Cancel
+                  </Button>
+                </Box>
+              </Box>
+            </Drawer>
           </>
         );
       // Add cases for other actions here
@@ -257,11 +428,18 @@ const PipelineTemp = () => {
       const selectedAutomation = {
         type: automationSelect, // The type of automation (e.g., "Send Email")
         template: selectedtemp ? { label: selectedtemp.label, value: selectedtemp.value } : null, // Store label and value of selected template
+        tags: selectedTags.map(tag => ({ // Map selectedTags to include necessary tag data
+          _id: tag._id,
+          tagName: tag.tagName,
+          tagColour: tag.tagColour,
+        })),
       };
       updatedStages[index].automations.push(selectedAutomation);
       setStages(updatedStages);
       console.log("Automation saved for stage:", index, selectedAutomation);
       setselectedTemp(null); // Clear the selected template after saving
+      setSelectedTags([])
+      setIsAnyCheckboxChecked(false)
       handleDrawerClose();
     };
   };
@@ -428,7 +606,7 @@ const PipelineTemp = () => {
                               // onClick={handleClick}
                               onClick={(e) => handleClick(e, index)}
                             >
-                              Added automation
+                              Add automation
                             </Typography>
 
                             <Menu
@@ -458,7 +636,7 @@ const PipelineTemp = () => {
 
                                 }}
                               >
-                                
+
                                 {stage.automations.map((automation, idx) => (
                                   <Typography
                                     key={idx}
@@ -477,6 +655,28 @@ const PipelineTemp = () => {
                                   >
                                     {/* <span style={{ marginRight: "4px", color: "#3f51b5" }}>•</span> */}
                                     {automation.type} {automation.template ? `${automation.template.label}` : ""}
+                                    {/* Display tags with tag color and name */}
+                                    {automation.tags && automation.tags.length > 0 && (
+                                      <Box sx={{ display: "flex", gap: 1, ml: 2, flexWrap: "wrap" }}>
+                                        {automation.tags.map((tag) => (
+                                          <Box
+                                            key={tag._id}
+                                            sx={{
+                                              backgroundColor: tag.tagColour,
+                                              color: "#fff",
+                                              fontSize: "12px",
+                                              fontWeight: "600",
+                                              textAlign: "center",
+                                              padding: "3px 8px",
+                                              borderRadius: "12px",
+                                              marginBottom: "4px",
+                                            }}
+                                          >
+                                            {tag.tagName}
+                                          </Box>
+                                        ))}
+                                      </Box>
+                                    )}
                                   </Typography>
                                 ))}
                               </Box>

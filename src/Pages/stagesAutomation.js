@@ -642,48 +642,48 @@
 //               </Grid>
 //             </Box>
 
-//             <Drawer anchor="right" open={isConditionsFormOpen} onClose={handleGoBack} PaperProps={{ sx: { width: "550px", padding: 2 } }}>
-//               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-//                 <IconButton onClick={handleGoBack}>
-//                   <IoMdArrowRoundBack fontSize="large" color="blue" />
-//                 </IconButton>
-//                 <Typography variant="h6">Add conditions</Typography>
-//               </Box>
+            // <Drawer anchor="right" open={isConditionsFormOpen} onClose={handleGoBack} PaperProps={{ sx: { width: "550px", padding: 2 } }}>
+            //   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            //     <IconButton onClick={handleGoBack}>
+            //       <IoMdArrowRoundBack fontSize="large" color="blue" />
+            //     </IconButton>
+            //     <Typography variant="h6">Add conditions</Typography>
+            //   </Box>
 
-//               <Box sx={{ padding: 2 }}>
-//                 <Typography variant="body1">Apply automation only for accounts with these tags</Typography>
-//                 <TextField
-//                   fullWidth
-//                   size="small"
-//                   variant="outlined"
-//                   placeholder="Search..."
-//                   value={searchTerm}
-//                   onChange={handleSearchChange}
-//                   InputProps={{
-//                     startAdornment: <AiOutlineSearch style={{ marginRight: 8 }} />,
-//                   }}
-//                   sx={{ marginTop: 2 }}
-//                 />
+            //   <Box sx={{ padding: 2 }}>
+            //     <Typography variant="body1">Apply automation only for accounts with these tags</Typography>
+            //     <TextField
+            //       fullWidth
+            //       size="small"
+            //       variant="outlined"
+            //       placeholder="Search..."
+            //       value={searchTerm}
+            //       onChange={handleSearchChange}
+            //       InputProps={{
+            //         startAdornment: <AiOutlineSearch style={{ marginRight: 8 }} />,
+            //       }}
+            //       sx={{ marginTop: 2 }}
+            //     />
 
-//                 <Box sx={{ marginTop: 2 }}>
-//                   {filteredTags.map((tag) => (
-//                     <Box key={tag._id} sx={{ display: "flex", alignItems: "center", gap: 3, borderBottom: "1px solid grey", paddingBottom: 1 }}>
-//                       <Checkbox checked={tempSelectedTags.includes(tag)} onChange={() => handleCheckboxChange(tag)} />
-//                       <Chip label={tag.tagName} sx={{ backgroundColor: tag.tagColour, color: "#fff", fontWeight: "500", borderRadius: "20px", marginRight: 1 }} />
-//                     </Box>
-//                   ))}
-//                 </Box>
+            //     <Box sx={{ marginTop: 2 }}>
+            //       {filteredTags.map((tag) => (
+            //         <Box key={tag._id} sx={{ display: "flex", alignItems: "center", gap: 3, borderBottom: "1px solid grey", paddingBottom: 1 }}>
+            //           <Checkbox checked={tempSelectedTags.includes(tag)} onChange={() => handleCheckboxChange(tag)} />
+            //           <Chip label={tag.tagName} sx={{ backgroundColor: tag.tagColour, color: "#fff", fontWeight: "500", borderRadius: "20px", marginRight: 1 }} />
+            //         </Box>
+            //       ))}
+            //     </Box>
 
-//                 <Box sx={{ display: "flex", gap: 2, marginTop: 2 }}>
-//                   <Button variant="contained" color="primary" disabled={!isAnyCheckboxChecked} onClick={handleAddTags}>
-//                     Add
-//                   </Button>
-//                   <Button variant="outlined" color="primary" onClick={handleGoBack}>
-//                     Cancel
-//                   </Button>
-//                 </Box>
-//               </Box>
-//             </Drawer>
+            //     <Box sx={{ display: "flex", gap: 2, marginTop: 2 }}>
+            //       <Button variant="contained" color="primary" disabled={!isAnyCheckboxChecked} onClick={handleAddTags}>
+            //         Add
+            //       </Button>
+            //       <Button variant="outlined" color="primary" onClick={handleGoBack}>
+            //         Cancel
+            //       </Button>
+            //     </Box>
+            //   </Box>
+            // </Drawer>
 //           </>
 //         );
 
