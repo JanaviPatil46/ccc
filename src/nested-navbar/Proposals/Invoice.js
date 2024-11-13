@@ -394,7 +394,7 @@ const Invoice = ({ charLimit = 4000, serviceandinvoiceSettings, serviceandinvoic
 
   useEffect(() => {
     fetchInvoiceTemplates();
-    console.log(invoiceTemplates);
+    console.log(serviceandinvoiceSettings);
 
     if (!isUpdating && serviceandinvoiceSettings) {
       console.log("Received invoice settings:", serviceandinvoiceSettings);
@@ -425,6 +425,7 @@ const Invoice = ({ charLimit = 4000, serviceandinvoiceSettings, serviceandinvoic
           };
         });
         setRows(formattedLineItems);
+        
       } else {
         console.error("lineItems is either undefined or not an array");
       }
@@ -734,12 +735,21 @@ const Invoice = ({ charLimit = 4000, serviceandinvoiceSettings, serviceandinvoic
               <Grid xs={6}>
                 <Box>
                   <InputLabel sx={{ color: "black" }}>Invoice Template</InputLabel>
-                  <Autocomplete options={invoiceoptions} sx={{ mt: 1, mb: 2, backgroundColor: "#fff" }} size="small" value={selectInvoiceTemp} onChange={handleInvoiceTempChange} isOptionEqualToValue={(option, value) => option.value === value.value} getOptionLabel={(option) => option.label || ""} renderInput={(params) => <TextField {...params} placeholder="Invoice Template" />} isClearable={true} />
+                  <Autocomplete options={invoiceoptions}
+                    sx={{ mt: 1, mb: 2, backgroundColor: "#fff" }} size="small"
+                    value={selectInvoiceTemp} onChange={handleInvoiceTempChange}
+                    isOptionEqualToValue={(option, value) => option.value === value.value}
+                    getOptionLabel={(option) => option.label || ""}
+                    renderInput={(params) => <TextField {...params} placeholder="Invoice Template" />}
+                    isClearable={true} />
                 </Box>
               </Grid>
               <Grid xs={6}>
                 <InputLabel sx={{ color: "black" }}>Team Member</InputLabel>
-                <Autocomplete sx={{ mt: 1, mb: 2, backgroundColor: "#fff" }} size="small" options={teammemberoption} value={selecteduser} onChange={handleuserChange} isOptionEqualToValue={(option, value) => option.value === value.value} getOptionLabel={(option) => option.label || ""} renderInput={(params) => <TextField {...params} placeholder="Team Member" />} />
+                <Autocomplete sx={{ mt: 1, mb: 2, backgroundColor: "#fff" }} size="small" options={teammemberoption}
+                  value={selecteduser} onChange={handleuserChange}
+                  isOptionEqualToValue={(option, value) => option.value === value.value} getOptionLabel={(option) => option.label || ""}
+                  renderInput={(params) => <TextField {...params} placeholder="Team Member" />} />
               </Grid>
             </Grid>
             <Box>
@@ -1023,7 +1033,7 @@ const Invoice = ({ charLimit = 4000, serviceandinvoiceSettings, serviceandinvoic
                     placeholder="Rate"
                     size="small"
                     sx={{ mt: 1 }}
-                 
+
                     value={selectedRowData?.rate || ""} // Use selected row data
                     onChange={(e) => setSelectedRowData({ ...selectedRowData, rate: e.target.value })}
                   />

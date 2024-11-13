@@ -16,6 +16,7 @@ import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import { CiMenuKebab } from "react-icons/ci";
 import EditorShortcodes from "../../Templates/Texteditor/EditorShortcodes";
 import { useTheme } from "@mui/material/styles";
+import { IoArrowBackSharp } from "react-icons/io5";
 
 const MyStepperUpdateAcc = () => {
 
@@ -224,7 +225,7 @@ const MyStepperUpdateAcc = () => {
   });
 
   const steps = ["General"].concat(stepsVisibility.Introduction ? ["Introduction"] : [], stepsVisibility.Terms ? ["Terms"] : [], stepsVisibility.ServicesInvoices ? ["Services & Invoices"] : [], activeOption === "invoice" ? ["Payments"] : []);
-// console.log(steps)
+  // console.log(steps)
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
@@ -233,17 +234,7 @@ const MyStepperUpdateAcc = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleReset = () => {
-    // console.log(serviceAndInvoiceData)
-    // if (!serviceAndInvoiceData) {
-    //   console.error("Error: serviceAndInvoiceData is undefined");
-    //   return;
-    // }
-    // onupdateserviceandinvoiceSettings(serviceAndInvoiceData);
-    updatesaveProposaltemp();
-    // setActiveStep(0);
-    navigate(`/accountsdash/proposals/${data}`)
-  };
+
 
   const handleStepClick = (step) => {
     setActiveStep(step);
@@ -443,7 +434,6 @@ const MyStepperUpdateAcc = () => {
       const url = `${PROPOSAL_ACCOUNT_API}/proposalandels/proposalaccountwise/proposallist/${_id}`;
       const response = await fetch(url);
       const result = await response.json();
-      console.log(result)
       const proposalesandelsTemplate = result.proposalesandelsAccountwise;
       console.log(proposalesandelsTemplate);
       // Set template name and proposal name
@@ -459,19 +449,15 @@ const MyStepperUpdateAcc = () => {
       } else {
         setSelectedAccount(null); // Clear if no matching account found
       }
-       console.log(proposalesandelsTemplate.proposaltemplateid.templatename)
+
       const selectedProposal = {
         label: proposalesandelsTemplate.proposaltemplateid?.templatename,
         value: proposalesandelsTemplate.proposaltemplateid?._id,
       };
 
       setSelectedProposalTemp(selectedProposal);
-      // setCombinedProposalTempValues(selectedProposal ? [selectedProposal.value] : []);
-      console.log(selectedProposal)
-
       // settemplatename(proposalesandelsTemplate.templatename);
       setProposalName(proposalesandelsTemplate.proposalname);
-
       // Map team members for Autocomplete
       const mappedOptions = proposalesandelsTemplate.teammember.map((member) => ({
         label: member.username, // Display username
@@ -502,13 +488,8 @@ const MyStepperUpdateAcc = () => {
       setPaymentTerms(proposalesandelsTemplate.paymentterms);
       setPaymentDueDate(proposalesandelsTemplate.paymentduedate);
       setPaymentAmount(proposalesandelsTemplate.paymentamount);
-      // Set invoice data
-      console.log(proposalesandelsTemplate.servicesandinvoices);
-      // if (proposalesandelsTemplate.servicesandinvoices === "true") {
-      console.log(proposalesandelsTemplate.servicesandinvoices);
-      if (proposalesandelsTemplate.Additemizedserviceswithoutcreatinginvoices === "service") {
-        console.log(proposalesandelsTemplate.lineItems);
 
+      if (proposalesandelsTemplate.Additemizedserviceswithoutcreatinginvoices === "service") {
         const mappedLineItems = proposalesandelsTemplate.lineItems.map((item) => ({
           productName: item.productorService || "", // Map productorService to productName
           description: item.description || "",
@@ -522,7 +503,9 @@ const MyStepperUpdateAcc = () => {
         setRows(mappedLineItems);
         // summary(proposalesandelsTemplate.summary)
       }
-      setTaxRate(proposalesandelsTemplate.summary.taxRate);
+
+      setTaxRate(proposalesandelsTemplate.summary.taxRate || '');
+
       const invoiceData = {
         servicesandinvoicetempid: proposalesandelsTemplate.servicesandinvoicetempid,
         invoicetemplatename: proposalesandelsTemplate.invoicetemplatename,
@@ -556,7 +539,6 @@ const MyStepperUpdateAcc = () => {
     }
   };
 
-console.log(stepsVisibility)
 
   // Define service and invoice settings outside of fetchData
   const serviceandinvoiceSettings = {
@@ -584,21 +566,26 @@ console.log(stepsVisibility)
 
   console.log(serviceandinvoiceSettings);
 
+  const handleReset = (serviceAndInvoiceData) => {
+    // console.log(serviceAndInvoiceData)
+    if (!serviceAndInvoiceData) {
+      console.error("Error: serviceAndInvoiceData is undefined");
+      return;
+    }
+    // onupdateserviceandinvoiceSettings(serviceAndInvoiceData);
+    updatesaveProposaltemp();
+    setActiveStep(0);
+    navigate(`/accountsdash/proposals/${data}`);
+  };
+
   const updatesaveProposaltemp = () => {
     // if (!validateForm()) {
     //   // toast.error("Please fix the validation errors.");
     //   return;
     // }
+    const currentStep = steps[activeStep];
 
-    // const currentStep = steps[activeStep];
-    console.log(activeOption)
-    console.log(activeStep)
-    // console.log(currentStep)
-
-
-    if (activeStep <= 3) {
-      // if (["General", "Introduction", "Terms"].includes(currentStep)) {
-        // console.log(currentStep)
+    if (["General", "Introduction", "Terms"].includes(currentStep)) {
       const options = {
         method: "PATCH",
         headers: {
@@ -614,7 +601,6 @@ console.log(stepsVisibility)
           terms: stepsVisibility.Terms,
           servicesandinvoices: stepsVisibility.ServicesInvoices,
           introductiontext: introductionContent,
-          // servicesandinvoiceid: "66fa83ffe6e0f4ca11c2204d",
           custommessageinemail: stepsVisibility.CustomEmailMessage,
           custommessageinemailtext: description,
           reminders: stepsVisibility.Reminders,
@@ -627,164 +613,184 @@ console.log(stepsVisibility)
           active: true,
         }),
       };
-      console.log(options.body);
-      fetch(`${PROPOSAL_ACCOUNT_API}/proposalandels/proposalaccountwise/${_id}`, options)
-        .then((response) => response.json())
+
+      const url = `${PROPOSAL_ACCOUNT_API}/proposalandels/proposalaccountwise/${_id}`;
+      console.log(url); // Log the URL for debugging
+      console.log(options.body); // Log request body for debugging
+
+      fetch(url, options)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Request failed with status ${response.status}`);
+          }
+          return response.json();
+        })
         .then((result) => {
           console.log(result.message);
-          // toast.success("Invoice created successfully");
-          if (result && result.message === "Proposalesandels Accountwise Updated successfully") {
-            // fetchPrprosalsAllData();
-            // navigate("/firmtemp/templates/proposals");
+          if (result?.message === "Proposalesandels Accountwise Updated successfully") {
             toast.success("Proposalesandels Accountwise Updated successfully");
           } else {
-            toast.error(result.message || "Failed to Created ProposalesAndEls");
+            toast.error(result.message || "Failed to update ProposalesAndEls");
           }
         })
         .catch((error) => {
-          console.error("Error:", error);
+          console.error("Fetch Error:", error);
+          toast.error("An error occurred while updating ProposalesAndEls.");
         });
     }
-    // else if (currentStep === "Services & Invoices") {
-    if (activeOption === "invoice") {
-      const lineItems = invoiceData.lineItems.map((item) => ({
-        productorService: item.productName, // Assuming productName maps to productorService
-        description: item.description,
-        rate: item.rate.replace("$", ""), // Removing '$' sign from rate
-        quantity: item.qty,
-        amount: item.amount.replace("$", ""), // Removing '$' sign from amount
-        tax: item.tax.toString(), // Converting boolean to string
-      }));
-      const options = {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          accountids: [data],
-          proposaltemplateid: selectedProposalTemp.value,
-          templatename: templatename,
-          teammember: combinedTeamMemberValues,
-          proposalname: proposalName,
-          introduction: stepsVisibility.Introduction,
-          terms: stepsVisibility.Terms,
-          servicesandinvoices: stepsVisibility.ServicesInvoices,
-          // servicesandinvoiceid: "66fa83ffe6e0f4ca11c2204d",
-          custommessageinemail: stepsVisibility.CustomEmailMessage,
-          custommessageinemailtext: description,
-          reminders: stepsVisibility.Reminders,
-          daysuntilnextreminder: daysuntilNextReminder,
-          numberofreminder: noOfReminder,
-          introductiontextname: introductionname,
-          introductiontext: introductionContent,
-          termsandconditionsname: termsandconditionname,
-          termsandconditions: termsContent,
-          servicesandinvoicetempid: invoiceDataUpdate.servicesandinvoicetempid,
-          invoicetemplatename: invoiceDataUpdate.invoicetemplatename,
-          invoiceteammember: invoiceDataUpdate.invoiceteammember,
-          issueinvoice: invoiceDataUpdate.issueinvoice,
-          specificdate: invoiceDataUpdate.specificdate,
-          specifictime: invoiceDataUpdate.specifictime,
-          description: invoiceDataUpdate.description,
-          lineItems: lineItems,
-          summary: invoiceDataUpdate.summary,
-          notetoclient: invoiceDataUpdate.notetoclient,
-          Addinvoiceoraskfordeposit: addInvoice,
-          Additemizedserviceswithoutcreatinginvoices: addInvoiceitemized,
-          paymentterms: paymentterms,
-          paymentduedate: paymentduedate,
-          paymentamount: paymentamount,
-          active: true,
-        }),
-      };
-      console.log(options.body);
-      fetch(`${PROPOSAL_ACCOUNT_API}/proposalandels/proposalaccountwise/${_id}`, options)
-        .then((response) => response.json())
-        .then((result) => {
-          console.log(result);
-          if (result && result.message === "Proposalesandels Accountwise Updated successfully") {
-            // fetchPrprosalsAllData();
-            // navigate("/firmtemp/templates/proposals");
-            toast.success("Proposalesandels Accountwise Updated successfully");
-          } else {
-            toast.error(result.message || "Failed to create ProposalesAndEls");
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-    }
-
-    if (activeOption === "service") {
-      console.log(rows)
-      const lineItems = rows.map((item) => ({
-        productorService: item.productName, // Assuming productName maps to productorService
-        description: item.description,
-        rate: item.rate.replace("$", ""), // Removing '$' sign from rate
-        quantity: item.qty,
-        amount: item.amount.replace("$", ""), // Removing '$' sign from amount
-        tax: item.tax.toString(), // Converting boolean to string
-      }));
-      const options = {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          accountids: [data],
-          proposaltemplateid: selectedProposalTemp.value,
-          templatename: templatename,
-          teammember: combinedTeamMemberValues,
-          proposalname: proposalName,
-          introduction: stepsVisibility.Introduction,
-          terms: stepsVisibility.Terms,
-          servicesandinvoices: stepsVisibility.ServicesInvoices,
-          introductiontext: introductionContent,
-          // servicesandinvoiceid: "66fa83ffe6e0f4ca11c2204d",
-          custommessageinemail: stepsVisibility.CustomEmailMessage,
-          custommessageinemailtext: description,
-          reminders: stepsVisibility.Reminders,
-          daysuntilnextreminder: daysuntilNextReminder,
-          numberofreminder: noOfReminder,
-          introductiontextname: introductionname,
-          introductiontext: introductionContent,
-          termsandconditionsname: termsandconditionname,
-          termsandconditions: termsContent,
-          servicesandinvoicetempid: invoiceData.servicesandinvoicetempid,
-
-          lineItems: lineItems,
-          summary: {
-            subtotal: subtotal,
-            taxRate: taxRate,
-            taxTotal: taxTotal,
-            total: totalAmount,
+    else if (currentStep === "Services & Invoices" || currentStep === "Payments") {
+      if (activeOption === "invoice") {
+        const lineItems = invoiceData.lineItems.map((item) => ({
+          productorService: item.productName, // Assuming productName maps to productorService
+          description: item.description,
+          rate: item.rate.replace("$", ""), // Removing '$' sign from rate
+          quantity: item.qty,
+          amount: item.amount.replace("$", ""), // Removing '$' sign from amount
+          tax: item.tax.toString(), // Converting boolean to string
+        }));
+        const options = {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
           },
+          body: JSON.stringify({
+            accountids: [data],
+            proposaltemplateid: selectedProposalTemp.value,
+            templatename: templatename,
+            teammember: combinedTeamMemberValues,
+            proposalname: proposalName,
+            introduction: stepsVisibility.Introduction,
+            terms: stepsVisibility.Terms,
+            servicesandinvoices: stepsVisibility.ServicesInvoices,
+            // servicesandinvoiceid: "66fa83ffe6e0f4ca11c2204d",
+            custommessageinemail: stepsVisibility.CustomEmailMessage,
+            custommessageinemailtext: description,
+            reminders: stepsVisibility.Reminders,
+            daysuntilnextreminder: daysuntilNextReminder,
+            numberofreminder: noOfReminder,
+            introductiontextname: introductionname,
+            introductiontext: introductionContent,
+            termsandconditionsname: termsandconditionname,
+            termsandconditions: termsContent,
+            servicesandinvoicetempid: invoiceDataUpdate.servicesandinvoicetempid,
+            invoicetemplatename: invoiceDataUpdate.invoicetemplatename,
+            invoiceteammember: invoiceDataUpdate.invoiceteammember,
+            issueinvoice: invoiceDataUpdate.issueinvoice,
+            specificdate: invoiceDataUpdate.specificdate,
+            specifictime: invoiceDataUpdate.specifictime,
+            description: invoiceDataUpdate.description,
+            lineItems: lineItems,
+            summary: invoiceDataUpdate.summary,
+            notetoclient: invoiceDataUpdate.notetoclient,
+            Addinvoiceoraskfordeposit: addInvoice,
+            Additemizedserviceswithoutcreatinginvoices: addInvoiceitemized,
+            paymentterms: paymentterms,
+            paymentduedate: paymentduedate,
+            paymentamount: paymentamount,
+            active: true,
+          }),
+        };
+        const url = `${PROPOSAL_ACCOUNT_API}/proposalandels/proposalaccountwise/${_id}`;
+        console.log(url); // Log the URL for debugging
+        console.log(options.body); // Log request body for debugging
 
-          Addinvoiceoraskfordeposit: addInvoice,
-          Additemizedserviceswithoutcreatinginvoices: addInvoiceitemized,
+        fetch(url, options)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`Request failed with status ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((result) => {
+            console.log(result.message);
+            if (result?.message === "Proposalesandels Accountwise Updated successfully") {
+              toast.success("Proposalesandels Accountwise Updated successfully");
+            } else {
+              toast.error(result.message || "Failed to update ProposalesAndEls");
+            }
+          })
+          .catch((error) => {
+            console.error("Fetch Error:", error);
+            toast.error("An error occurred while updating ProposalesAndEls.");
+          });
+      }
 
-          active: true,
-        }),
-      };
-      console.log(options.body);
-      fetch(`${PROPOSAL_ACCOUNT_API}/proposalandels/proposalaccountwise/${_id}`, options)
-        .then((response) => response.json())
-        .then((result) => {
-          console.log(result.message);
-          // toast.success("Invoice created successfully");
-          if (result && result.message === "Proposalesandels Accountwise Updated successfully") {
-            // fetchPrprosalsAllData();
-            // navigate("/firmtemp/templates/proposals");
-            toast.success("Proposalesandels Accountwise Updated successfully");
-          } else {
-            toast.error(result.message || "Failed to Create ProposalesAndEls");
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+      if (activeOption === "service") {
+        console.log(rows)
+        const lineItems = rows.map((item) => ({
+          productorService: item.productName, // Assuming productName maps to productorService
+          description: item.description,
+          rate: item.rate.replace("$", ""), // Removing '$' sign from rate
+          quantity: item.qty,
+          amount: item.amount.replace("$", ""), // Removing '$' sign from amount
+          tax: item.tax.toString(), // Converting boolean to string
+        }));
+        const options = {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            accountids: [data],
+            proposaltemplateid: selectedProposalTemp.value,
+            templatename: templatename,
+            teammember: combinedTeamMemberValues,
+            proposalname: proposalName,
+            introduction: stepsVisibility.Introduction,
+            terms: stepsVisibility.Terms,
+            servicesandinvoices: stepsVisibility.ServicesInvoices,
+            introductiontext: introductionContent,
+            // servicesandinvoiceid: "66fa83ffe6e0f4ca11c2204d",
+            custommessageinemail: stepsVisibility.CustomEmailMessage,
+            custommessageinemailtext: description,
+            reminders: stepsVisibility.Reminders,
+            daysuntilnextreminder: daysuntilNextReminder,
+            numberofreminder: noOfReminder,
+            introductiontextname: introductionname,
+            introductiontext: introductionContent,
+            termsandconditionsname: termsandconditionname,
+            termsandconditions: termsContent,
+            servicesandinvoicetempid: invoiceData.servicesandinvoicetempid,
+
+            lineItems: lineItems,
+            summary: {
+              subtotal: subtotal,
+              taxRate: taxRate,
+              taxTotal: taxTotal,
+              total: totalAmount,
+            },
+
+            Addinvoiceoraskfordeposit: addInvoice,
+            Additemizedserviceswithoutcreatinginvoices: addInvoiceitemized,
+
+            active: true,
+          }),
+        };
+        const url = `${PROPOSAL_ACCOUNT_API}/proposalandels/proposalaccountwise/${_id}`;
+        console.log(url); // Log the URL for debugging
+        console.log(options.body); // Log request body for debugging
+
+        fetch(url, options)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`Request failed with status ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((result) => {
+            console.log(result.message);
+            if (result?.message === "Proposalesandels Accountwise Updated successfully") {
+              toast.success("Proposalesandels Accountwise Updated successfully");
+            } else {
+              toast.error(result.message || "Failed to update ProposalesAndEls");
+            }
+          })
+          .catch((error) => {
+            console.error("Fetch Error:", error);
+            toast.error("An error occurred while updating ProposalesAndEls.");
+          });
+      }
     }
-  // }
   };
 
 
@@ -1184,7 +1190,7 @@ console.log(stepsVisibility)
   }));
 
 
-  
+
   const fetchproposalTemplatbyid = async (templateid) => {
     try {
       const url = `${PROPOSAL_API}/workflow/proposalesandels/proposalesandelslist/${templateid}`;
@@ -2059,9 +2065,25 @@ console.log(stepsVisibility)
     }
   };
 
+  const handleBackToProposalTable = () => {
+    navigate(`/accountsdash/proposals/${data}`); // Replace with the actual path to your proposal table page
+  };
+
   return (
     <Box sx={{ width: "100%" }}>
       <Box>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <Button
+            // variant="outlined"
+            onClick={handleBackToProposalTable}
+            startIcon={<IoArrowBackSharp style={{ fontSize: '25px' }} />}
+            sx={{ marginRight: 2 }}
+          >
+          </Button>
+          <Box sx={{ typography: "h4" }}>Update proposal/engagement letter</Box>
+        </Box>
+
         <Grid container spacing={3} mr={5} p={5}>
           <Grid item xs={8}>
             <Box sx={{ p: 2, backgroundColor: "#fff" }}>
@@ -2079,7 +2101,7 @@ console.log(stepsVisibility)
               {/* <Button variant="contained" onClick={activeStep === steps.length - 1 ? handleReset : handleNext} sx={{ width: "200px" }}>
                 {activeStep === steps.length - 1 ? "Save Template" : "Next"}
               </Button> */}
-               <Button variant="contained" onClick={activeStep === steps.length - 1 ? handleReset : handleNext} sx={{ width: "200px" }}>
+              <Button variant="contained" onClick={activeStep === steps.length - 1 ? handleReset : handleNext} sx={{ width: "200px" }}>
                 {activeStep === steps.length - 1 ? "Save Template" : "Next"}
               </Button>
               <Button disabled={activeStep === 0} onClick={handleBack} variant="outlined">

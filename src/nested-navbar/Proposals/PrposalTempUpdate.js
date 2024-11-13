@@ -15,6 +15,7 @@ import { RxCross2 } from "react-icons/rx";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import EditorShortcodes from "../../Templates/Texteditor/EditorShortcodes";
 import { useTheme } from "@mui/material/styles";
+import { IoArrowBackSharp } from "react-icons/io5";
 
 const MyStepperUpdate = () => {
 
@@ -77,9 +78,10 @@ const MyStepperUpdate = () => {
       summary: serviceAndInvoiceData.summary,
       notetoclient: serviceAndInvoiceData.noteToClient,
     };
-    setInvoiceData(newInvoiceData);
+    setInvoiceDataUpdate(newInvoiceData);
   };
   console.log(invoiceDataUpdate);
+
 
   // console.log(combinedValues)
   const [proposalTempData, setProposalTempData] = useState([]);
@@ -300,6 +302,7 @@ const MyStepperUpdate = () => {
   };
 
   const handleReset = (serviceAndInvoiceData) => {
+    // console.log(serviceAndInvoiceData)
     if (!serviceAndInvoiceData) {
       console.error("Error: serviceAndInvoiceData is undefined");
       return;
@@ -307,7 +310,10 @@ const MyStepperUpdate = () => {
     // onupdateserviceandinvoiceSettings(serviceAndInvoiceData);
     updatesaveProposaltemp();
     setActiveStep(0);
+    // navigate(`accountsdash/proposals/${data}`)
+    navigate(`/accountsdash/proposals/${data}`);
   };
+
 
   const handleStepClick = (step) => {
     setActiveStep(step);
@@ -391,6 +397,7 @@ const MyStepperUpdate = () => {
   };
   const [addInvoice, setAddInvoice] = useState("");
   const [addInvoiceitemized, setAddInvoiceitemized] = useState("");
+
   const handleShowInvoiceForm = () => {
     setActiveOption("invoice");
     setAddInvoice("invoice");
@@ -565,6 +572,7 @@ const MyStepperUpdate = () => {
         // summary(proposalesandelsTemplate.summary)
       }
       setTaxRate(proposalesandelsTemplate.summary.taxRate);
+      setIsUpdating(true);
       const invoiceData = {
         servicesandinvoicetempid: proposalesandelsTemplate.servicesandinvoicetempid,
         invoicetemplatename: proposalesandelsTemplate.invoicetemplatename,
@@ -576,10 +584,11 @@ const MyStepperUpdate = () => {
         lineItems: proposalesandelsTemplate.lineItems,
         summary: proposalesandelsTemplate.summary,
         notetoclient: proposalesandelsTemplate.notetoclient,
+        // isUpdating: isUpdating,
       };
 
       setInvoiceData(invoiceData);
-
+      // serviceandinvoiceSettings(invoiceData);
       console.log(invoiceData);
       // Conditionally set the active option
       if (proposalesandelsTemplate.Addinvoiceoraskfordeposit === "invoice") {
@@ -590,7 +599,6 @@ const MyStepperUpdate = () => {
         setAddInvoiceitemized(proposalesandelsTemplate.Additemizedserviceswithoutcreatinginvoices);
       }
       // }
-      setIsUpdating(true);
       // Set the rows (line items)
       // setRows(proposalesandelsTemplate.lineItems);
     } catch (error) {
@@ -598,24 +606,22 @@ const MyStepperUpdate = () => {
     }
   };
 
-  const serviceandinvoiceSettings = (data) => {
-    console.log("Invoice data received:", data);
-    const newInvoiceData = {
-      servicesandinvoicetempid: data.invoiceTempId,
-      invoicetemplatename: data.invoiceTempName,
-      invoiceteammember: data.invoiceTeamMember,
-      issueinvoice: data.issueInvoiceSelect,
-      specificdate: data.specificDate,
-      specifictime: data.specificTime,
-      description: data.descriptionData,
-      lineItems: data.lineItems,
-      summary: data.summary,
-      isUpdating: isUpdating,
-      notetoclient: data.noteToClient,
-    };
-    setInvoiceData(newInvoiceData);
+  const serviceandinvoiceSettings = {
+    servicesandinvoicetempid: invoiceData?.servicesandinvoicetempid,
+    invoicetemplatename: invoiceData?.invoicetemplatename,
+    invoiceteammember: invoiceData?.invoiceteammember,
+    issueinvoice: invoiceData?.issueinvoice,
+    specificdate: invoiceData?.specificdate,
+    specifictime: invoiceData?.specifictime,
+    description: invoiceData?.description,
+    lineItems: invoiceData?.lineItems,
+    summary: invoiceData?.summary,
+    notetoclient: invoiceData?.notetoclient,
+
+    isUpdating: isUpdating,
   };
-  console.log(invoiceData);
+
+  console.log(serviceandinvoiceSettings);
 
   // Define service and invoice settings outside of fetchData
   // const serviceandinvoiceSettings = {
@@ -637,20 +643,20 @@ const MyStepperUpdate = () => {
     // const fetchData = async () => {
     //   await fetchproposalbyid();
     // };
-
     fetchData();
   }, []); // Empty dependency array to run only once on mount
 
-  console.log(serviceandinvoiceSettings);
+  // console.log(serviceandinvoiceSettings);
 
   const updatesaveProposaltemp = () => {
-    if (!validateForm()) {
-      // toast.error("Please fix the validation errors.");
-      return;
-    }
+    // if (!validateForm()) {
+    //   // toast.error("Please fix the validation errors.");
+    //   return;
+    // }
     const currentStep = steps[activeStep];
     console.log(activeOption)
     console.log(activeStep)
+    console.log(currentStep)
     if (["General", "Introduction", "Terms"].includes(currentStep)) {
       const options = {
         method: "POST",
@@ -698,146 +704,146 @@ const MyStepperUpdate = () => {
           console.error("Error:", error);
         });
     }
-    else if (currentStep === "Services & Invoices") {
-    if (activeOption === "invoice") {
-      const lineItems = invoiceData.lineItems.map((item) => ({
-        productorService: item.productName, // Assuming productName maps to productorService
-        description: item.description,
-        rate: item.rate.replace("$", ""), // Removing '$' sign from rate
-        quantity: item.qty,
-        amount: item.amount.replace("$", ""), // Removing '$' sign from amount
-        tax: item.tax.toString(), // Converting boolean to string
-      }));
-      const options = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          accountids: [data],
-          proposaltemplateid: selectedProposalTemp.value,
-          templatename: templatename,
-          teammember: combinedTeamMemberValues,
-          proposalname: proposalName,
-          introduction: stepsVisibility.Introduction,
-          terms: stepsVisibility.Terms,
-          servicesandinvoices: stepsVisibility.ServicesInvoices,
-          servicesandinvoiceid: "66fa83ffe6e0f4ca11c2204d",
-          custommessageinemail: stepsVisibility.CustomEmailMessage,
-          custommessageinemailtext: description,
-          reminders: stepsVisibility.Reminders,
-          daysuntilnextreminder: daysuntilNextReminder,
-          numberofreminder: noOfReminder,
-          introductiontextname: introductionname,
-          introductiontext: introductionContent,
-          termsandconditionsname: termsandconditionname,
-          termsandconditions: termsContent,
-          servicesandinvoicetempid: invoiceDataUpdate.servicesandinvoicetempid,
-          invoicetemplatename: invoiceDataUpdate.invoicetemplatename,
-          invoiceteammember: invoiceDataUpdate.invoiceteammember,
-          issueinvoice: invoiceDataUpdate.issueinvoice,
-          specificdate: invoiceDataUpdate.specificdate,
-          specifictime: invoiceDataUpdate.specifictime,
-          description: invoiceDataUpdate.description,
-          lineItems: lineItems,
-          summary: invoiceDataUpdate.summary,
-          notetoclient: invoiceDataUpdate.notetoclient,
-          Addinvoiceoraskfordeposit: addInvoice,
-          Additemizedserviceswithoutcreatinginvoices: addInvoiceitemized,
-          paymentterms: paymentterms,
-          paymentduedate: paymentduedate,
-          paymentamount: paymentamount,
-          active: true,
-        }),
-      };
-      console.log(options.body);
-      fetch(`${PROPOSAL_ACCOUNT_API}/proposalandels/proposalaccountwise/`, options)
-        .then((response) => response.json())
-        .then((result) => {
-          console.log(result);
-          if (result && result.message === "ProposalesandelsAccountwise created successfully") {
-            // fetchPrprosalsAllData();
-            // navigate("/firmtemp/templates/proposals");
-            toast.success("ProposalesAndEls Created successfully");
-          } else {
-            toast.error(result.message || "Failed to create ProposalesAndEls");
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-    }
-
-    if (activeOption === "service") {
-      console.log(rows)
-      const lineItems = rows.map((item) => ({
-        productorService: item.productName, // Assuming productName maps to productorService
-        description: item.description,
-        rate: item.rate.replace("$", ""), // Removing '$' sign from rate
-        quantity: item.qty,
-        amount: item.amount.replace("$", ""), // Removing '$' sign from amount
-        tax: item.tax.toString(), // Converting boolean to string
-      }));
-      const options = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          accountids: [data],
-          proposaltemplateid: selectedProposalTemp.value,
-          templatename: templatename,
-          teammember: combinedTeamMemberValues,
-          proposalname: proposalName,
-          introduction: stepsVisibility.Introduction,
-          terms: stepsVisibility.Terms,
-          servicesandinvoices: stepsVisibility.ServicesInvoices,
-          introductiontext: introductionContent,
-          // servicesandinvoiceid: "66fa83ffe6e0f4ca11c2204d",
-          custommessageinemail: stepsVisibility.CustomEmailMessage,
-          custommessageinemailtext: description,
-          reminders: stepsVisibility.Reminders,
-          daysuntilnextreminder: daysuntilNextReminder,
-          numberofreminder: noOfReminder,
-          introductiontextname: introductionname,
-          introductiontext: introductionContent,
-          termsandconditionsname: termsandconditionname,
-          termsandconditions: termsContent,
-          servicesandinvoicetempid: invoiceData.servicesandinvoicetempid,
-
-          lineItems: lineItems,
-          summary: {
-            subtotal: subtotal,
-            taxRate: taxRate,
-            taxTotal: taxTotal,
-            total: totalAmount,
+    else if (currentStep === "Services & Invoices" || currentStep === "Payments") {
+      if (activeOption === "invoice") {
+        const lineItems = invoiceDataUpdate.lineItems.map((item) => ({
+          productorService: item.productName, // Assuming productName maps to productorService
+          description: item.description,
+          rate: item.rate.replace("$", ""), // Removing '$' sign from rate
+          quantity: item.qty,
+          amount: item.amount.replace("$", ""), // Removing '$' sign from amount
+          tax: item.tax.toString(), // Converting boolean to string
+        }));
+        const options = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
+          body: JSON.stringify({
+            accountids: [data],
+            proposaltemplateid: selectedProposalTemp.value,
+            templatename: templatename,
+            teammember: combinedTeamMemberValues,
+            proposalname: proposalName,
+            introduction: stepsVisibility.Introduction,
+            terms: stepsVisibility.Terms,
+            servicesandinvoices: stepsVisibility.ServicesInvoices,
+            // servicesandinvoiceid: "66fa83ffe6e0f4ca11c2204d",
+            custommessageinemail: stepsVisibility.CustomEmailMessage,
+            custommessageinemailtext: description,
+            reminders: stepsVisibility.Reminders,
+            daysuntilnextreminder: daysuntilNextReminder,
+            numberofreminder: noOfReminder,
+            introductiontextname: introductionname,
+            introductiontext: introductionContent,
+            termsandconditionsname: termsandconditionname,
+            termsandconditions: termsContent,
+            servicesandinvoicetempid: invoiceDataUpdate.servicesandinvoicetempid,
+            invoicetemplatename: invoiceDataUpdate.invoicetemplatename,
+            invoiceteammember: invoiceDataUpdate.invoiceteammember,
+            issueinvoice: invoiceDataUpdate.issueinvoice,
+            specificdate: invoiceDataUpdate.specificdate,
+            specifictime: invoiceDataUpdate.specifictime,
+            description: invoiceDataUpdate.description,
+            lineItems: lineItems,
+            summary: invoiceDataUpdate.summary,
+            notetoclient: invoiceDataUpdate.notetoclient,
+            Addinvoiceoraskfordeposit: addInvoice,
+            Additemizedserviceswithoutcreatinginvoices: addInvoiceitemized,
+            paymentterms: paymentterms,
+            paymentduedate: paymentduedate,
+            paymentamount: paymentamount,
+            active: true,
+          }),
+        };
+        console.log(options.body);
+        fetch(`${PROPOSAL_ACCOUNT_API}/proposalandels/proposalaccountwise/`, options)
+          .then((response) => response.json())
+          .then((result) => {
+            console.log(result);
+            if (result && result.message === "ProposalesandelsAccountwise created successfully") {
+              // fetchPrprosalsAllData();
+              // navigate("/firmtemp/templates/proposals");
+              toast.success("ProposalesAndEls Created successfully");
+            } else {
+              toast.error(result.message || "Failed to create ProposalesAndEls");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
 
-          Addinvoiceoraskfordeposit: addInvoice,
-          Additemizedserviceswithoutcreatinginvoices: addInvoiceitemized,
+      if (activeOption === "service") {
+        console.log(rows)
+        const lineItems = rows.map((item) => ({
+          productorService: item.productName, // Assuming productName maps to productorService
+          description: item.description,
+          rate: item.rate.replace("$", ""), // Removing '$' sign from rate
+          quantity: item.qty,
+          amount: item.amount.replace("$", ""), // Removing '$' sign from amount
+          tax: item.tax.toString(), // Converting boolean to string
+        }));
+        const options = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            accountids: [data],
+            proposaltemplateid: selectedProposalTemp.value,
+            templatename: templatename,
+            teammember: combinedTeamMemberValues,
+            proposalname: proposalName,
+            introduction: stepsVisibility.Introduction,
+            terms: stepsVisibility.Terms,
+            servicesandinvoices: stepsVisibility.ServicesInvoices,
+            introductiontext: introductionContent,
+            // servicesandinvoiceid: "66fa83ffe6e0f4ca11c2204d",
+            custommessageinemail: stepsVisibility.CustomEmailMessage,
+            custommessageinemailtext: description,
+            reminders: stepsVisibility.Reminders,
+            daysuntilnextreminder: daysuntilNextReminder,
+            numberofreminder: noOfReminder,
+            introductiontextname: introductionname,
+            introductiontext: introductionContent,
+            termsandconditionsname: termsandconditionname,
+            termsandconditions: termsContent,
+            servicesandinvoicetempid: invoiceData.servicesandinvoicetempid,
 
-          active: true,
-        }),
-      };
-      console.log(options.body);
-      fetch(`${PROPOSAL_ACCOUNT_API}/proposalandels/proposalaccountwise/`, options)
-        .then((response) => response.json())
-        .then((result) => {
-          console.log(result.message);
-          // toast.success("Invoice created successfully");
-          if (result && result.message === "ProposalesandelsAccountwise created successfully") {
-            // fetchPrprosalsAllData();
-            // navigate("/firmtemp/templates/proposals");
-            toast.success("ProposalesAndEls Created successfully");
-          } else {
-            toast.error(result.message || "Failed to Create ProposalesAndEls");
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+            lineItems: lineItems,
+            summary: {
+              subtotal: subtotal,
+              taxRate: taxRate,
+              taxTotal: taxTotal,
+              total: totalAmount,
+            },
+
+            Addinvoiceoraskfordeposit: addInvoice,
+            Additemizedserviceswithoutcreatinginvoices: addInvoiceitemized,
+
+            active: true,
+          }),
+        };
+        console.log(options.body);
+        fetch(`${PROPOSAL_ACCOUNT_API}/proposalandels/proposalaccountwise/`, options)
+          .then((response) => response.json())
+          .then((result) => {
+            console.log(result.message);
+            // toast.success("Invoice created successfully");
+            if (result && result.message === "ProposalesandelsAccountwise created successfully") {
+              // fetchPrprosalsAllData();
+              // navigate("/firmtemp/templates/proposals");
+              toast.success("ProposalesAndEls Created successfully");
+            } else {
+              toast.error(result.message || "Failed to Create ProposalesAndEls");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
     }
-  }
   };
 
   //*****Payments */
@@ -1859,11 +1865,24 @@ const MyStepperUpdate = () => {
     }
   };
 
+  const handleBackToProposalTable = () => {
+    navigate(`/accountsdash/proposals/${data}`); // Replace with the actual path to your proposal table page
+  };
+
   return (
     <Box sx={{ width: "100%" }}>
       <Box>
 
-        <Box sx={{ typography: "h4" }}>Create proposal/engagement letter</Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <Button
+            // variant="outlined"
+            onClick={handleBackToProposalTable}
+            startIcon={ <IoArrowBackSharp  style={{fontSize:'25px'}} />}
+             sx={{ marginRight: 2 }}
+          >
+          </Button>
+          <Box sx={{ typography: "h4" }}>Create proposal/engagement letter</Box>
+        </Box>
 
         <Grid container spacing={3} mr={5} p={5}>
           <Grid item xs={8}>

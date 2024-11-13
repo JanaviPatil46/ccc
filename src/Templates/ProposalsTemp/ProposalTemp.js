@@ -460,8 +460,9 @@ const MyStepper = () => {
       return;
     }
     console.log(invoiceData);
-
-    if (activeStep !== 3) {
+    const currentStep = steps[activeStep];
+    // if (activeStep !== 3) {
+      if (["General", "Introduction", "Terms"].includes(currentStep)) {
       const options = {
         method: "POST",
         headers: {
@@ -505,6 +506,7 @@ const MyStepper = () => {
           console.error("Error:", error);
         });
     }
+    else if (currentStep === "Services & Invoices" || currentStep === "Payments") {
     if (activeOption === "invoice") {
       const options = {
         method: "POST",
@@ -566,6 +568,7 @@ const MyStepper = () => {
           console.error("Error:", error);
         });
     }
+
     if (activeOption === "service") {
       const lineItems = rows.map((item) => ({
         productorService: item.productName, // Assuming productName maps to productorService
@@ -639,6 +642,7 @@ const MyStepper = () => {
           console.error("Error:", error);
         });
     }
+  }
     console.log(options.body);
   };
 
@@ -1624,7 +1628,7 @@ const MyStepper = () => {
                               placeholder="Rate"
                               size="small"
                               sx={{ mt: 1 }}
-                              fullWidth
+                             
                               value={selectedRowData?.rate || ""} // Use selected row data
                               onChange={(e) => setSelectedRowData({ ...selectedRowData, rate: e.target.value })}
                             />

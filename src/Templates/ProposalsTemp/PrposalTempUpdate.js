@@ -556,7 +556,8 @@ const MyStepperUpdate = () => {
       // toast.error("Please fix the validation errors.");
       return;
     }
-    if (activeStep !== 3) {
+    const currentStep = steps[activeStep];
+    if (["General", "Introduction", "Terms"].includes(currentStep)) {
       const options = {
         method: "PATCH",
         headers: {
@@ -601,6 +602,7 @@ const MyStepperUpdate = () => {
           console.error("Error:", error);
         });
     }
+    else if (currentStep === "Services & Invoices" || currentStep === "Payments") {
     if (activeOption === "invoice") {
       const lineItems = invoiceDataUpdate.lineItems.map((item) => ({
         productorService: item.productName, // Assuming productName maps to productorService
@@ -741,6 +743,7 @@ const MyStepperUpdate = () => {
           console.error("Error:", error);
         });
     }
+  }
   };
 
   //*****Payments */
@@ -1565,7 +1568,7 @@ const MyStepperUpdate = () => {
                               placeholder="Rate"
                               size="small"
                               sx={{ mt: 1 }}
-                              fullWidth
+                             
                               value={selectedRowData?.rate || ""} // Use selected row data
                               onChange={(e) => setSelectedRowData({ ...selectedRowData, rate: e.target.value })}
                             />
