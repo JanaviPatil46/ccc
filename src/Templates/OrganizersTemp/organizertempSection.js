@@ -137,7 +137,8 @@ const Section = ({ sections, section, onDelete, onUpdate, onDuplicate, onSaveFor
         conditions: queConditionButton
           ? questionAnswers.map((qa, index) => ({
               question: selectedQuestions[index], // Ensure selectedQuestions are saved
-              answer: selectedAnswers[index], // Ensure selectedAnswers are saved
+              answer: selectedAnswers[index], 
+              optionvalue:false// Ensure selectedAnswers are saved
             }))
           : [],
         descriptionEnabled: descriptionButton,
