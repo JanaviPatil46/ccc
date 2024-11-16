@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { toast, } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
@@ -7,27 +7,23 @@ import FolderTemplateTable from "./FolderTemplateTable";
 import NameFolderTemp from "./NameFolderTemp";
 import FolderList from "./FolderList";
 import TemplateName from "./TemplateName";
-import {
-  Box,
-  Typography,
-  Paper
-} from '@mui/material';
+import { Box, Typography, Paper } from "@mui/material";
+import FolderTempEdit from "./FolderTempEdit";
 
 const FolderTemp = () => {
-
   const API_KEY = process.env.REACT_APP_API_IP;
   const [isOpenClientDocs, setIsOpenClientDocs] = useState(false);
   const [isOpenSharedDocs, setIsOpenSharedDocs] = useState(false);
   const [isOpenPrivate, setIsOpenPrivate] = useState(false);
   const [isFolderFormOpen, setIsFolderFormOpen] = useState(false);
   const [isDocumentForm, setIsDocumentForm] = useState(false);
+  const [isTempEditForm, setIsTempEditForm] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [tempName, setTempName] = useState("");
   const [clientFolder, setClientFolder] = useState("Client uploaded document");
   const [firmFolder, setFirmFolder] = useState("Firm Doc shared with client");
   const [privateFolder, setPrivateFolder] = useState("Private");
   const [templateId, setTemplateId] = useState();
-
 
   const handleCancel = () => {
     setShowTable(false);
@@ -57,7 +53,13 @@ const FolderTemp = () => {
 
   const handleEdit = (_id) => {
     // Implement logic for editing here
-    // console.log("Edit action triggered for template id: ", templateId);
+    console.log("Edit action triggered for template id: ", _id);
+    setIsDocumentForm(true);
+    setShowTable(!showTable);
+    setTemplateName(false);
+    setIsTempEditForm(true);
+    setTemplateId(_id);
+
     // navigate('FoldertempUpdate/'+_id)
   };
 
@@ -67,7 +69,7 @@ const FolderTemp = () => {
 
   const handleCreateTemplate = () => {
     setShowTable(!showTable);
-    setTemplateName(!templateName);
+    setTemplateName(true);
     console.log(templateName);
   };
 
@@ -142,9 +144,11 @@ const FolderTemp = () => {
 
   return (
     <>
-      <Box sx={{ borderRadius:'10px',padding:'20px'}} >
-       <Box>
-          <Typography variant='h4' fontWeight='bold'>Folder Templates</Typography>
+      <Box sx={{ borderRadius: "10px", padding: "20px" }}>
+        <Box>
+          <Typography variant="h4" fontWeight="bold">
+            Folder Templates
+          </Typography>
         </Box>
 
         <Box>
@@ -152,6 +156,7 @@ const FolderTemp = () => {
           {templateName && <TemplateName handleSaveTemplate={handleSaveTemplate} handleCancel={handleCancel} tempName={tempName} setTempName={setTempName} />}
 
           {folderList && <FolderList tempName={tempName} folderData={folderData} fetchAllFolders={fetchAllFolders} templateId={templateId} />}
+          {isTempEditForm && <FolderTempEdit tempName={tempName} folderData={folderData} fetchAllFolders={fetchAllFolders} templateId={templateId} />}
         </Box>
       </Box>
     </>
@@ -160,11 +165,8 @@ const FolderTemp = () => {
 
 export default FolderTemp;
 
-
-
-
-
-{/* <div className="container">
+{
+  /* <div className="container">
         <h1>Folder Template</h1>
         <div className="subtitle" style={{ border: "1px solid #f1f3f5", padding: "10px", borderRadius: "15px", marginTop: "25px" }}>
           {showTable && <FolderTemplateTable handleCreateTemplate={handleCreateTemplate} folderTemplates={folderTemplates} handleEdit={handleEdit} />}
@@ -173,4 +175,5 @@ export default FolderTemp;
           {folderList && <FolderList tempName={tempName} folderData={folderData} fetchAllFolders={fetchAllFolders} templateId={templateId}/>}
          
         </div>
-      </div> */}
+      </div> */
+}

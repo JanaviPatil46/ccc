@@ -12,9 +12,9 @@ import axios from "axios";
 import { FaRegFilePdf, FaRegImage } from "react-icons/fa6";
 import { PiMicrosoftWordLogoFill } from "react-icons/pi";
 import { AiFillFileUnknown } from "react-icons/ai";
-import { toast, } from "react-toastify";
+import { toast } from "react-toastify";
 import { BsFiletypeXlsx } from "react-icons/bs";
-import { Button, IconButton, List, ListItem, Divider, Box, Typography,Drawer } from "@mui/material";
+import { Button, IconButton, List, ListItem, Divider, Box, Typography, Drawer } from "@mui/material";
 const UploadDocument = ({ isDocumentForm, setIsDocumentForm, file, setFile, folderData, templateId }) => {
   const API_KEY = process.env.REACT_APP_API_IP;
   const [menuVisible, setMenuVisible] = useState(false);
@@ -67,7 +67,6 @@ const UploadDocument = ({ isDocumentForm, setIsDocumentForm, file, setFile, fold
 
   const fetchAllFolders = async () => {
     try {
-    
       const response = await axios.get(`${API_KEY}/allFolders/${templateId}`);
       setFolderDataRef(response.data.folders);
     } catch (error) {
@@ -111,84 +110,6 @@ const UploadDocument = ({ isDocumentForm, setIsDocumentForm, file, setFile, fold
   };
 
   return (
-    // <div className={`upload-form-container ${isDocumentForm ? "upload-form-open" : ""}`}>
-    //   <div className="folder-header">
-    //     Upload Documents
-    //     <FaTimes style={{ color: "#1976d3", cursor: "pointer" }} onClick={handleUploadFormClose} />
-    //   </div>
-    //   <div className="upload-container">
-    //     <div style={{ padding: "10px" }}>
-    //       {folderDataRef.map((folder, index) => (
-    //         <div key={index}>
-    //           <div style={{ display: "flex", alignItems: "center", gap: "10px" }} onClick={() => handleSelectedFolder(folder.folder)}>
-    //             <div
-    //               style={{ display: "flex", alignItems: "center", gap: "10px" }}
-    //               onClick={() => {
-    //                 toggleFolder(folder.folder);
-    //               }}
-    //             >
-    //               <button style={{ fontSize: "20px", background: "none", color: "inherit", border: "none", padding: 0, font: "inherit", cursor: "pointer", outline: "inherit" }}>{expandedFolders.includes(folder.folder) ? <FcOpenedFolder style={{ fontSize: "20px" }} /> : <FcFolder />}</button>
-    //               {folder.folder}
-    //             </div>
-    //           </div>
-    //           <hr style={{ marginBottom: "5px" }} />
-    //           {expandedFolders.includes(folder.folder) && folder.contents.length > 0 && (
-    //             <ul>
-    //               {folder.contents.map((item, itemIndex) => (
-    //                 <div key={itemIndex}>
-    //                   {item.file && (
-    //                     <li style={{ listStyle: "none", padding: 0, margin: "20px" }}>
-    //                       <span style={{ marginRight: "10px", fontSize: "25px" }}>{getFileIcon(item.file)}</span>
-    //                       {item.file}
-    //                     </li>
-    //                   )}
-    //                   {item.folder && (
-    //                     <div>
-    //                       <div style={{ display: "flex", gap: "10px", alignItems: "center" }} onClick={() => handleSelectedSubFolder(item.folder)}>
-    //                         <div
-    //                           style={{ display: "flex", alignItems: "center", gap: "10px" }}
-    //                           onClick={() => {
-    //                             toggleFolder(item.folder);
-    //                           }}
-    //                         >
-    //                           <button style={{ fontSize: "20px", background: "none", color: "inherit", border: "none", padding: 0, font: "inherit", cursor: "pointer", outline: "inherit" }}>{expandedFolders.includes(item.folder) ? <FcOpenedFolder style={{ fontSize: "20px" }} /> : <FcFolder />}</button>
-    //                           {item.folder}
-    //                         </div>
-    //                       </div>
-    //                       <hr style={{ marginBottom: "5px" }} />
-    //                       {expandedFolders.includes(item.folder) && item.contents.length > 0 && (
-    //                         <ul>
-    //                           {item.contents.map((subItem, subItemIndex) => (
-    //                             <li key={subItemIndex} style={{ listStyle: "none", padding: 0, margin: "20px" }}>
-    //                               <span style={{ marginRight: "10px", fontSize: "25px" }}>{getFileIcon(subItem.file)}</span>
-    //                               {subItem.file}
-    //                             </li>
-    //                           ))}
-    //                         </ul>
-    //                       )}
-    //                     </div>
-    //                   )}
-    //                 </div>
-    //               ))}
-    //             </ul>
-    //           )}
-    //         </div>
-    //       ))}
-    //     </div>
-    //   </div>
-    //   <div className="uploads-btns">
-    //     <div>
-    //       <button type="submit" className="btn1" disabled={!file} onClick={handleSubmitfile}>
-    //         Upload
-    //       </button>
-    //     </div>
-    //     <div>
-    //       <button className="btn2" onClick={handleUploadFormClose}>
-    //         Cancel
-    //       </button>
-    //     </div>
-    //   </div>
-    // </div>
     <Drawer
       anchor="right"
       open={isDocumentForm}
@@ -214,26 +135,14 @@ const UploadDocument = ({ isDocumentForm, setIsDocumentForm, file, setFile, fold
         <Box>
           {folderDataRef.map((folder, index) => (
             <Box key={index}>
-              <Box
-                sx={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}
-                onClick={() => handleSelectedFolder(folder.folder)}
-              >
-                <Box
-                  sx={{ display: "flex", alignItems: "center", gap: "10px" }}
-                  onClick={() => toggleFolder(folder.folder)}
-                >
-                  <IconButton sx={{ padding: 0 }}>
-                    {expandedFolders.includes(folder.folder) ? (
-                      <FcOpenedFolder style={{ fontSize: "20px" }} />
-                    ) : (
-                      <FcFolder style={{ fontSize: "20px" }} />
-                    )}
-                  </IconButton>
+              <Box sx={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }} onClick={() => handleSelectedFolder(folder.folder)}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }} onClick={() => toggleFolder(folder.folder)}>
+                  <IconButton sx={{ padding: 0 }}>{expandedFolders.includes(folder.folder) ? <FcOpenedFolder style={{ fontSize: "20px" }} /> : <FcFolder style={{ fontSize: "20px" }} />}</IconButton>
                   <Typography>{folder.folder}</Typography>
                 </Box>
               </Box>
               <Divider sx={{ my: 1 }} />
-              
+
               {/* Folder contents */}
               {expandedFolders.includes(folder.folder) && folder.contents.length > 0 && (
                 <List disablePadding>
@@ -249,26 +158,14 @@ const UploadDocument = ({ isDocumentForm, setIsDocumentForm, file, setFile, fold
                       )}
                       {item.folder && (
                         <Box>
-                          <Box
-                            sx={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", padding: "10px" }}
-                            onClick={() => handleSelectedSubFolder(item.folder)}
-                          >
-                            <Box
-                              sx={{ display: "flex", alignItems: "center", gap: "10px" }}
-                              onClick={() => toggleFolder(item.folder)}
-                            >
-                              <IconButton sx={{ padding: 0 }}>
-                                {expandedFolders.includes(item.folder) ? (
-                                  <FcOpenedFolder style={{ fontSize: "20px" }} />
-                                ) : (
-                                  <FcFolder style={{ fontSize: "20px" }} />
-                                )}
-                              </IconButton>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", padding: "10px" }} onClick={() => handleSelectedSubFolder(item.folder)}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }} onClick={() => toggleFolder(item.folder)}>
+                              <IconButton sx={{ padding: 0 }}>{expandedFolders.includes(item.folder) ? <FcOpenedFolder style={{ fontSize: "20px" }} /> : <FcFolder style={{ fontSize: "20px" }} />}</IconButton>
                               <Typography>{item.folder}</Typography>
                             </Box>
                           </Box>
                           <Divider sx={{ my: 1 }} />
-                          
+
                           {expandedFolders.includes(item.folder) && item.contents.length > 0 && (
                             <List disablePadding>
                               {item.contents.map((subItem, subItemIndex) => (
@@ -292,13 +189,8 @@ const UploadDocument = ({ isDocumentForm, setIsDocumentForm, file, setFile, fold
         </Box>
 
         {/* Buttons */}
-        <Box sx={{ display: "flex", gap:2, mt: 2 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={!file}
-            onClick={handleSubmitfile}
-          >
+        <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+          <Button variant="contained" color="primary" disabled={!file} onClick={handleSubmitfile}>
             Upload
           </Button>
           <Button variant="outlined" onClick={handleUploadFormClose}>
@@ -311,6 +203,3 @@ const UploadDocument = ({ isDocumentForm, setIsDocumentForm, file, setFile, fold
 };
 
 export default UploadDocument;
-
-
-

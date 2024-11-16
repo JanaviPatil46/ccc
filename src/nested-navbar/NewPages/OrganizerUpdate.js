@@ -630,18 +630,18 @@
 //                   </>
 //                 )}
 
-//                 {question.type === "Checkboxes" && (
-//                   <div>
-//                     <Typography variant="body1">{question.text}</Typography>
-//                     {question.options.map((option, oIndex) => (
-//                       <FormControlLabel
-//                         key={option.id || oIndex}
-//                         control={<Checkbox checked={option.selected || false} onChange={() => handleCheckboxToggle(question.id, option.id)} />}
-//                         label={option.text}
-//                       />
-//                     ))}
-//                   </div>
-//                 )}
+                // {question.type === "Checkboxes" && (
+                //   <div>
+                //     <Typography variant="body1">{question.text}</Typography>
+                //     {question.options.map((option, oIndex) => (
+                //       <FormControlLabel
+                //         key={option.id || oIndex}
+                //         control={<Checkbox checked={option.selected || false} onChange={() => handleCheckboxToggle(question.id, option.id)} />}
+                //         label={option.text}
+                //       />
+                //     ))}
+                //   </div>
+                // )}
 
 //                 {question.type === "Dropdown" && (
 //                   <>
@@ -920,8 +920,12 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
           options: element.options.map(option => ({
             id: option.id,
             text: option.text,
-            selected:   radioValues[element.text] === option.text // For radio buttons
-            || checkboxValues[element.text]?.[option.text] || false,
+            // selected:   radioValues[element.text] === option.text // For radio buttons
+            // || checkboxValues[element.text]?.[option.text] || false,
+            selected: 
+      radioValues[element.text] === option.text // For radio buttons
+      || checkboxValues[element.text]?.[option.text] // For checkboxes
+      || option.selected, 
           })),
           text: element.text,
           textvalue: inputValues[element.text] || element.textvalue || "", // For "Free Entry", "Number", "Email", etc.
@@ -1051,12 +1055,29 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
         return radioAnswer === condition.answer || isOptionSelected;
       }
 
+      // For checkboxes
+     // For checkboxes
+     const checkboxElement = visibleSections.flatMap(section => section.formElements)
+     .find(elem => elem.type === "Checkboxes" && elem.text === condition.question);
+
+   // Check if the selected checkbox option matches the condition
+   const isCheckboxOptionSelected = checkboxElement?.options.some(option =>
+     option.text === condition.answer && checkboxValues[condition.question]?.[option.text]);
+
+   // If checkbox condition matches, show element
+   if (isCheckboxOptionSelected) {
+     return true;
+   }
+   console.log("Is Checkbox Option Selected?", isCheckboxOptionSelected);
+
+   return false; // Hide the element if no condition matches
+ }
 
 
-      return false;
-    }
+    
     return true;
   };
+  
 
   const handleRadioChange = (optionText, elementText) => {
     setRadioValues(prev => ({
@@ -1098,30 +1119,85 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
   //   });
   // };
   
+  
+  // const handleCheckboxChange = (optionText, elementText) => {
+  //   // Toggle selected state in the checkboxValues state
+  //   setCheckboxValues(prevValues => ({
+  //     ...prevValues,
+  //     [elementText]: {
+  //       ...prevValues[elementText],
+  //       [optionText]: !prevValues[elementText]?.[optionText], // Toggle selected state for checkbox
+  //     },
+  //   }));
+  
+  //   // Optionally, also update the `visibleSections` if needed for additional logic
+  //   visibleSections.forEach(section => {
+  //     section.formElements.forEach(elem => {
+  //       if (elem.type === "Checkboxes" && elem.text === elementText) {
+  //         elem.options.forEach(option => {
+  //           if (option.text === optionText) {
+  //             option.selected = !option.selected; // Toggle selected state for the checkbox option
+  //           }
+  //         });
+  //       }
+  //     });
+  //   });
+  // };
+  
+  // const handleCheckboxChange = (optionText, elementText) => {
+  //   setCheckboxValues((prev) => ({
+  //     ...prev,
+  //     [elementText]: {
+  //       ...prev[elementText],
+  //       [optionText]: !prev[elementText]?.[optionText], // Toggle the selected state
+  //     },
+  //   }));
+  
+  //   visibleSections.forEach((section) => {
+  //     section.formElements.forEach((elem) => {
+  //       if (elem.type === "Checkboxes" && elem.text === elementText) {
+  //         elem.options.forEach((option) => {
+  //           if (option.text === optionText) {
+  //             option.selected = !option.selected; // Update the selected state
+  //           }
+  //         });
+  //       }
+  //     });
+  //   });
+  // };
+  
+  // const handleCheckboxChange = (optionText, elementText) => {
+  //   setCheckboxValues((prevValues) => ({
+  //     ...prevValues,
+  //     [elementText]: {
+  //       ...prevValues[elementText],
+  //       [optionText]: !prevValues[elementText]?.[optionText], // Toggle the value
+  //     },
+  //   }));
+  // };
+
+ 
   const handleCheckboxChange = (optionText, elementText) => {
-    // Toggle selected state in the checkboxValues state
-    setCheckboxValues(prevValues => ({
+    setCheckboxValues((prevValues) => ({
       ...prevValues,
       [elementText]: {
-        ...prevValues[elementText],
-        [optionText]: !prevValues[elementText]?.[optionText], // Toggle selected state for checkbox
+        ...(prevValues[elementText] || {}),
+        [optionText]: !prevValues[elementText]?.[optionText],
       },
     }));
   
-    // Optionally, also update the `visibleSections` if needed for additional logic
-    visibleSections.forEach(section => {
-      section.formElements.forEach(elem => {
+    visibleSections.forEach((section) => {
+      section.formElements.forEach((elem) => {
         if (elem.type === "Checkboxes" && elem.text === elementText) {
-          elem.options.forEach(option => {
+          elem.options.forEach((option) => {
             if (option.text === optionText) {
-              option.selected = !option.selected; // Toggle selected state for the checkbox option
+              option.selected = !option.selected; // Toggle the `selected` property
             }
           });
         }
       });
     });
   };
-  
   
   
   
@@ -1224,7 +1300,7 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
                               {element.options.map((option) => (
                                 <Button key={option.text}
                                   variant={radioValues[element.text] === option.text || option.selected ? "contained" : "outlined"}
-                                  // variant={radioValues[element.text] === option.text && option.selected ? "contained" : "outlined"}
+                                 
                                   onClick={() => handleRadioChange(option.text, element.text)}>
                                   {option.text}
                                 </Button>
@@ -1247,17 +1323,19 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
                             </Box>
                           </Box>
                         )} */}
-
-
-{element.type === "Checkboxes" && (
+{/* {element.type === "Checkboxes" && (
   <Box>
     <Typography fontSize="18px">{element.text}</Typography>
     <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
       {element.options.map((option) => (
         <Button
           key={option.text}
+          variant={
+            checkboxValues[element.text]?.[option.text]
+              ? "contained"
+              : "outlined"
+          }
           
-          variant={checkboxValues[element.text]?.[option.text] ? "contained" : "outlined"} // Correctly shows selected state
           onClick={() => handleCheckboxChange(option.text, element.text)}
         >
           {option.text}
@@ -1265,7 +1343,50 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
       ))}
     </Box>
   </Box>
+)} */}
+{element.type === "Checkboxes" && (
+  <div>
+    <Typography variant="body1">{element.text}</Typography>
+    {element.options.map((option, oIndex) => (
+      <FormControlLabel
+        key={option.text || oIndex}
+        control={
+          <Checkbox
+            // checked={!!checkboxValues[element.text]?.[option.text]}
+            // checked={option.selected}
+            checked={checkboxValues[element.text]?.[option.text] || option.selected}
+            onChange={() => handleCheckboxChange(option.text, element.text)}
+          />
+        }
+        label={option.text}
+      />
+    ))}
+  </div>
 )}
+
+
+
+{/* {element.type === "Checkboxes" && (
+  <Box>
+    <Typography fontSize="18px">{element.text}</Typography>
+    <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+      {element.options.map((option) => (
+        <Button
+          key={option.text}
+          variant={
+            checkboxValues[element.text]?.[option.text] || option.selected
+              ? "contained"
+              : "outlined"
+          }
+          // variant={checkboxValues[element.text]?.[option.text] ? "contained" : "outlined"} // Correctly shows selected state
+          onClick={() => handleCheckboxChange(option.text, element.text)}
+        >
+          {option.text}
+        </Button>
+      ))}
+    </Box>
+  </Box>
+)} */}
                         {element.type === "Yes/No" && (
                           <Box>
                             <Typography fontSize="18px">{element.text}</Typography>
