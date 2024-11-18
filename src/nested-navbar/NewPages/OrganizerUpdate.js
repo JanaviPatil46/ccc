@@ -630,18 +630,18 @@
 //                   </>
 //                 )}
 
-                // {question.type === "Checkboxes" && (
-                //   <div>
-                //     <Typography variant="body1">{question.text}</Typography>
-                //     {question.options.map((option, oIndex) => (
-                //       <FormControlLabel
-                //         key={option.id || oIndex}
-                //         control={<Checkbox checked={option.selected || false} onChange={() => handleCheckboxToggle(question.id, option.id)} />}
-                //         label={option.text}
-                //       />
-                //     ))}
-                //   </div>
-                // )}
+// {question.type === "Checkboxes" && (
+//   <div>
+//     <Typography variant="body1">{question.text}</Typography>
+//     {question.options.map((option, oIndex) => (
+//       <FormControlLabel
+//         key={option.id || oIndex}
+//         control={<Checkbox checked={option.selected || false} onChange={() => handleCheckboxToggle(question.id, option.id)} />}
+//         label={option.text}
+//       />
+//     ))}
+//   </div>
+// )}
 
 //                 {question.type === "Dropdown" && (
 //                   <>
@@ -913,6 +913,10 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
         id: section.id,
         name: section.name,
         text: section.text,
+        sectionsettings: {
+          conditional: section?.sectionsettings?.conditional || false,
+          conditions: section?.sectionsettings?.conditions || [],
+        },
         formElements: section.formElements.map(element => ({
           type: element.type,
           id: element.id,
@@ -920,12 +924,15 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
           options: element.options.map(option => ({
             id: option.id,
             text: option.text,
-            // selected:   radioValues[element.text] === option.text // For radio buttons
-            // || checkboxValues[element.text]?.[option.text] || false,
-            selected: 
-      radioValues[element.text] === option.text // For radio buttons
-      || checkboxValues[element.text]?.[option.text] // For checkboxes
-      || option.selected, 
+            selected:
+              (element.type === "Radio" && radioValues[element.text] === option.text) ||
+              (element.type === "Checkbox" && checkboxValues[element.text]?.[option.text]) ||
+              (element.type === "Dropdown" && option.text === selectedDropdownValue) || // For Dropdown
+              option.selected,
+            // selected:
+            //   radioValues[element.text] === option.text // For radio buttons
+            //   || checkboxValues[element.text]?.[option.text] // For checkboxes
+            //   || option.selected,
           })),
           text: element.text,
           textvalue: inputValues[element.text] || element.textvalue || "", // For "Free Entry", "Number", "Email", etc.
@@ -970,33 +977,141 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
   const [selectedDropdownValue, setSelectedDropdownValue] = useState("");
   const [inputValues, setInputValues] = useState({});
   const [selectedValue, setSelectedValue] = useState(null);
-  const shouldShowSection = (section) => {
+  // const shouldShowSection = (section) => {
+  //   if (!section.sectionsettings?.conditional) return true;
+
+  //   const condition = section.sectionsettings?.conditions?.[0];
+  //   if (condition && condition.question && condition.answer) {
+  //     const radioAnswer = radioValues[condition.question];
+  //     const checkboxAnswer = checkboxValues[condition.question];
+  //     const dropdownAnswer = selectedDropdownValue;
+  //     // For radio buttons
+  //     if (radioAnswer !== undefined && condition.answer === radioAnswer) {
+  //       return true;
+  //     }
+  //     // For checkboxes: check if the condition answer is in the selected checkbox values
+  //     if (checkboxAnswer && checkboxAnswer[condition.answer]) {
+  //       return true;
+  //     }
+  //     // For dropdowns: check if the condition answer matches the selected dropdown value
+  //     if (dropdownAnswer !== undefined && condition.answer === dropdownAnswer) {
+  //       return true;
+  //     }
+  //     return false;
+  //   }
+  //   return true;
+  // };
+
+
+  // const shouldShowSection = (section) => {
+  //   if (!section.sectionsettings?.conditional) return true;
+
+  //   const condition = section.sectionsettings?.conditions?.[0];
+
+  //   if (condition && condition.question && condition.answer) {
+  //     console.log(condition)
+  //     // console.log(condition.question)
+  //     // console.log(condition.answer)
+  //     const radioAnswer = condition.question;
+  //     const checkboxAnswer = condition.question;
+  //     const dropdownAnswer = condition.question; 
+
+  //     console.log(checkboxAnswer)
+  //     // Handle checkboxes condition
+  //     if (checkboxAnswer !== undefined) {
+  //       const checkboxElement = visibleSections.flatMap(section => section.formElements)
+  //         .find(elem => elem.type === "Checkboxes" && elem.text === condition.question);
+
+  //       const isCheckboxOptionSelected = checkboxElement?.options.some(option =>
+  //         option.text === condition.answer && option.selected);
+
+  //       // Check if checkbox answer matches or if the specific checkbox option is selected
+  //       if (checkboxAnswer === condition.answer || isCheckboxOptionSelected) {
+  //         return true; // Show the element if the checkbox condition matches
+  //       }
+  //     }
+  //     console.log(radioAnswer)
+  //     // Handle radio buttons condition
+  //     if (radioAnswer !== undefined) {
+  //       const radioElement = visibleSections.flatMap(section => section.formElements)
+  //         .find(elem => elem.type === "Radio Buttons" && elem.text === condition.question);
+
+  //       const isRadioOptionSelected = radioElement?.options.some(option =>
+  //         option.text === condition.answer && option.selected);
+
+  //       // Check if radio answer matches or if the specific radio option is selected
+  //       if (radioAnswer === condition.answer || isRadioOptionSelected) {
+  //         return true; // Show the element if the radio button condition matches
+  //       }
+  //     }
+
+  //     // Handle dropdown condition
+  //     if (dropdownAnswer !== undefined) {
+  //       const dropdownElement = visibleSections.flatMap(section => section.formElements)
+  //           .find(elem => elem.type === "Dropdown" && elem.text === condition.question);
+
+  //       // Check if the dropdown's selected value matches the condition's answer
+  //       if (dropdownElement?.textvalue === condition.answer) {
+  //           return true;
+  //       }
+  //   }
+
+  //     // If neither condition matches, hide the element
+  //     return false;
+  //   }
+
+  //   return true; // Show the element if no conditional logic is applied
+  // };
+
+  // const getVisibleSections = () => sections.filter(shouldShowSection);
+  // const visibleSections = getVisibleSections();
+
+  const shouldShowSection = (section, allSections) => {
     if (!section.sectionsettings?.conditional) return true;
-
+  
     const condition = section.sectionsettings?.conditions?.[0];
+  
     if (condition && condition.question && condition.answer) {
-      const radioAnswer = radioValues[condition.question];
-      const checkboxAnswer = checkboxValues[condition.question];
-      const dropdownAnswer = selectedDropdownValue;
-      // For radio buttons
-      if (radioAnswer !== undefined && condition.answer === radioAnswer) {
-        return true;
+      const questionText = condition.question;
+  
+      // Handle checkboxes condition
+      const checkboxElement = allSections.flatMap(sec => sec.formElements)
+        .find(elem => elem.type === "Checkboxes" && elem.text === questionText);
+  
+      if (checkboxElement) {
+        const isCheckboxOptionSelected = checkboxElement.options.some(option =>
+          option.text === condition.answer && option.selected);
+  
+        if (isCheckboxOptionSelected) return true;
       }
-      // For checkboxes: check if the condition answer is in the selected checkbox values
-      if (checkboxAnswer && checkboxAnswer[condition.answer]) {
-        return true;
+  
+      // Handle radio buttons condition
+      const radioElement = allSections.flatMap(sec => sec.formElements)
+        .find(elem => elem.type === "Radio Buttons" && elem.text === questionText);
+  
+      if (radioElement) {
+        const isRadioOptionSelected = radioElement.options.some(option =>
+          option.text === condition.answer && option.selected);
+  
+        if (isRadioOptionSelected) return true;
       }
-      // For dropdowns: check if the condition answer matches the selected dropdown value
-      if (dropdownAnswer !== undefined && condition.answer === dropdownAnswer) {
-        return true;
-      }
-      return false;
+  
+      // Handle dropdown condition
+      const dropdownElement = allSections.flatMap(sec => sec.formElements)
+        .find(elem => elem.type === "Dropdown" && elem.text === questionText);
+  
+      if (dropdownElement?.textvalue === condition.answer) return true;
+  
+      return false; // None of the conditions match
     }
-    return true;
+  
+    return true; // Show the section if no conditions are defined
   };
-
-  const getVisibleSections = () => sections.filter(shouldShowSection);
+  
+  const getVisibleSections = () => sections.filter(section => shouldShowSection(section, sections));
   const visibleSections = getVisibleSections();
+  // console.log(visibleSections);
+  
   console.log(visibleSections)
 
   const handleInputChange = (event, elementText) => {
@@ -1031,53 +1146,70 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
     const selectedIndex = event.target.value;
     setActiveStep(selectedIndex);
   };
+
+
+
+
   const shouldShowElement = (element) => {
     if (!element.questionsectionsettings?.conditional) return true;
 
     const condition = element.questionsectionsettings?.conditions?.[0];
 
     if (condition && condition.question && condition.answer) {
-      const radioAnswer = radioValues[condition.question];
-      const checkboxAnswer = checkboxValues[condition.question];
-      const dropdownAnswer = selectedDropdownValue;
+      // console.log(condition)
+      // console.log(condition.question)
+      // console.log(condition.answer)
+      const radioAnswer = condition.question;
+      const checkboxAnswer = condition.question;
+      const dropdownAnswer = condition.question; 
 
-      // For radio buttons
-      if (condition && condition.question && condition.answer) {
-        const radioAnswer = radioValues[condition.question];
+      console.log(checkboxAnswer)
+      // Handle checkboxes condition
+      if (checkboxAnswer !== undefined) {
+        const checkboxElement = visibleSections.flatMap(section => section.formElements)
+          .find(elem => elem.type === "Checkboxes" && elem.text === condition.question);
 
-        // Check if the selected radio option matches the condition
+        const isCheckboxOptionSelected = checkboxElement?.options.some(option =>
+          option.text === condition.answer && option.selected);
+
+        // Check if checkbox answer matches or if the specific checkbox option is selected
+        if (checkboxAnswer === condition.answer || isCheckboxOptionSelected) {
+          return true; // Show the element if the checkbox condition matches
+        }
+      }
+      console.log(radioAnswer)
+      // Handle radio buttons condition
+      if (radioAnswer !== undefined) {
         const radioElement = visibleSections.flatMap(section => section.formElements)
           .find(elem => elem.type === "Radio Buttons" && elem.text === condition.question);
 
-        const isOptionSelected = radioElement?.options.some(option =>
+        const isRadioOptionSelected = radioElement?.options.some(option =>
           option.text === condition.answer && option.selected);
 
-        return radioAnswer === condition.answer || isOptionSelected;
+        // Check if radio answer matches or if the specific radio option is selected
+        if (radioAnswer === condition.answer || isRadioOptionSelected) {
+          return true; // Show the element if the radio button condition matches
+        }
       }
 
-      // For checkboxes
-     // For checkboxes
-     const checkboxElement = visibleSections.flatMap(section => section.formElements)
-     .find(elem => elem.type === "Checkboxes" && elem.text === condition.question);
+      // Handle dropdown condition
+      if (dropdownAnswer !== undefined) {
+        const dropdownElement = visibleSections.flatMap(section => section.formElements)
+            .find(elem => elem.type === "Dropdown" && elem.text === condition.question);
 
-   // Check if the selected checkbox option matches the condition
-   const isCheckboxOptionSelected = checkboxElement?.options.some(option =>
-     option.text === condition.answer && checkboxValues[condition.question]?.[option.text]);
+        // Check if the dropdown's selected value matches the condition's answer
+        if (dropdownElement?.textvalue === condition.answer) {
+            return true;
+        }
+    }
 
-   // If checkbox condition matches, show element
-   if (isCheckboxOptionSelected) {
-     return true;
-   }
-   console.log("Is Checkbox Option Selected?", isCheckboxOptionSelected);
+      // If neither condition matches, hide the element
+      return false;
+    }
 
-   return false; // Hide the element if no condition matches
- }
-
-
-    
-    return true;
+    return true; // Show the element if no conditional logic is applied
   };
-  
+
 
   const handleRadioChange = (optionText, elementText) => {
     setRadioValues(prev => ({
@@ -1096,111 +1228,36 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
     });
   };
 
+  const handleCheckboxChange = (optionText, elementText, isChecked) => {
+    setCheckboxValues(prev => {
+      const currentValues = prev[elementText] || [];
+      const updatedValues = isChecked
+        ? [...currentValues, optionText] // Add the option if checked
+        : currentValues.filter(value => value !== optionText); // Remove the option if unchecked
 
-  // const handleCheckboxChange = (optionText, elementText) => {
-  //   setCheckboxValues(prevValues => ({
-  //     ...prevValues,
-  //     [elementText]: {
-  //       ...prevValues[elementText],
-  //       [optionText]: !prevValues[elementText]?.[optionText], // Toggle the selected state of the checkbox
-  //     },
-  //   }));
-  
-  //   visibleSections.forEach(section => {
-  //     section.formElements.forEach(elem => {
-  //       if (elem.type === "Checkboxes" && elem.text === elementText) {
-  //         elem.options.forEach(option => {
-  //           if (option.text === optionText) {
-  //             option.selected = !option.selected; // Toggle selected state for the checkbox option
-  //           }
-  //         });
-  //       }
-  //     });
-  //   });
-  // };
-  
-  
-  // const handleCheckboxChange = (optionText, elementText) => {
-  //   // Toggle selected state in the checkboxValues state
-  //   setCheckboxValues(prevValues => ({
-  //     ...prevValues,
-  //     [elementText]: {
-  //       ...prevValues[elementText],
-  //       [optionText]: !prevValues[elementText]?.[optionText], // Toggle selected state for checkbox
-  //     },
-  //   }));
-  
-  //   // Optionally, also update the `visibleSections` if needed for additional logic
-  //   visibleSections.forEach(section => {
-  //     section.formElements.forEach(elem => {
-  //       if (elem.type === "Checkboxes" && elem.text === elementText) {
-  //         elem.options.forEach(option => {
-  //           if (option.text === optionText) {
-  //             option.selected = !option.selected; // Toggle selected state for the checkbox option
-  //           }
-  //         });
-  //       }
-  //     });
-  //   });
-  // };
-  
-  // const handleCheckboxChange = (optionText, elementText) => {
-  //   setCheckboxValues((prev) => ({
-  //     ...prev,
-  //     [elementText]: {
-  //       ...prev[elementText],
-  //       [optionText]: !prev[elementText]?.[optionText], // Toggle the selected state
-  //     },
-  //   }));
-  
-  //   visibleSections.forEach((section) => {
-  //     section.formElements.forEach((elem) => {
-  //       if (elem.type === "Checkboxes" && elem.text === elementText) {
-  //         elem.options.forEach((option) => {
-  //           if (option.text === optionText) {
-  //             option.selected = !option.selected; // Update the selected state
-  //           }
-  //         });
-  //       }
-  //     });
-  //   });
-  // };
-  
-  // const handleCheckboxChange = (optionText, elementText) => {
-  //   setCheckboxValues((prevValues) => ({
-  //     ...prevValues,
-  //     [elementText]: {
-  //       ...prevValues[elementText],
-  //       [optionText]: !prevValues[elementText]?.[optionText], // Toggle the value
-  //     },
-  //   }));
-  // };
+      return {
+        ...prev,
+        [elementText]: updatedValues,
+      };
+    });
 
- 
-  const handleCheckboxChange = (optionText, elementText) => {
-    setCheckboxValues((prevValues) => ({
-      ...prevValues,
-      [elementText]: {
-        ...(prevValues[elementText] || {}),
-        [optionText]: !prevValues[elementText]?.[optionText],
-      },
-    }));
-  
-    visibleSections.forEach((section) => {
-      section.formElements.forEach((elem) => {
+
+    visibleSections.forEach(section => {
+      section.formElements.forEach(elem => {
         if (elem.type === "Checkboxes" && elem.text === elementText) {
-          elem.options.forEach((option) => {
+          elem.options.forEach(option => {
             if (option.text === optionText) {
-              option.selected = !option.selected; // Toggle the `selected` property
+              option.selected = isChecked; // Update the selected state
             }
           });
         }
       });
     });
   };
-  
-  
-  
+
+
+
+
   const handleChange = (event, elementText) => {
     setSelectedValue(event.target.value);
     setAnsweredElements((prevAnswered) => ({
@@ -1209,13 +1266,35 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
     }));
   };
 
-  const handleDropdownValueChange = (event, elementText) => {
-    setSelectedDropdownValue(event.target.value);
-    setAnsweredElements((prevAnswered) => ({
-      ...prevAnswered,
-      [elementText]: true,
-    }));
+
+  const handleDropdownValueChange = (event, element, newValue) => {
+    // Update the selected value in your options array
+    element.options.forEach((option) => {
+      option.selected = option.text === newValue; // Ensure only one option is selected
+    });
+
+    // Update the dropdown's text value if necessary
+    element.textvalue = newValue;
+
+    console.log(`Updated dropdown "${element.text}" with selected value: ${newValue}`);
+
+    setSelectedDropdownValue(newValue)
+    // Iterate through the sections and form elements to update the options
+    visibleSections.forEach((section) => {
+      section.formElements.forEach((elem) => {
+        if (elem.type === "Dropdown" && elem.text === element) {
+          elem.options.forEach((option) => {
+            option.selected = option.text === newValue; // Ensure only one option is selected
+          });
+          elem.textvalue = newValue; // Update the dropdown's text value
+        }
+      });
+    });
+
   };
+
+
+
   const stripHtmlTags = (html) => {
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = html;
@@ -1300,7 +1379,7 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
                               {element.options.map((option) => (
                                 <Button key={option.text}
                                   variant={radioValues[element.text] === option.text || option.selected ? "contained" : "outlined"}
-                                 
+
                                   onClick={() => handleRadioChange(option.text, element.text)}>
                                   {option.text}
                                 </Button>
@@ -1309,84 +1388,28 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
                           </Box>
                         )}
 
-                        {/* {element.type === "Checkboxes" && (
-                          <Box>
-                            <Typography fontSize="18px">{element.text}</Typography>
-                            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                              {element.options.map((option) => (
-                                <Button key={option.text} 
-                                variant={checkboxValues[element.text]?.[option.text] ? "contained" : "outlined"}
-                                 onClick={() => handleCheckboxChange(option.text, element.text)}>
-                                  {option.text}
-                                </Button>
-                              ))}
-                            </Box>
-                          </Box>
-                        )} */}
-{/* {element.type === "Checkboxes" && (
-  <Box>
-    <Typography fontSize="18px">{element.text}</Typography>
-    <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-      {element.options.map((option) => (
-        <Button
-          key={option.text}
-          variant={
-            checkboxValues[element.text]?.[option.text]
-              ? "contained"
-              : "outlined"
-          }
-          
-          onClick={() => handleCheckboxChange(option.text, element.text)}
-        >
-          {option.text}
-        </Button>
-      ))}
-    </Box>
-  </Box>
-)} */}
-{element.type === "Checkboxes" && (
-  <div>
-    <Typography variant="body1">{element.text}</Typography>
-    {element.options.map((option, oIndex) => (
-      <FormControlLabel
-        key={option.text || oIndex}
-        control={
-          <Checkbox
-            // checked={!!checkboxValues[element.text]?.[option.text]}
-            // checked={option.selected}
-            checked={checkboxValues[element.text]?.[option.text] || option.selected}
-            onChange={() => handleCheckboxChange(option.text, element.text)}
-          />
-        }
-        label={option.text}
-      />
-    ))}
-  </div>
-)}
+                        {element.type === "Checkboxes" && (
+                          <div>
+                            <Typography variant="body1">{element.text}</Typography>
+                            {element.options.map((option, oIndex) => (
 
+                              <FormControlLabel
 
+                                key={option.text || oIndex}
+                                control={
 
-{/* {element.type === "Checkboxes" && (
-  <Box>
-    <Typography fontSize="18px">{element.text}</Typography>
-    <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-      {element.options.map((option) => (
-        <Button
-          key={option.text}
-          variant={
-            checkboxValues[element.text]?.[option.text] || option.selected
-              ? "contained"
-              : "outlined"
-          }
-          // variant={checkboxValues[element.text]?.[option.text] ? "contained" : "outlined"} // Correctly shows selected state
-          onClick={() => handleCheckboxChange(option.text, element.text)}
-        >
-          {option.text}
-        </Button>
-      ))}
-    </Box>
-  </Box>
-)} */}
+                                  <Checkbox
+
+                                    // checked={checkboxValues[option.selected]}
+                                    checked={checkboxValues[element.text || element.selected]?.includes(option.text) || option.selected}
+                                    onChange={(e) => handleCheckboxChange(option.text, element.text, e.target.checked)}
+                                  />
+                                }
+                                label={option.text}
+                              />
+                            ))}
+                          </div>
+                        )}
                         {element.type === "Yes/No" && (
                           <Box>
                             <Typography fontSize="18px">{element.text}</Typography>
@@ -1400,17 +1423,34 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
                           </Box>
                         )}
 
-                        {element.type === "Dropdown" && (
+                        {/* {element.type === "Dropdown" && (
                           <Box>
                             <Typography fontSize="18px">{element.text}</Typography>
                             <FormControl fullWidth>
-                              <Select value={selectedDropdownValue} onChange={(event) => handleDropdownValueChange(event, element.text)} size="small">
+                              <Select value={selectedDropdownValue || (element.options.find(option => option.selected)?.text || '')} onChange={(event) => handleDropdownValueChange(event, element.text)} size="small">
                                 {element.options.map((option) => (
                                   <MenuItem key={option.text} value={option.text}>
                                     {option.text}
                                   </MenuItem>
                                 ))}
                               </Select>
+                            </FormControl>
+                          </Box>
+                        )} */}
+
+                        {element.type === "Dropdown" && (
+                          <Box>
+                            <Typography fontSize="18px">{element.text}</Typography>
+                            <FormControl fullWidth>
+                              <Autocomplete
+                                value={selectedDropdownValue || (element.options.find(option => option.selected)?.text || '')}
+                                onChange={(event, newValue) => handleDropdownValueChange(event, element, newValue)}
+                                options={element.options.map(option => option.text)}
+                                renderInput={(params) => <TextField {...params} variant="outlined" size="small" />}
+                                disableClearable
+                                isOptionEqualToValue={(option, value) => option === value}
+                                getOptionLabel={(option) => option}
+                              />
                             </FormControl>
                           </Box>
                         )}

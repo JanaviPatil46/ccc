@@ -298,6 +298,10 @@ const AccountOrganizer = () => {
           name: section?.text || "",
           id: section?.id?.toString() || "",
           text: section?.text || "",
+          sectionsettings: {
+            conditional: section?.sectionsettings?.conditional || false,
+            conditions: section?.sectionsettings?.conditions || [],
+          },
           formElements:
             section?.formElements?.map((question) => ({
               type: question?.type || "",
@@ -320,8 +324,12 @@ const AccountOrganizer = () => {
                 description: question?.questionsectionsettings?.description || "",
                 mode: question?.questionsectionsettings?.mode || "Any"  
               }
+              
             })) || [],
+           
         })) || [],
+      
+       
       active: true,
     });
 
