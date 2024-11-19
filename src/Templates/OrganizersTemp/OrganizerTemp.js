@@ -565,35 +565,79 @@ const OrganizersTemp = () => {
   // };
 
 
-  const shouldShowElement = (element) => {
-    if (!element.questionsectionsettings?.conditional) return true;
+//   const shouldShowElement = (element) => {
+//     if (!element.questionsectionsettings?.conditional) return true;
 
-    const condition = element.questionsectionsettings?.conditions?.[0];
+//     const condition = element.questionsectionsettings?.conditions?.[0];
 
-    if (condition && condition.question && condition.answer) {
-        const radioAnswer = radioValues[condition.question];
-        const checkboxAnswer = checkboxValues[condition.question];
-        const dropdownAnswer = selectedDropdownValue;
+//     if (condition && condition.question && condition.answer) {
+//         const radioAnswer = radioValues[condition.question];
+//         const checkboxAnswer = checkboxValues[condition.question];
+//         const dropdownAnswer = selectedDropdownValue;
 
-        // For radio buttons
-        if (radioAnswer !== undefined && condition.answer === radioAnswer) {
-            return true;
-        }
+//         // For radio buttons
+//         if (radioAnswer !== undefined && condition.answer === radioAnswer) {
+//             return true;
+//         }
 
-        // For checkboxes: check if the condition answer is in the selected checkbox values
-        if (checkboxAnswer && checkboxAnswer[condition.answer]) {
-            return true;
-        }
+//         // For checkboxes: check if the condition answer is in the selected checkbox values
+//         if (checkboxAnswer && checkboxAnswer[condition.answer]) {
+//             return true;
+//         }
 
-        // For dropdowns: check if the condition answer matches the selected dropdown value
-        if (dropdownAnswer !== undefined && condition.answer === dropdownAnswer) {
-            return true;
-        }
+//         // For dropdowns: check if the condition answer matches the selected dropdown value
+//         if (dropdownAnswer !== undefined && condition.answer === dropdownAnswer) {
+//             return true;
+//         }
 
-        return false;
-    }
-    return true;
+//         return false;
+//     }
+//     return true;
+// };
+
+
+
+const shouldShowElement = (element) => {
+  const settings = element.questionsectionsettings;
+
+  // If the element isn't conditional, show it by default
+  if (!settings?.conditional) return true;
+
+  const conditions = settings?.conditions || [];
+
+  // Check if all conditions are satisfied
+  for (const condition of conditions) {
+      const { question, answer } = condition;
+
+      if (question && answer) {
+          const radioAnswer = radioValues[question];
+          const checkboxAnswer = checkboxValues[question];
+          const dropdownAnswer = selectedDropdownValue;
+
+          // For radio buttons
+          if (radioAnswer !== undefined && radioAnswer === answer) {
+              continue;
+          }
+
+          // For checkboxes: check if the condition answer is in the selected checkbox values
+          if (checkboxAnswer && checkboxAnswer[answer]) {
+              continue;
+          }
+
+          // For dropdowns: check if the condition answer matches the selected dropdown value
+          if (dropdownAnswer !== undefined && dropdownAnswer === answer) {
+              continue;
+          }
+
+          // If any condition is not satisfied, hide the element
+          return false;
+      }
+  }
+
+  // All conditions are satisfied, show the element
+  return true;
 };
+
 
   const totalElements = sections[activeStep]?.formElements.length || 0;
   const answeredCount = sections[activeStep]?.formElements.filter(
@@ -627,35 +671,92 @@ const OrganizersTemp = () => {
   //   }
   //   return true;
   // };
-  const shouldShowSection = (section) => {
-    if (!section.sectionsettings?.conditional) return true;
+//   const shouldShowSection = (section) => {
+//     if (!section.sectionsettings?.conditional) return true;
 
-    const condition = section.sectionsettings?.conditions?.[0];
-    if (condition && condition.question && condition.answer) {
-        const radioAnswer = radioValues[condition.question];
-        const checkboxAnswer = checkboxValues[condition.question];
-        const dropdownAnswer = selectedDropdownValue;
+//     const condition = section.sectionsettings?.conditions?.[0];
+//     if (condition && condition.question && condition.answer) {
+//         const radioAnswer = radioValues[condition.question];
+//         const checkboxAnswer = checkboxValues[condition.question];
+//         const dropdownAnswer = selectedDropdownValue;
 
-        // For radio buttons
-        if (radioAnswer !== undefined && condition.answer === radioAnswer) {
-            return true;
-        }
+//         // For radio buttons
+//         if (radioAnswer !== undefined && condition.answer === radioAnswer) {
+//             return true;
+//         }
 
-        // For checkboxes: check if the condition answer is in the selected checkbox values
-        if (checkboxAnswer && checkboxAnswer[condition.answer]) {
-            return true;
-        }
+//         // For checkboxes: check if the condition answer is in the selected checkbox values
+//         if (checkboxAnswer && checkboxAnswer[condition.answer]) {
+//             return true;
+//         }
 
-        // For dropdowns: check if the condition answer matches the selected dropdown value
-        if (dropdownAnswer !== undefined && condition.answer === dropdownAnswer) {
-            return true;
-        }
+//         // For dropdowns: check if the condition answer matches the selected dropdown value
+//         if (dropdownAnswer !== undefined && condition.answer === dropdownAnswer) {
+//             return true;
+//         }
 
-        return false;
-    }
+//         return false;
+//     }
 
-    return true;
+//     return true;
+// };
+
+// const shouldShowSection = (section) => {
+//   const settings = section.sectionSettings;
+
+//   if (!settings?.conditional) return true;
+
+//   const conditions = settings?.conditions || [];
+
+//   // Show the section if any condition is satisfied
+//   return conditions.some((condition) => {
+//       const { question, answer } = condition;
+
+//       if (question && answer) {
+//           const radioAnswer = radioValues[question];
+//           const checkboxAnswer = checkboxValues[question];
+//           const dropdownAnswer = selectedDropdownValue;
+
+//           if (radioAnswer === answer) return true;
+//           if (checkboxAnswer && checkboxAnswer[answer]) return true;
+//           if (dropdownAnswer === answer) return true;
+//       }
+
+//       return false;
+//   });
+// };
+const shouldShowSection = (section) => {
+  const settings = section.sectionSettings;
+
+  // If the section isn't conditional, show it by default
+  if (!settings?.conditional) return true;
+
+  const conditions = settings?.conditions || [];
+
+  // Check if every condition is satisfied
+  return conditions.every((condition) => {
+      const { question, answer } = condition;
+
+      if (question && answer) {
+          const radioAnswer = radioValues[question];
+          const checkboxAnswer = checkboxValues[question];
+          const dropdownAnswer = selectedDropdownValue;
+
+          // For radio buttons
+          if (radioAnswer === answer) return true;
+
+          // For checkboxes: check if the condition answer is in the selected checkbox values
+          if (checkboxAnswer && checkboxAnswer[answer]) return true;
+
+          // For dropdowns: check if the condition answer matches the selected dropdown value
+          if (dropdownAnswer === answer) return true;
+      }
+
+      // If a condition is not satisfied, return false
+      return false;
+  });
 };
+
 
   // const getVisibleSections = () => {
   //     return sections.filter(shouldShowSection);

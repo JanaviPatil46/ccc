@@ -1066,48 +1066,93 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
   // const getVisibleSections = () => sections.filter(shouldShowSection);
   // const visibleSections = getVisibleSections();
 
+  // const shouldShowSection = (section, allSections) => {
+  //   if (!section.sectionsettings?.conditional) return true;
+  
+  //   const condition = section.sectionsettings?.conditions?.[0];
+  
+  //   if (condition && condition.question && condition.answer) {
+  //     const questionText = condition.question;
+  
+  //     // Handle checkboxes condition
+  //     const checkboxElement = allSections.flatMap(sec => sec.formElements)
+  //       .find(elem => elem.type === "Checkboxes" && elem.text === questionText);
+  
+  //     if (checkboxElement) {
+  //       const isCheckboxOptionSelected = checkboxElement.options.some(option =>
+  //         option.text === condition.answer && option.selected);
+  
+  //       if (isCheckboxOptionSelected) return true;
+  //     }
+  
+  //     // Handle radio buttons condition
+  //     const radioElement = allSections.flatMap(sec => sec.formElements)
+  //       .find(elem => elem.type === "Radio Buttons" && elem.text === questionText);
+  
+  //     if (radioElement) {
+  //       const isRadioOptionSelected = radioElement.options.some(option =>
+  //         option.text === condition.answer && option.selected);
+  
+  //       if (isRadioOptionSelected) return true;
+  //     }
+  
+  //     // Handle dropdown condition
+  //     const dropdownElement = allSections.flatMap(sec => sec.formElements)
+  //       .find(elem => elem.type === "Dropdown" && elem.text === questionText);
+  
+  //     if (dropdownElement?.textvalue === condition.answer) return true;
+  
+  //     return false; // None of the conditions match
+  //   }
+  
+  //   return true; // Show the section if no conditions are defined
+  // };
+  
+
   const shouldShowSection = (section, allSections) => {
     if (!section.sectionsettings?.conditional) return true;
-  
-    const condition = section.sectionsettings?.conditions?.[0];
-  
-    if (condition && condition.question && condition.answer) {
-      const questionText = condition.question;
-  
-      // Handle checkboxes condition
-      const checkboxElement = allSections.flatMap(sec => sec.formElements)
-        .find(elem => elem.type === "Checkboxes" && elem.text === questionText);
-  
-      if (checkboxElement) {
-        const isCheckboxOptionSelected = checkboxElement.options.some(option =>
-          option.text === condition.answer && option.selected);
-  
-        if (isCheckboxOptionSelected) return true;
-      }
-  
-      // Handle radio buttons condition
-      const radioElement = allSections.flatMap(sec => sec.formElements)
-        .find(elem => elem.type === "Radio Buttons" && elem.text === questionText);
-  
-      if (radioElement) {
-        const isRadioOptionSelected = radioElement.options.some(option =>
-          option.text === condition.answer && option.selected);
-  
-        if (isRadioOptionSelected) return true;
-      }
-  
-      // Handle dropdown condition
-      const dropdownElement = allSections.flatMap(sec => sec.formElements)
-        .find(elem => elem.type === "Dropdown" && elem.text === questionText);
-  
-      if (dropdownElement?.textvalue === condition.answer) return true;
-  
-      return false; // None of the conditions match
-    }
-  
-    return true; // Show the section if no conditions are defined
-  };
-  
+
+    const conditions = section.sectionsettings?.conditions || [];
+
+    // Check if all conditions are true
+    return conditions.every(condition => {
+        if (!condition.question || !condition.answer) return false;
+
+        const questionText = condition.question;
+
+        // Handle checkboxes condition
+        const checkboxElement = allSections.flatMap(sec => sec.formElements)
+            .find(elem => elem.type === "Checkboxes" && elem.text === questionText);
+
+        if (checkboxElement) {
+            const isCheckboxOptionSelected = checkboxElement.options.some(option =>
+                option.text === condition.answer && option.selected);
+
+            if (isCheckboxOptionSelected) return true;
+        }
+
+        // Handle radio buttons condition
+        const radioElement = allSections.flatMap(sec => sec.formElements)
+            .find(elem => elem.type === "Radio Buttons" && elem.text === questionText);
+
+        if (radioElement) {
+            const isRadioOptionSelected = radioElement.options.some(option =>
+                option.text === condition.answer && option.selected);
+
+            if (isRadioOptionSelected) return true;
+        }
+
+        // Handle dropdown condition
+        const dropdownElement = allSections.flatMap(sec => sec.formElements)
+            .find(elem => elem.type === "Dropdown" && elem.text === questionText);
+
+        if (dropdownElement?.textvalue === condition.answer) return true;
+
+        // If none of the conditions are met for this condition, return false
+        return false;
+    });
+};
+
   const getVisibleSections = () => sections.filter(section => shouldShowSection(section, sections));
   const visibleSections = getVisibleSections();
   // console.log(visibleSections);
@@ -1150,65 +1195,112 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
 
 
 
-  const shouldShowElement = (element) => {
-    if (!element.questionsectionsettings?.conditional) return true;
+//  const shouldShowElement = (element) => {
+//     if (!element.questionsectionsettings?.conditional) return true;
 
-    const condition = element.questionsectionsettings?.conditions?.[0];
+//     const condition = element.questionsectionsettings?.conditions?.[0];
 
-    if (condition && condition.question && condition.answer) {
-      // console.log(condition)
-      // console.log(condition.question)
-      // console.log(condition.answer)
-      const radioAnswer = condition.question;
-      const checkboxAnswer = condition.question;
-      const dropdownAnswer = condition.question; 
+//     if (condition && condition.question && condition.answer) {
+//       // console.log(condition)
+//       // console.log(condition.question)
+//       // console.log(condition.answer)
+//       const radioAnswer = condition.question;
+//       const checkboxAnswer = condition.question;
+//       const dropdownAnswer = condition.question; 
 
-      console.log(checkboxAnswer)
+//       console.log(checkboxAnswer)
+//       // Handle checkboxes condition
+//       if (checkboxAnswer !== undefined) {
+//         const checkboxElement = visibleSections.flatMap(section => section.formElements)
+//           .find(elem => elem.type === "Checkboxes" && elem.text === condition.question);
+
+//         const isCheckboxOptionSelected = checkboxElement?.options.some(option =>
+//           option.text === condition.answer && option.selected);
+
+//         // Check if checkbox answer matches or if the specific checkbox option is selected
+//         if (checkboxAnswer === condition.answer || isCheckboxOptionSelected) {
+//           return true; // Show the element if the checkbox condition matches
+//         }
+//       }
+//       console.log(radioAnswer)
+//       // Handle radio buttons condition
+//       if (radioAnswer !== undefined) {
+//         const radioElement = visibleSections.flatMap(section => section.formElements)
+//           .find(elem => elem.type === "Radio Buttons" && elem.text === condition.question);
+
+//         const isRadioOptionSelected = radioElement?.options.some(option =>
+//           option.text === condition.answer && option.selected);
+
+//         // Check if radio answer matches or if the specific radio option is selected
+//         if (radioAnswer === condition.answer || isRadioOptionSelected) {
+//           return true; // Show the element if the radio button condition matches
+//         }
+//       }
+
+//       // Handle dropdown condition
+//       if (dropdownAnswer !== undefined) {
+//         const dropdownElement = visibleSections.flatMap(section => section.formElements)
+//             .find(elem => elem.type === "Dropdown" && elem.text === condition.question);
+
+//         // Check if the dropdown's selected value matches the condition's answer
+//         if (dropdownElement?.textvalue === condition.answer) {
+//             return true;
+//         }
+//     }
+
+//       // If neither condition matches, hide the element
+//       return false;
+//     }
+
+//     return true; // Show the element if no conditional logic is applied
+//   }; 
+
+const shouldShowElement = (element) => {
+  if (!element.questionsectionsettings?.conditional) return true;
+
+  const conditions = element.questionsectionsettings?.conditions || [];
+
+  // Ensure all conditions are true
+  return conditions.every((condition) => {
+      if (!condition.question || !condition.answer) return false;
+
       // Handle checkboxes condition
-      if (checkboxAnswer !== undefined) {
-        const checkboxElement = visibleSections.flatMap(section => section.formElements)
+      const checkboxElement = visibleSections
+          .flatMap(section => section.formElements)
           .find(elem => elem.type === "Checkboxes" && elem.text === condition.question);
 
-        const isCheckboxOptionSelected = checkboxElement?.options.some(option =>
+      const isCheckboxOptionSelected = checkboxElement?.options.some(option =>
           option.text === condition.answer && option.selected);
 
-        // Check if checkbox answer matches or if the specific checkbox option is selected
-        if (checkboxAnswer === condition.answer || isCheckboxOptionSelected) {
-          return true; // Show the element if the checkbox condition matches
-        }
+      if (checkboxElement && (checkboxElement.text === condition.answer || isCheckboxOptionSelected)) {
+          return true;
       }
-      console.log(radioAnswer)
+
       // Handle radio buttons condition
-      if (radioAnswer !== undefined) {
-        const radioElement = visibleSections.flatMap(section => section.formElements)
+      const radioElement = visibleSections
+          .flatMap(section => section.formElements)
           .find(elem => elem.type === "Radio Buttons" && elem.text === condition.question);
 
-        const isRadioOptionSelected = radioElement?.options.some(option =>
+      const isRadioOptionSelected = radioElement?.options.some(option =>
           option.text === condition.answer && option.selected);
 
-        // Check if radio answer matches or if the specific radio option is selected
-        if (radioAnswer === condition.answer || isRadioOptionSelected) {
-          return true; // Show the element if the radio button condition matches
-        }
+      if (radioElement && (radioElement.text === condition.answer || isRadioOptionSelected)) {
+          return true;
       }
 
       // Handle dropdown condition
-      if (dropdownAnswer !== undefined) {
-        const dropdownElement = visibleSections.flatMap(section => section.formElements)
-            .find(elem => elem.type === "Dropdown" && elem.text === condition.question);
+      const dropdownElement = visibleSections
+          .flatMap(section => section.formElements)
+          .find(elem => elem.type === "Dropdown" && elem.text === condition.question);
 
-        // Check if the dropdown's selected value matches the condition's answer
-        if (dropdownElement?.textvalue === condition.answer) {
-            return true;
-        }
-    }
+      if (dropdownElement?.textvalue === condition.answer) {
+          return true;
+      }
 
-      // If neither condition matches, hide the element
+      // If none of the conditions match, return false
       return false;
-    }
-
-    return true; // Show the element if no conditional logic is applied
-  };
+  });
+};
 
 
   const handleRadioChange = (optionText, elementText) => {
@@ -1370,7 +1462,7 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
                           </Box>
                         )}
 
-                        {element.type === "Radio Buttons" && (
+                        {/* {element.type === "Radio Buttons" && (
                           <Box>
                             <Typography fontSize="18px" mb={1} mt={1}>
                               {element.text}
@@ -1386,7 +1478,29 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
                               ))}
                             </Box>
                           </Box>
-                        )}
+                        )} */}
+{element.type === "Radio Buttons" && (
+  <Box>
+    <Typography fontSize="18px" mb={1} mt={1}>
+      {element.text}
+    </Typography>
+    <FormControl>
+      <RadioGroup
+        value={radioValues[element.text] || ""}
+        onChange={(event) => handleRadioChange(event.target.value, element.text)}
+      >
+        {element.options.map((option) => (
+          <FormControlLabel
+            key={option.text}
+            value={option.text}
+            control={ <Radio checked={radioValues[element.text] === option.text || option.selected || false} />}
+            label={option.text}
+          />
+        ))}
+      </RadioGroup>
+    </FormControl>
+  </Box>
+)}
 
                         {element.type === "Checkboxes" && (
                           <div>
