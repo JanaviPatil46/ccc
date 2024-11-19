@@ -174,15 +174,9 @@ const Organizers = () => {
           const formElementsHtml = section.formElements
             .map((element) => {
               return `
-            <div>
-              <strong>${element.text}</strong>
-              ${
-                element.options && element.options.length > 0
-                  ? `
-                <div>Options: ${element.options.map((opt) => opt.text).join(", ")}</div>
-              `
-                  : ""
-              }
+            <div style="margin-bottom: 20px;">
+              <strong >${element.text}</strong>
+             
             </div>
           `;
             })
@@ -228,6 +222,18 @@ const Organizers = () => {
       toast.error("Organizer not found.");
     }
   };
+
+
+  // 
+
+  // ${
+  //   element.options && element.options.length > 0
+  //     ? `
+  //   <div>Options: ${element.options.map((opt) => opt.text).join(", ")}</div>
+  // `
+  //     : ""
+  // }
+
 
   return (
     <Box sx={{ mt: 2 }}>
