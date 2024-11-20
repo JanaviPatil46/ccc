@@ -1,4 +1,4 @@
-import { Box, Autocomplete, TextField, Typography, Switch, FormControlLabel, Button } from '@mui/material'
+import { InputLabel,Chip,Box,InputAdornment, Autocomplete, TextField, Typography, Switch, FormControlLabel, Button } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -10,14 +10,14 @@ import Priority from '../Templates/Priority/Priority';
 import Editor from '../Templates/Texteditor/Editor';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
-const AddJobs = ({ stages, pipelineId, handleDrawerClose, fetchJobData }) => {
+const AddJobs = ({ charLimit = 4000,stages, pipelineId, handleDrawerClose, fetchJobData }) => {
 
   const ACCOUNT_API = process.env.REACT_APP_ACCOUNTS_URL;
   const JOBS_API = process.env.REACT_APP_ADD_JOBS_URL;
   const JOBS_TEMP_API = process.env.REACT_APP_JOBS_TEMP_URL;
   const USER_API = process.env.REACT_APP_USER_URL;
   const PIPELINE_API = process.env.REACT_APP_PIPELINE_TEMP_URL;
-
+  const CLIENT_FACING_API = process.env.REACT_APP_CLIENT_FACING_URL;
   const handleAbsolutesDates = (checked) => {
     setAbsoluteDates(checked);
   };
@@ -122,7 +122,60 @@ const AddJobs = ({ stages, pipelineId, handleDrawerClose, fetchJobData }) => {
   const [duein, setduein] = useState('');
   const [jobTemp, setJobTemp] = useState([]);
   const [selectedtemp, setselectedTemp] = useState();
+  const [clientFacingStatus, setClientFacingStatus] = useState(false);
+  const [selectedJobShortcut, setSelectedJobShortcut] = useState("");
+  const [anchorElClientJob, setAnchorElClientJob] = useState(null);
+  const [anchorElDescription, setAnchorElDecription] = useState(null);
+  const [inputText, setInputText] = useState("");
+  const [charCount, setCharCount] = useState(0);
+  const [clientDescription, setClientDescription] = useState("");
+  const [showDropdownClientJob, setShowDropdownClientJob] = useState(false);
+  const [showDropdownDescription, setShowDropdownDescription] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [clientFacingJobs, setClientFacingJobs] = useState([]);
+  const fetchClientFacingJobsData = async () => {
+    try {
+      const response = await fetch(`${CLIENT_FACING_API}/workflow/clientfacingjobstatus/`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setClientFacingJobs(data.clientFacingJobStatues); // Ensure data is set correctly
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  const optionstatus = clientFacingJobs.map((status) => ({
+    value: status._id,
+    label: status.clientfacingName,
+    clientfacingColour: status.clientfacingColour,
+  }));
 
+  // useEffect to fetch jobs when the component mounts
+  useEffect(() => {
+    fetchClientFacingJobsData();
+  }, []);
+  const handleJobChange = async (event, newValue) => {
+    setSelectedJob(newValue);
+
+    if (newValue && newValue.value) {
+      const clientjobId = newValue.value;
+      try {
+        const response = await fetch(`${CLIENT_FACING_API}/workflow/clientfacingjobstatus/${clientjobId}`);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+
+        console.log(data);
+        setClientDescription(data.clientfacingjobstatuses.clientfacingdescription);
+        console.log(data.clientfacingjobstatuses.clientfacingdescription);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+  };
   const handletemp = async (event, newValue) => {
     setselectedTemp(newValue);
     if (newValue && newValue.value) {
@@ -153,11 +206,39 @@ const AddJobs = ({ stages, pipelineId, handleDrawerClose, fetchJobData }) => {
         setduein(template.duein); // You might need to adjust this
         setStartsInDuration(template.startsinduration);
         setdueinduration(template.dueinduration)
+          setClientFacingStatus(template.showinclientportal);
+        setInputText(template.jobnameforclient);
+        if (template.clientfacingstatus && template.clientfacingstatus) {
+          const clientStatusData = {
+            value: template.clientfacingstatus._id,
+            label: template.clientfacingstatus.clientfacingName,
+            clientfacingColour: template.clientfacingstatus.clientfacingColour,
+          };
+
+          setSelectedJob(clientStatusData);
+        }
+        setClientDescription(template.clientfacingDescription);
       } catch (error) {
         console.error("Error fetching template data:", error);
       }
     }
   };
+
+  const handlechatsubject = (e) => {
+    const { value } = e.target;
+    setInputText(value);
+  };
+  const handleChange = (event) => {
+    const value = event.target.value;
+    if (value.length <= charLimit) {
+      setClientDescription(value);
+      setCharCount(value.length);
+    }
+  };
+  const handleClientFacing = (checked) => {
+    setClientFacingStatus(checked);
+  };
+
 
   useEffect(() => {
     fetchtemp();
@@ -212,6 +293,10 @@ const AddJobs = ({ stages, pipelineId, handleDrawerClose, fetchJobData }) => {
       duein: duein,
       dueinduration: dueinduration,
       comments: "",
+        showinclientportal: clientFacingStatus,
+      jobnameforclient: inputText,
+      clientfacingstatus: selectedJob?.value,
+      clientfacingDescription: clientDescription,
       startdate: startDate,
       enddate: dueDate,
     };
@@ -478,6 +563,104 @@ const AddJobs = ({ stages, pipelineId, handleDrawerClose, fetchJobData }) => {
             </Box>
           </>
         )}
+
+        <Box sx={{ display: "flex", flexDirection: "column" }}>
+        <Box mt={2}>
+          <Box style={{ display: "flex", alignItems: "center" }}>
+            {/* <EditCalendarRoundedIcon sx={{ fontSize: '120px', color: '#c6c7c7', }} /> */}
+            <Box style={{ display: "flex", flexDirection: "column", gap: "8px", width: "100%" }}>
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <Typography variant="body">
+                  <b>Client-facing status</b>
+                </Typography>
+                <FormControlLabel control={<Switch onChange={(event) => handleClientFacing(event.target.checked)} checked={clientFacingStatus} color="primary" />} label="Show in Client portal" />
+              </Box>
+              <Box>
+                {clientFacingStatus && (
+                  <>
+                    <Typography>Job name for client</Typography>
+                    <TextField fullWidth name="subject" value={inputText + selectedJobShortcut} onChange={handlechatsubject} placeholder="Job name for client" size="small" sx={{ background: "#fff", mt: 2 }} />
+
+                    <Box mt={2}>
+                      <Typography>Status</Typography>
+                      <Autocomplete
+                        options={optionstatus}
+                        size="small"
+                        sx={{ mt: 1 }}
+                        value={selectedJob}
+                        onChange={handleJobChange}
+                        getOptionLabel={(option) => option.label}
+                        isOptionEqualToValue={(option, value) => option.value === value.value}
+                        renderOption={(props, option) => (
+                          <Box component="li" {...props}>
+                            {/* Color dot */}
+                            <Chip
+                              size="small"
+                              style={{
+                                backgroundColor: option.clientfacingColour,
+                                marginRight: 8,
+                                marginLeft: 8,
+                                borderRadius: "50%",
+                                height: "15px",
+                              }}
+                            />
+                            {option.label}
+                          </Box>
+                        )}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder="Select Client Facing Job"
+                            InputProps={{
+                              ...params.InputProps,
+                              startAdornment:
+                                params.inputProps.value && clientFacingJobs.length > 0 ? (
+                                  <Chip
+                                    size="small"
+                                    style={{
+                                      backgroundColor: clientFacingJobs.find((job) => job.clientfacingName === params.inputProps.value)?.clientfacingColour, // Set color from selection
+                                      marginRight: 8,
+                                      marginLeft: 2,
+                                      borderRadius: "50%",
+                                      height: "15px",
+                                    }}
+                                  />
+                                ) : null,
+                            }}
+                          />
+                        )}
+                      />
+                    </Box>
+                    <Box sx={{ position: "relative", mt: 2 }}>
+                      <InputLabel sx={{ color: "black" }}>Description</InputLabel>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        margin="normal"
+                        type="text"
+                        multiline
+                        value={clientDescription}
+                        onChange={handleChange}
+                        placeholder="Description"
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Typography sx={{ color: "gray", fontSize: "12px", position: "absolute", bottom: "15px", right: "15px" }}>
+                                {charCount}/{charLimit}
+                              </Typography>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Box>
+                    
+                  </>
+                )}
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
         <Box mt={2} display={'flex'} gap={2} alignItems={'center'} mb={2}>
           <Button variant="contained" color="primary" onClick={createjob}>Save</Button>
           <Button variant="outlined">Cancel</Button>

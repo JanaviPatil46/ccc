@@ -486,10 +486,30 @@ const PipelineTemp = () => {
   const [automationSelectEditType, setAutomationEditType] = useState()
   console.log("vinayak",automationSelectEditType)
   const [automationSelectEdit, setAutomationSelectEdit] = useState()
+  const [defaultValueEmail, setDefaultValueEmail] = useState('')
+  const  [defaultValueInvoice,setDefaultValueInvoice] = useState('')
+
+ useEffect(() => {
+    if (automationSelectEdit && invoiceTemplateOptions.length > 0 && emailTemplateOptions.length > 0) {
+      const matchedInvoiceOption = invoiceTemplateOptions.find(
+        option => option.label === automationSelectEdit
+      );
+      const matchedEmailOption = emailTemplateOptions.find(
+        option => option.label === automationSelectEdit
+      );
+      setDefaultValueInvoice(matchedInvoiceOption || null);
+      setDefaultValueEmail(matchedEmailOption || null);
+    }
+  }, [automationSelectEdit, invoiceTemplateOptions, emailTemplateOptions]);
+
+  const handleEdittemp = (newValue)=>{
+    setDefaultValueInvoice(newValue)
+  }
   // renderActionContentedit
   const renderActionContentedit = (automationSelectEditType, automationSelectEdit,index) => {
-    const defaultValueInvoice = invoiceTemplateOptions.find(option => option.label === automationSelectEdit);
-    const defaultValueEmail = emailTemplateOptions.find(option => option.label === automationSelectEdit);
+    
+
+
     
   switch (automationSelectEditType) {
    
@@ -505,7 +525,7 @@ const PipelineTemp = () => {
               options={invoiceTemplateOptions}
               getOptionLabel={(option) => option.label}
               value={defaultValueInvoice}  // Set default value
-              onChange={(event, newValue) => handletemp(newValue)}
+             onChange={(event, newValue) => handleEdittemp(newValue)}
               isOptionEqualToValue={(option, value) =>
                 option.value === value.value
               }

@@ -716,41 +716,7 @@ const CreateJob = ({ charLimit = 4000 }) => {
                               <Typography>Job name for client</Typography>
                               <TextField fullWidth name="subject" value={inputText + selectedJobShortcut} onChange={handlechatsubject} placeholder="Job name for client" size="small" sx={{ background: "#fff", mt: 2 }} />
 
-                              {/* <Box>
-                                <Button variant="contained" color="primary" onClick={toggleShortcodeDropdown} sx={{ mt: 2 }}>
-                                  Add Shortcode
-                                </Button>
-                                <Popover
-                                  open={showDropdownClientJob}
-                                  anchorEl={anchorElClientJob}
-                                  onClose={handleCloseDropdown}
-                                  anchorOrigin={{
-                                    vertical: "bottom",
-                                    horizontal: "left",
-                                  }}
-                                  transformOrigin={{
-                                    vertical: "top",
-                                    horizontal: "left",
-                                  }}
-                                >
-                                  <Box>
-                                    <List className="dropdown-list" sx={{ width: "300px", height: "300px", cursor: "pointer" }}>
-                                      {filteredShortcuts.map((shortcut, index) => (
-                                        <ListItem key={index} onClick={() => handleJobAddShortcut(shortcut.value)}>
-                                          <ListItemText
-                                            primary={shortcut.title}
-                                            primaryTypographyProps={{
-                                              style: {
-                                                fontWeight: shortcut.isBold ? "bold" : "normal",
-                                              },
-                                            }}
-                                          />
-                                        </ListItem>
-                                      ))}
-                                    </List>
-                                  </Box>
-                                </Popover>
-                              </Box> */}
+
                               <Box mt={2}>
                                 <Typography>Status</Typography>
                                 <Autocomplete

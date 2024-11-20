@@ -244,7 +244,7 @@ const JobTemplateUpdate = ({ charLimit = 4000 }) => {
       console.error("Error fetching data:", error);
     }
   };
-  // console.log(selectedJob);
+  console.log(clientStatusId);
   const getClientStatusById = async (clientStatusId) => {
     try {
       const response = await fetch(`${CLIENT_FACING_API}/workflow/clientfacingjobstatus/${clientStatusId}`);

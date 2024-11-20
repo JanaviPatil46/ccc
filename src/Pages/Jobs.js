@@ -515,7 +515,7 @@ const Example = ({ charLimit = 4000 }) => {
       console.error("Error fetching data:", error);
     }
   };
-  console.log(selectedTags);
+  // console.log(selectedTags)
   const handleSubmit = (id) => {
     // setjobid(id);
     const myHeaders = new Headers();
