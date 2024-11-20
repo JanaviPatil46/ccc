@@ -502,14 +502,17 @@ const PipelineTemp = () => {
     }
   }, [automationSelectEdit, invoiceTemplateOptions, emailTemplateOptions]);
 
-  const handleEdittemp = (newValue)=>{
+  const handleEdittemp = (newValue,index)=>{
     setDefaultValueInvoice(newValue)
+    setAutomationSelectEdit(0);
+ 
+   
+    console.log("janvai",newValue);
+    
   }
   // renderActionContentedit
   const renderActionContentedit = (automationSelectEditType, automationSelectEdit,index) => {
     
-
-
     
   switch (automationSelectEditType) {
    
@@ -525,7 +528,7 @@ const PipelineTemp = () => {
               options={invoiceTemplateOptions}
               getOptionLabel={(option) => option.label}
               value={defaultValueInvoice}  // Set default value
-             onChange={(event, newValue) => handleEdittemp(newValue)}
+             onChange={(event, newValue) => handleEdittemp(newValue,index)}
               isOptionEqualToValue={(option, value) =>
                 option.value === value.value
               }
@@ -562,7 +565,8 @@ const PipelineTemp = () => {
             <Button variant="text" onClick={handleAddConditions}>Add Conditions</Button>
 
 
-            <Button variant="contained" onClick={handleSaveAutomation(index)}>
+            <Button variant="contained" onClick={handleEditSaveAutomation(defaultValueInvoice,index)}>
+          
               Save Automation
             </Button>
           </Grid>
@@ -744,6 +748,37 @@ const handleSaveAutomation = (index) => {
     handleDrawerClose();
   };
 };
+
+//handle automation save edit 
+
+const handleEditSaveAutomation = (defaultValueInvoice,index) => {
+  console.log("edit working ",defaultValueInvoice)
+  return () => {
+    const updatedStages = [...stages];
+    const selectedAutomation = {
+      type: automationSelect, // The type of automation (e.g., "Send Email")
+      template: defaultValueInvoice ? { label: defaultValueInvoice.label, value: defaultValueInvoice.value } : null, // Store label and value of selected template
+      tags: selectedTags.map(tag => ({ // Map selectedTags to include necessary tag data
+        _id: tag._id,
+        tagName: tag.tagName,
+        tagColour: tag.tagColour,
+      })),
+    };
+    updatedStages[index].automations.push(selectedAutomation);
+    setStages(updatedStages);
+    console.log("Automation edit saved for stage:", index, selectedAutomation);
+    setselectedTemp(null); // Clear the selected template after saving
+    setSelectedTags([])
+    setIsAnyCheckboxChecked(false)
+    handleDrawerClose();
+  };
+};
+
+
+
+
+
+
 const handleStageNameChange = (e, index) => {
   const newStages = [...stages]; // Create a copy of the stages array
   newStages[index].name = e.target.value; // Update the name of the specific stage
