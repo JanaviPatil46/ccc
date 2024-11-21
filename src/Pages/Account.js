@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { DialogTitle, DialogContent, DialogActions, Drawer, TablePagination, Chip, Tooltip, Autocomplete, Box, Divider, Typography, OutlinedInput, MenuItem as MuiMenuItem, FormControl, InputLabel, Menu, Button, IconButton, Select, MenuItem, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Checkbox, Paper } from "@mui/material";
 import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -20,6 +20,7 @@ import { useTheme } from "@mui/material/styles";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import CloseIcon from "@mui/icons-material/Close";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { LoginContext } from '../Sidebar/Context/Context.js'
 const FixedColumnTable = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -132,9 +133,9 @@ const FixedColumnTable = () => {
   const uniqueTags =
     tags.length > 0
       ? Array.from(new Set(tags.map((tag) => `${tag.tagName}-${tag.tagColour}`))).map((tagKey) => {
-          const [tagName, tagColour] = tagKey.split("-");
-          return { tagName, tagColour };
-        })
+        const [tagName, tagColour] = tagKey.split("-");
+        return { tagName, tagColour };
+      })
       : [];
   const calculateWidth = (tagName) => {
     const baseWidth = 10; // base width for each tag
@@ -314,19 +315,135 @@ const FixedColumnTable = () => {
 
   // Handle the change in the select dropdown
   const handleSettingChange = (setting, value) => {
+
+    console.log(value)
+    console.log(setting)
+
+    // if (setting === 'notify') {
+    //   setNotifySetting(setting, value)
+    // }
+    // if (setting === 'login') {
+    //   setLoginSetting(setting, value)
+    // }
+    // if (setting === 'emailSync') {
+    //   setEmailSyncSetting(setting, value)
+    // }
+
     // Map the dropdown values to boolean or undefined
     const mappedValue = value === "Assign to all" ? true : value === "Remove from all" ? false : undefined;
-
+    console.log(mappedValue)
     setSettings((prevState) => ({
       ...prevState,
       [setting]: mappedValue,
     }));
   };
+  // const handleSettingChange = (setting, value) => {
+  //   console.log(`Setting: ${setting}, Value: ${value}`);
+  
+   
+  
+  //   // Map dropdown values to a boolean or undefined
+  //   const mappedValue = value === "Assign to all" 
+  //     ? true 
+  //     : value === "Remove from all" 
+  //     ? false 
+  //     : undefined;
+  
+  //   console.log(`Mapped Value: ${mappedValue}`);
+  
+  //   // Update the state with the new setting value
+  //   setSettings((prevState) => ({
+  //     ...prevState,
+  //     [setting]: mappedValue,
+  //   }));
+  //    // Handle specific settings based on the `setting` type
+  //    switch (setting) {
+  //     case 'notify':
+  //       setNotifySetting(setting, value);
+  //       break;
+  //     case 'login':
+  //       setLoginSetting(setting, value);
+  //       break;
+  //     case 'emailSync':
+  //       setEmailSyncSetting(setting, value);
+  //       break;
+  //     default:
+  //       console.warn(`Unknown setting: ${setting}`);
+  //   }
+  // };
+  
+
+  const [loginSetting, setLoginSetting] = useState({ settingName: '', value: '' })
+  const [notifySetting, setNotifySetting] = useState({ settingName: '', value: '' })
+  const [emailSyncSetting, setEmailSyncSetting] = useState({ settingName: '', value: '' })
 
   const handleupdatecontacts = () => {
     submitupdatecontacts(selected);
-  };
 
+  };
+  const { logindata, setLoginData } = useContext(LoginContext);
+
+  const [loginsData, setloginsData] = useState("");
+
+  const [username, setUsername] = useState("");
+  const [userData, setUserData] = useState("");
+  const LOGIN_API = process.env.REACT_APP_USER_LOGIN;
+  const fetchUserLoginData = async (id) => {
+    const maxLength = 15;
+    const myHeaders = new Headers();
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+    const url = `${LOGIN_API}/common/user/${id}`;
+    fetch(url + loginsData, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+
+        setUserData(result.email); // Set a maximum length for userData if email exists
+
+        setUsername(result.username);
+      });
+  };
+  useEffect(() => {
+
+    fetchUserLoginData(logindata.user.id);
+  }, []);
+
+  const editMailNotifyLoginSendmail = () => {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const raw = JSON.stringify({
+      // useremail:"dipika@microtechsolutions.co.in",
+      useremail: userData,
+      operations: {
+        login: loginSetting.value,
+        notify: notifySetting.value,
+        emailSync: emailSyncSetting.value
+      },
+      accountsSummary: {
+        "total": "1",
+        "successful": "1",
+        "failed": "0"
+      },
+      timestamp: "10.21"
+    });
+console.log(raw)
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow"
+    };
+
+    fetch("http://127.0.0.1:7000/editnotifyloginemailsync", requestOptions)
+      .then((response) => response.text())
+      .then((result) => console.log(result))
+      .catch((error) => console.error(error));
+  }
   const submitupdatecontacts = (selected) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -373,6 +490,7 @@ const FixedColumnTable = () => {
       .then((result) => {
         console.log(result);
         toast.success("Bulk edit in progress, you will receive an email and Inbox+ notification when complete.");
+        editMailNotifyLoginSendmail()
         handleCloseSidebar();
       })
       .catch((error) => console.error(error));
@@ -438,7 +556,7 @@ const FixedColumnTable = () => {
             </Button>
           </Box>
           <Outlet />
-                  
+
         </Box>
         {/* <Button variant="text" onClick={handleFilterButtonClick} style={{ marginRight: "10px" }}>
           Filter Options
@@ -494,7 +612,7 @@ const FixedColumnTable = () => {
               <MenuItem onClick={handleArchiveAccount}> {isActiveTrue ? "Archive Account" : "Activate Account"}</MenuItem>
               <MenuItem onClick={handleEditLoginNotifyEmailSync}>Edit login notify emailSync</MenuItem>
               {/* <MenuItem onClick={handleAction3}>Additional Action 3</MenuItem>  */}
-                       
+
             </Menu>
           </div>
         )}
@@ -583,7 +701,7 @@ const FixedColumnTable = () => {
               </Button>
             </DialogActions>
           </div>
-                 
+
         </Drawer>
 
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>

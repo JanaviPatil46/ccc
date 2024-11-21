@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo ,useContext} from "react";
 import { Chip, Stepper, Step, StepLabel, Button, Typography, Box, Grid, TextField, FormControl, FormControlLabel, Switch, List, ListItem, ListItemText, Popover, Autocomplete, Alert, InputLabel } from "@mui/material";
 import Editor from "../../Templates/Texteditor/Editor";
 import TermEditor from "../../Templates/Texteditor/TermEditor";
@@ -16,7 +16,7 @@ import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import EditorShortcodes from "../../Templates/Texteditor/EditorShortcodes";
 import { useTheme } from "@mui/material/styles";
 import { IoArrowBackSharp } from "react-icons/io5";
-
+import { LoginContext } from '../../Sidebar/Context/Context.js'
 const MyStepperUpdate = () => {
 
   const { data } = useParams();
@@ -647,7 +647,59 @@ const MyStepperUpdate = () => {
   }, []); // Empty dependency array to run only once on mount
 
   // console.log(serviceandinvoiceSettings);
+  const { logindata, setLoginData } = useContext(LoginContext);
 
+  const [loginsData, setloginsData] = useState("");
+
+  const [username, setUsername] = useState("");
+ 
+  const LOGIN_API = process.env.REACT_APP_USER_LOGIN;
+  const fetchUserLoginData = async (id) => {
+    const maxLength = 15;
+    const myHeaders = new Headers();
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+    const url = `${LOGIN_API}/common/user/${id}`;
+    fetch(url + loginsData, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+       
+        setUsername(result.username);
+      });
+  };
+  useEffect(() => {
+    
+    fetchUserLoginData(logindata.user.id);
+  }, []);
+
+  const proposalSendMail = () => {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const raw = JSON.stringify({
+      accountid: data,
+      username: username,
+      proposalName: templatename,
+      proposalLink: "http://localhost:3000/accountsdash/organizers/6718e47e1b7d40bc7d33611e"
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow"
+    };
+    console.log(raw)
+
+    fetch("http://127.0.0.1:7400/proposalsendemail", requestOptions)
+      .then((response) => response.json())
+      .then((result) => console.log(result))
+      .catch((error) => console.error(error));
+  }
   const updatesaveProposaltemp = () => {
     // if (!validateForm()) {
     //   // toast.error("Please fix the validation errors.");
@@ -696,6 +748,7 @@ const MyStepperUpdate = () => {
             // fetchPrprosalsAllData();
             // navigate("/firmtemp/templates/proposals");
             toast.success("ProposalesAndEls Created successfully");
+            proposalSendMail();
           } else {
             toast.error(result.message || "Failed to Created ProposalesAndEls");
           }
@@ -765,6 +818,7 @@ const MyStepperUpdate = () => {
               // fetchPrprosalsAllData();
               // navigate("/firmtemp/templates/proposals");
               toast.success("ProposalesAndEls Created successfully");
+              proposalSendMail();
             } else {
               toast.error(result.message || "Failed to create ProposalesAndEls");
             }
@@ -835,6 +889,7 @@ const MyStepperUpdate = () => {
               // fetchPrprosalsAllData();
               // navigate("/firmtemp/templates/proposals");
               toast.success("ProposalesAndEls Created successfully");
+              proposalSendMail();
             } else {
               toast.error(result.message || "Failed to Create ProposalesAndEls");
             }

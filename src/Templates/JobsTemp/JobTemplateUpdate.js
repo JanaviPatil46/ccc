@@ -236,9 +236,10 @@ const JobTemplateUpdate = ({ charLimit = 4000 }) => {
         setCombinedValues(selectedValues);
         console.log(selectedValues);
       }
-      setClientStatusId(data.jobTemplate.clientfacingstatus);
-      console.log(data.jobTemplate.clientfacingstatus);
-      getClientStatusById(data.jobTemplate.clientfacingstatus);
+      
+      setClientStatusId(data.jobTemplate.clientfacingstatus._id);
+      console.log(data.jobTemplate.clientfacingstatus._id);
+      getClientStatusById(data.jobTemplate.clientfacingstatus._id);
       tempallvalue();
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -294,6 +295,7 @@ const JobTemplateUpdate = ({ charLimit = 4000 }) => {
     setClientFacingStatus(tempvalues.showinclientportal);
     setInputText(tempvalues.jobnameforclient);
     setClientDescription(tempvalues.clientfacingDescription);
+    setSelectedJob(tempvalues.clientfacingstatus.clientfacingName)
   };
 
   // client facing integration

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect,  } from "react";
 import { Stepper, Step, StepLabel, Button, Typography, Box, Grid, TextField, FormControl, FormControlLabel, Switch, List, ListItem, ListItemText, Popover, Autocomplete, Alert, InputLabel } from "@mui/material";
 import Editor from "../../Templates/Texteditor/Editor";
 import TermEditor from "../../Templates/Texteditor/TermEditor";
@@ -629,6 +629,7 @@ const MyStepperUpdateAcc = () => {
           console.log(result.message);
           if (result?.message === "Proposalesandels Accountwise Updated successfully") {
             toast.success("Proposalesandels Accountwise Updated successfully");
+            
           } else {
             toast.error(result.message || "Failed to update ProposalesAndEls");
           }
@@ -793,6 +794,10 @@ const MyStepperUpdateAcc = () => {
     }
   };
 
+
+
+
+  
 
   const [paymentterms, setPaymentTerms] = useState("");
   const handlePaymentTerms = (e) => {

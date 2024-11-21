@@ -1,11 +1,12 @@
 import { Box, Typography, Divider, Dialog, Tooltip, FormControlLabel, Switch, InputLabel, DialogContent, Select, LinearProgress, Autocomplete, TextField, MenuItem, Chip, Container, Button, Checkbox, FormControl } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState, useEffect,useContext } from "react";
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { toast } from "react-toastify";
+import { LoginContext } from '../../Sidebar/Context/Context.js'
 const AccountOrganizer = () => {
   const ACCOUNT_API = process.env.REACT_APP_ACCOUNTS_URL;
   const ORGANIZER_TEMP_API = process.env.REACT_APP_ORGANIZER_TEMP_URL;
@@ -504,10 +505,65 @@ const AccountOrganizer = () => {
         setSelectedOrganizerTemplate(selectedOrganizerTemplate);
         console.log(selectedOrganizerTemplate);
         toast.success("New organizer created successfully");
+        organizerSendEmail()
         navigate(`/accountsdash/organizers/${data}`);
       })
       .catch((error) => console.error(error));
   };
+  const { logindata, setLoginData } = useContext(LoginContext);
+  const [loginsData, setloginsData] = useState("");
+  console.log(logindata)
+
+
+ 
+  const [username, setUsername] = useState("");
+ 
+  const LOGIN_API = process.env.REACT_APP_USER_LOGIN;
+  const fetchUserData = async (id) => {
+    const maxLength = 15;
+    const myHeaders = new Headers();
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+    const url = `${LOGIN_API}/common/user/${id}`;
+    fetch(url + loginsData, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+       
+        setUsername(result.username);
+      });
+  };
+  useEffect(() => {
+    // setloginsData(logindata.user.id)
+    fetchUserData(logindata.user.id);
+  }, []);
+  const organizerSendEmail=()=>{
+    const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+const raw = JSON.stringify({
+  accountid:data,
+  username: username,
+  organizerName:organizerName,
+  organizerLink:"http://localhost:3000/accountsdash/organizers/6718e47e1b7d40bc7d33611e"
+  });
+
+const requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  body: raw,
+  redirect: "follow"
+};
+console.log(raw)
+fetch("http://127.0.0.1:7600/organizersendemail", requestOptions)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.error(error));
+
+  }
 
   const handleDelete = (valueToDelete) => {
     setSelectedAccount((prevSelected) => prevSelected.filter((value) => value !== valueToDelete));
