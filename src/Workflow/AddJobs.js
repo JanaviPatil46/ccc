@@ -292,7 +292,7 @@ const AddJobs = ({ charLimit = 4000,stages, pipelineId, handleDrawerClose, fetch
       startsinduration: startsInDuration,
       duein: duein,
       dueinduration: dueinduration,
-      comments: "",
+    
         showinclientportal: clientFacingStatus,
       jobnameforclient: inputText,
       clientfacingstatus: selectedJob?.value,
@@ -308,7 +308,7 @@ const AddJobs = ({ charLimit = 4000,stages, pipelineId, handleDrawerClose, fetch
       headers: myHeaders,
       data: JSON.stringify(data)
     };
-
+console.log(data)
     axios.request(config)
       .then((response) => {
         console.log("Job created successfully");

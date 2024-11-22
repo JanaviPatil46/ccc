@@ -196,8 +196,10 @@ const Example = ({ charLimit = 4000 }) => {
       const jobListResponse = await axios.get(`${JOBS_API}/workflow/jobs/job/joblist/list/${isActiveTrue}`);
       const formattedData = jobListResponse.data.jobList.map((job) => ({
         ...job,
-        StartDate: format(new Date(job.StartDate), "MMMM dd, yyyy"),
-        DueDate: format(new Date(job.DueDate), "MMMM dd, yyyy"),
+        // StartDate: format(new Date(job.StartDate), "MMMM dd, yyyy"),
+        // DueDate: format(new Date(job.DueDate), "MMMM dd, yyyy"),
+        StartDate: job.StartDate ? format(new Date(job.StartDate), "MMMM dd, yyyy") : "",
+        DueDate: job.DueDate ? format(new Date(job.DueDate), "MMMM dd, yyyy") : "",
         updatedAt: formatDistanceToNow(new Date(job.updatedAt), { addSuffix: true }),
         JobAssignee: Array.isArray(job.JobAssignee) ? job.JobAssignee.join(", ") : job.JobAssignee,
         // clientfacingstatus: job.ClientFacingStatus?.statusName,
@@ -619,11 +621,13 @@ const Example = ({ charLimit = 4000 }) => {
         accessorKey: "StartDate",
         header: "Start Date",
         size: 150,
+        // Cell: ({ value }) => (value === "null" ? "null" : value),
       },
       {
         accessorKey: "DueDate",
         header: "Due Date",
         size: 150,
+        // Cell: ({ value }) => (value === "null" ? "null" : value),
       },
       {
         accessorKey: "updatedAt",

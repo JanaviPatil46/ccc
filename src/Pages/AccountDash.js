@@ -26,7 +26,7 @@ const AccountsDash = () => {
     fetch(url + data, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        // console.log(result);
+        console.log(result);
 
         setAccName(result.accountlist.Name);
       })
@@ -77,7 +77,7 @@ const AccountsDash = () => {
           <NavLink to={`/accountsdash/email/${data}`}>Email</NavLink>
           <NavLink to={`/accountsdash/proposals/${data}`}> Proposals & ELs</NavLink>
           <NavLink to={`/accountsdash/notes/${data}`}> Notes</NavLink>
-          <NavLink to={`/accountsdash/workflow/${data}`}> Workflow</NavLink>
+          <NavLink to={`/accountsdash/workflow/${data}/pipelines`}> Workflow</NavLink>
         </Box>
       </Box>
       <Box pl={3} pr={3}>

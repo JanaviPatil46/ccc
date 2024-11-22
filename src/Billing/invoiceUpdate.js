@@ -409,20 +409,35 @@ const Invoices = ({ charLimit = 4000 }) => {
     setTaxTotal(tax);
     setTotalAmount((subtotal + tax).toFixed(2));
   };
+  // useEffect(() => {
+  //   const calculateSubtotal = () => {
+  //     let subtotal = 0;
+
+  //     rows.forEach((row) => {
+  //       subtotal += parseFloat(row.amount.replace("$", "")) || 0;
+  //     });
+  //     //   console.log(subtotal)
+  //     setSubtotal(subtotal);
+  //     calculateTotal(subtotal, taxRate);
+  //   };
+  //   calculateSubtotal();
+  // }, [rows]);
   useEffect(() => {
     const calculateSubtotal = () => {
       let subtotal = 0;
 
       rows.forEach((row) => {
-        subtotal += parseFloat(row.amount.replace("$", "")) || 0;
+        if (row.tax) {
+          subtotal += parseFloat(row.amount.replace("$", "")) || 0;
+        }
+        // subtotal += parseFloat(row.amount.replace("$", "")) || 0;
       });
-      //   console.log(subtotal)
+      console.log(subtotal);
       setSubtotal(subtotal);
       calculateTotal(subtotal, taxRate);
     };
     calculateSubtotal();
-  }, [rows]);
-
+  }, [rows,taxRate]);
   const lineItems = rows.map((item) => ({
     productorService: item.productName, // Assuming productName maps to productorService
     description: item.description,
@@ -1452,7 +1467,7 @@ const Invoices = ({ charLimit = 4000 }) => {
                     <Box width="50%">
                       <Typography sx={{ color: "black" }}>Rate</Typography>
                       <TextField
-                        fullWidth
+                      
                         name="Rate"
                         placeholder="Rate"
                         size="small"

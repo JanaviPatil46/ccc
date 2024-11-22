@@ -529,14 +529,17 @@ const InvoiceTemp = () => {
       let subtotal = 0;
 
       rows.forEach((row) => {
-        subtotal += parseFloat(row.amount.replace("$", "")) || 0;
+        if (row.tax) {
+          subtotal += parseFloat(row.amount.replace("$", "")) || 0;
+        }
+        // subtotal += parseFloat(row.amount.replace("$", "")) || 0;
       });
       console.log(subtotal);
       setSubtotal(subtotal);
       calculateTotal(subtotal, taxRate);
     };
     calculateSubtotal();
-  }, [rows]);
+  }, [rows,taxRate]);
 
   //shortcode for  switch btn
 
@@ -1436,7 +1439,7 @@ const InvoiceTemp = () => {
                     placeholder="Rate"
                     size="small"
                     sx={{ mt: 1 }}
-                    fullWidth
+                
                     value={selectedRowData?.rate || ""} // Use selected row data
                     onChange={(e) => setSelectedRowData({ ...selectedRowData, rate: e.target.value })}
                   />

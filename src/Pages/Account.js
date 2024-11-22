@@ -490,7 +490,7 @@ console.log(raw)
       .then((result) => {
         console.log(result);
         toast.success("Bulk edit in progress, you will receive an email and Inbox+ notification when complete.");
-        editMailNotifyLoginSendmail()
+        // editMailNotifyLoginSendmail()
         handleCloseSidebar();
       })
       .catch((error) => console.error(error));

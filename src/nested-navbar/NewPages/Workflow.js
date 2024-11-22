@@ -1,8 +1,9 @@
 import React from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet,useParams } from 'react-router-dom'
 import { Box, } from '@mui/material'
 const Workflow = () => {
-  const accountid = '661b6d50187951c779906e29'
+  const { data } =  useParams();
+  console.log(data)
   return (
     
     <Box className="Docs">
@@ -29,9 +30,10 @@ const Workflow = () => {
           }
         }
       }}>
-             <NavLink to={`/accountsdash/workflow/${accountid}/activejobs`} activeClassName="active">Active Jobs</NavLink>
-        <NavLink to={`/accountsdash/workflow/${accountid}/archivedjobs`} activeClassName="active">Archived Jobs</NavLink>
-        <NavLink to={`/accountsdash/workflow/${accountid}/pipelines`} activeClassName="active">Pipelines</NavLink>
+          <NavLink to={`/accountsdash/workflow/${data}/pipelines`} activeClassName="active">Pipelines</NavLink>
+             <NavLink to={`/accountsdash/workflow/${data}/activejobs`} activeClassName="active">Active Jobs</NavLink>
+        <NavLink to={`/accountsdash/workflow/${data}/archivedjobs`} activeClassName="active">Archived Jobs</NavLink>
+      
       </Box>
 
     </Box>

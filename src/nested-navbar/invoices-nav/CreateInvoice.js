@@ -411,19 +411,34 @@ const CreateInvoice = ({ charLimit = 4000, onClose }) => {
     setTaxTotal(tax);
     setTotalAmount((subtotal + tax).toFixed(2));
   };
+  // useEffect(() => {
+  //   const calculateSubtotal = () => {
+  //     let subtotal = 0;
+  //     rows.forEach((row) => {
+  //       subtotal += parseFloat(row.amount.replace("$", "")) || 0;
+  //     });
+  //     console.log(subtotal);
+  //     setSubtotal(subtotal);
+  //     calculateTotal(subtotal, taxRate);
+  //   };
+  //   calculateSubtotal();
+  // }, [rows]);
   useEffect(() => {
     const calculateSubtotal = () => {
       let subtotal = 0;
+
       rows.forEach((row) => {
-        subtotal += parseFloat(row.amount.replace("$", "")) || 0;
+        if (row.tax) {
+          subtotal += parseFloat(row.amount.replace("$", "")) || 0;
+        }
+        // subtotal += parseFloat(row.amount.replace("$", "")) || 0;
       });
       console.log(subtotal);
       setSubtotal(subtotal);
       calculateTotal(subtotal, taxRate);
     };
     calculateSubtotal();
-  }, [rows]);
-
+  }, [rows,taxRate]);
   const INVOICE_NEW = process.env.REACT_APP_INVOICES_URL;
   const lineItems = rows.map((item) => ({
     productorService: item.productName, // Assuming productName maps to productorService
@@ -1168,7 +1183,7 @@ const CreateInvoice = ({ charLimit = 4000, onClose }) => {
                         placeholder="Rate"
                         size="small"
                         sx={{ mt: 1 }}
-                        fullWidth
+                       
                         value={selectedRowData?.rate || ""} // Use selected row data
                         onChange={(e) => setSelectedRowData({ ...selectedRowData, rate: e.target.value })}
                       />
