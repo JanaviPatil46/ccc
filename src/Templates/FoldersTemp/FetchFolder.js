@@ -183,7 +183,9 @@ function FetchFolder({ folderData, setSelectedFolder, selectedFolder, templateId
     }
   };
 
-  const handleDeleteFolder = async (folder) => {
+  const handleDeleteFolder = async (folder,templateId) => {
+    console.log(folder)
+    console.log(templateId)
     try {
       // Send a request to the server to delete the folder
       await axios.post(`${API_KEY}/common/deleteFolder/`, { folderName: folder });
@@ -272,7 +274,7 @@ function FetchFolder({ folderData, setSelectedFolder, selectedFolder, templateId
                     <li
                       style={{ margin: "10px", cursor: "pointer", fontSize: "12px" }}
                       onClick={() => {
-                        handleDeleteFolder(folder.folder);
+                        handleDeleteFolder(folder.folder,templateId);
                         toggleMenu(index);
                       }}
                     >

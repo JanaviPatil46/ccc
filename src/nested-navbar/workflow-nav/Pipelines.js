@@ -380,7 +380,7 @@
 import React, { useEffect, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { Box } from "@mui/material";
+import { Box ,Dialog, DialogActions, DialogContent, DialogTitle, Button} from "@mui/material";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -455,7 +455,7 @@ const Pipelines = () => {
     const config = {
       method: "post",
       maxBodyLength: Infinity,
-      url: `http://127.0.0.1:7550/workflow/jobs/job/jobpipeline/updatestageid/${item.id}`,
+      url: `${JOBS_API}/workflow/jobs/job/jobpipeline/updatestageid/${item.id}`,
       headers: { "Content-Type": "application/json" },
       data: data,
     };
@@ -502,6 +502,16 @@ const Pipeline = ({ pipeline, jobData, moveJob,fetchJobList, data }) => {
       isChecked ? [...prevIds, jobId] : prevIds.filter((id) => id !== jobId)
     );
   };
+  const [openDialog, setOpenDialog] = useState(false);
+  const [dialogType, setDialogType] = useState("");
+  const handleDialogOpen = (type) => {
+    setDialogType(type);
+    setOpenDialog(true);
+  };
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+  };
   const handleDelete = () => {
     const requestOptions = {
       method: "DELETE",
@@ -531,10 +541,6 @@ const Pipeline = ({ pipeline, jobData, moveJob,fetchJobList, data }) => {
       });
   };
   const navigate = useNavigate();
-  // const handleArchive = () => {
-  //   navigate(`/accountsdash/workflow/${data}/archivedjobs`);
-  // };
-  
   const handleArchive = async () => {
     const requestOptions = {
       method: "PATCH",
@@ -549,7 +555,7 @@ const Pipeline = ({ pipeline, jobData, moveJob,fetchJobList, data }) => {
       // Send PATCH request for each checked job
       const archivePromises = checkedJobIds.map((jobId) =>
         fetch(
-          `http://127.0.0.1:7550/workflow/jobs/job/${jobId}`,
+          `${JOBS_API}/workflow/jobs/job/${jobId}`,
           requestOptions
         ).then((response) => {
           if (!response.ok) {
@@ -578,9 +584,11 @@ const Pipeline = ({ pipeline, jobData, moveJob,fetchJobList, data }) => {
     <Box sx={{ border: "1px solid grey", borderRadius: '10px', marginBottom: '15px' }}>
       <h3 style={{ marginLeft: '15px' }}>{pipeline.pipelineName}</h3>
        {checkedJobIds.length > 0 && (
+        <Box>
         <Box sx={{display:'flex', alignItems:'center', gap:2}}>
         <DeleteIcon
-          onClick={handleDelete}
+          // onClick={handleDelete}
+          onClick={() => handleDialogOpen("delete")}
           sx={{
             marginLeft: "15px",
             color: "red",
@@ -589,10 +597,34 @@ const Pipeline = ({ pipeline, jobData, moveJob,fetchJobList, data }) => {
           }}
         />
         <Box sx={{  display: 'flex', alignItems: 'center' }}>
-        <ArchiveIcon sx={{ marginRight: 1 }} onClick={handleArchive}/>
+        <ArchiveIcon sx={{ marginRight: 1, cursor:'pointer' }} 
+        // onClick={handleArchive} 
+        onClick={() => handleDialogOpen("archive")}
+        />
         <p>Archive</p>
       </Box>
       </Box>
+      <Dialog open={openDialog} onClose={handleDialogClose}>
+      <DialogTitle>
+        {dialogType === "delete" ? "Confirm Delete" : "Confirm Archive"}
+      </DialogTitle>
+      <DialogContent>
+        Are you sure you want to{" "}
+        {dialogType === "delete" ? "delete" : "archive"} these jobs?
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleDialogClose} color="secondary">
+          Cancel
+        </Button>
+        <Button
+          onClick={dialogType === "delete" ? handleDelete : handleArchive}
+          color="primary"
+        >
+          Confirm
+        </Button>
+      </DialogActions>
+    </Dialog>
+    </Box>
       )}
       
       <Box

@@ -558,7 +558,7 @@ const requestOptions = {
   redirect: "follow"
 };
 console.log(raw)
-fetch("http://127.0.0.1:7600/organizersendemail", requestOptions)
+fetch(`${ORGANIZER_TEMP_API}/organizersendemail`, requestOptions)
   .then((response) => response.text())
   .then((result) => console.log(result))
   .catch((error) => console.error(error));

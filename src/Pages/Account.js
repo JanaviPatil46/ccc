@@ -439,7 +439,7 @@ console.log(raw)
       redirect: "follow"
     };
 
-    fetch("http://127.0.0.1:7000/editnotifyloginemailsync", requestOptions)
+    fetch(`${ACCOUNT_API}/editnotifyloginemailsync`, requestOptions)
       .then((response) => response.text())
       .then((result) => console.log(result))
       .catch((error) => console.error(error));

@@ -93,64 +93,6 @@ const ActiveJobs = () => {
   };
 
   
-  // const handleArchive = () => {
-  //   if (!selectedJobId) return;
-
-  //   const myHeaders = new Headers();
-  //   myHeaders.append("Content-Type", "application/json");
-
-  //   const raw = JSON.stringify({ active: false });
-
-  //   const requestOptions = {
-  //     method: "PATCH",
-  //     headers: myHeaders,
-  //     body: raw,
-  //     redirect: "follow",
-  //   };
-
-  //   const archiveUrl = `http://127.0.0.1:7550/workflow/jobs/job/${selectedJobId}`;
-
-  //   fetch(archiveUrl, requestOptions)
-  //     .then((response) => response.json())
-  //     .then((result) => {
-  //       console.log("Archive result:", result);
-  //       setJobData((prevJobs) =>
-  //         prevJobs.filter((job) => job.id !== selectedJobId)
-  //       ); // Remove archived job from the table
-  //       handleClose();
-  //       fetchJobList(data)
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error archiving job:", error);
-  //       handleClose();
-  //     });
-  // };
-
-  // const handleDelete = () => {
-  //   if (!selectedJobId) return;
-
-  //   const requestOptions = {
-  //     method: "DELETE",
-  //     redirect: "follow",
-  //   };
-
-  //   const deleteUrl = `http://127.0.0.1:7550/workflow/jobs/job/${selectedJobId}`;
-
-  //   fetch(deleteUrl, requestOptions)
-  //     .then((response) => response.json())
-  //     .then((result) => {
-  //       console.log("Delete result:", result);
-  //       setJobData((prevJobs) =>
-  //         prevJobs.filter((job) => job.id !== selectedJobId)
-  //       ); // Remove deleted job from the table
-  //       handleClose();
-  //       fetchJobList(data)
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error deleting job:", error);
-  //       handleClose();
-  //     });
-  // };
   const [actionType, setActionType] = useState(""); // Archive or Delete
   const [isDialogOpen, setIsDialogOpen] = useState(false); // Dialog state
   const openConfirmationDialog = (type) => {
@@ -187,7 +129,7 @@ const ActiveJobs = () => {
       redirect: "follow",
     };
 
-    const archiveUrl = `http://127.0.0.1:7550/workflow/jobs/job/${selectedJobId}`;
+    const archiveUrl = `${JOBS_API}/workflow/jobs/job/${selectedJobId}`;
 
     fetch(archiveUrl, requestOptions)
       .then((response) => response.json())
@@ -210,7 +152,7 @@ const ActiveJobs = () => {
       redirect: "follow",
     };
 
-    const deleteUrl = `http://127.0.0.1:7550/workflow/jobs/job/${selectedJobId}`;
+    const deleteUrl = `${JOBS_API}/workflow/jobs/job/${selectedJobId}`;
 
     fetch(deleteUrl, requestOptions)
       .then((response) => response.json())
@@ -285,14 +227,6 @@ const ActiveJobs = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      {/* <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        <MenuItem onClick={handleArchive}>Archive</MenuItem>
-        <MenuItem onClick={handleDelete}>Delete</MenuItem>
-      </Menu> */}
        <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}

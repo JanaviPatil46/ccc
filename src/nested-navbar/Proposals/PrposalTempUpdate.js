@@ -28,7 +28,7 @@ const MyStepperUpdate = () => {
   const PROPOSAL_API = process.env.REACT_APP_PROPOSAL_TEMP_URL;
   const ACCOUNT_API = process.env.REACT_APP_ACCOUNTS_URL;
   const PROPOSAL_ACCOUNT_API = process.env.REACT_APP_PROPOSAL_URL;
-
+  // const ACCOUNT_PROPOSAL= process.env.REACT_APP_PROPOSAL_UR;
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [activeStep, setActiveStep] = useState(0);
   const [introductionContent, setIntroductionContent] = useState("");
@@ -695,7 +695,7 @@ const MyStepperUpdate = () => {
     };
     console.log(raw)
 
-    fetch("http://127.0.0.1:7400/proposalsendemail", requestOptions)
+    fetch(`${PROPOSAL_ACCOUNT_API}/proposalsendemail`, requestOptions)
       .then((response) => response.json())
       .then((result) => console.log(result))
       .catch((error) => console.error(error));

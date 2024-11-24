@@ -349,7 +349,7 @@
 //               color: "#1976d3",
 //               fontWeight: "bold",
 //             }}
-            
+
 //           >
 //            <TbFolders />
 //             Apply folder template
@@ -699,12 +699,152 @@
 
 // export default Documents;
 
-import React from 'react'
+// import { Autocomplete, Box, Button, Typography } from '@mui/material'
+// import React,{ useState, useEffect,} from 'react'
+
+// const Documents = () => {
+//   const API_KEY = process.env.REACT_APP_API_IP;
+//   const [folderTemplates, setFolderTemplates] = useState([]);
+
+//   useEffect(() => {
+//     async function fetchFolderTemplates() {
+//       try {
+//         const url = `${API_KEY}/common/folder`;
+//         const response = await fetch(url);
+//         if (!response.ok) {
+//           throw new Error("Failed to fetch folder templates");
+//         }
+//         const data = await response.json();
+//         setFolderTemplates(data.folderTemplates);
+//       } catch (error) {
+//         console.error("Error fetching folder templates:", error);
+//       }
+//     }
+
+//     fetchFolderTemplates();
+//   }, []);
+//   return (
+//     <Box>
+//       <Typography>Assign folder template</Typography>
+//       <Autocomplete/>
+
+//       <Button></Button>
+//     </Box>
+//   )
+// }
+
+// export default Documents
+
+
+import { Autocomplete, Box, Button, Typography, TextField } from '@mui/material';
+import React, { useState, useEffect } from 'react';
 
 const Documents = () => {
-  return (
-    <div>Documents</div>
-  )
-}
+  const API_KEY = process.env.REACT_APP_API_IP;
+  const [folderTemplates, setFolderTemplates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
 
-export default Documents
+
+  useEffect(() => {
+    fetchPipelineData();
+  }, []);
+  // const fetchPipelineData = async () => {
+  //   try {
+  //     const url = `${API_KEY}/common/folder`;
+  //     const response = await fetch(url);
+  //     if (!response.ok) {
+  //       throw new Error('Failed to fetch folder templates');
+  //     }
+  //     const data = await response.json();
+  //     setFolderTemplates(data.folderTemplates || []);
+  //   } catch (error) {
+  //     console.error('Error fetching folder templates:', error);
+  //   }
+  // }
+  // };
+  // const optionpipeline = pipelineData.map((pipelineData) => ({
+  //   value: pipelineData._id,
+  //   label: pipelineData.templatename,
+  // }));
+
+
+
+  const fetchPipelineData = async () => {
+    try {
+      const url = `${API_KEY}/common/folder`;
+      const response = await fetch(url);
+      const data = await response.json();
+      setFolderTemplates(data.folderTemplates);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  const handleSelectTemplate = (selectedOptions) => {
+    setSelectedTemplate(selectedOptions);
+  };
+  const optionpipeline = folderTemplates.map((folderTemplates) => ({
+    value: folderTemplates._id,
+    label: folderTemplates.templatename,
+  }));
+
+
+  const assignfoldertemp =()=>{
+    const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+const raw = JSON.stringify({
+  "accountId": "6742f32219d34e7964b1f0ee",
+  "foldertempId": "673eefcfa00261e31a20ceac"
+});
+
+const requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  body: raw,
+  redirect: "follow"
+};
+console.log(raw)
+fetch("http://127.0.0.1:8002/clientdocs/accountfoldertemp", requestOptions)
+  .then((response) => response.json())
+  .then((result) => console.log(result))
+  .catch((error) => console.error(error));
+  }
+  return (
+    <Box>
+      <Typography variant="h6" gutterBottom>
+        Assign Folder Template
+      </Typography>
+      <Autocomplete
+        options={optionpipeline}
+        getOptionLabel={(option) => option.label}
+        value={selectedTemplate}
+        onChange={(event, newValue) => handleSelectTemplate(newValue)}
+        isOptionEqualToValue={(option, value) => option.value === value.value}
+        renderOption={(props, option) => (
+          <Box
+            component="li"
+            {...props}
+            sx={{ cursor: "pointer", margin: "5px 10px" }} // Add cursor pointer style
+          >
+            {option.label}
+          </Box>
+        )}
+        renderInput={(params) => <TextField {...params} sx={{ backgroundColor: "#fff" }} placeholder="Pipeline" variant="outlined" size="small" />}
+        sx={{ width: "100%", marginTop: "8px" }}
+        clearOnEscape // Enable clearable functionality
+      />
+      <Box mt={2}>
+        <Button
+          variant="contained"
+          color="primary"
+       onClick={assignfoldertemp}
+          disabled={!selectedTemplate}
+        >
+          Assign Template
+        </Button>
+      </Box>
+    </Box>
+  );
+};
+
+export default Documents;
