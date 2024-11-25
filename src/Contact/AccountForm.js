@@ -1,4 +1,4 @@
-import { ListItem, Box,Grid,Menu,IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider,Typography, FormControl, RadioGroup, Radio, Button, Select, Chip, MenuItem, TextField, useMediaQuery, Autocomplete, Switch, FormControlLabel } from "@mui/material";
+import { ListItem, Box, Grid, Menu, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Typography, FormControl, RadioGroup, Radio, Button, Select, Chip, MenuItem, TextField, useMediaQuery, Autocomplete, Switch, FormControlLabel } from "@mui/material";
 import { RxCross2 } from "react-icons/rx";
 import { useTheme } from "@mui/material/styles";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
@@ -23,6 +23,7 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
   const USER_API = process.env.REACT_APP_USER_URL;
   const TAGS_API = process.env.REACT_APP_TAGS_TEMP_URL;
   const CONTACT_API = process.env.REACT_APP_CONTACTS_URL;
+  const API_KEY = process.env.REACT_APP_API_IP;
   const theme = useTheme();
   const navigate = useNavigate();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -185,10 +186,39 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
     },
   }));
 
+
+
+  // folder templates
+  const [folderTemplates, setFolderTemplates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+
+
+  useEffect(() => {
+    fetchFolderData();
+  }, []);
+
+
+  const fetchFolderData = async () => {
+    try {
+      const url = `${API_KEY}/common/folder`;
+      const response = await fetch(url);
+      const data = await response.json();
+      setFolderTemplates(data.folderTemplates);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  const handleSelectTemplate = (selectedOptions) => {
+    setSelectedTemplate(selectedOptions);
+  };
+  const optionfolder = folderTemplates.map((folderTemplates) => ({
+    value: folderTemplates._id,
+    label: folderTemplates.templatename,
+  }));
   const [AccountId, setAccountId] = useState();
+  const [folderTempId, setFolderTempId]=useState()
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedContactCountry, setSelectedContactCountry] = useState(null);
-
   // create account
   // const handleSubmit = () => {
   //   const myHeaders = new Headers();
@@ -280,6 +310,7 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
         accountName: accountName,
         tags: combinedValues,
         teamMember: combinedTeamMemberValues,
+        foldertemplate: selectedTemplate.value
       });
 
       const requestOptions = {
@@ -293,8 +324,15 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
         .then((response) => response.json())
         .then((result) => {
           console.log(result);
+          const newAccountId = result.newAccount._id;
           console.log(result.newAccount._id); // Log the result
           setAccountId(result.newAccount._id);
+          console.log(result.newAccount.foldertemplate)
+          setFolderTempId(result.newAccount.foldertemplate)
+          addFolderTemplate(newAccountId);
+
+        // Assign the folder template after creating the account
+        assignfoldertemp(newAccountId, result.newAccount.foldertemplate);
           setAccountData(result.newAccount)
           fetchAccountDataById(result.newAccount._id)
           // updateContactsAccountId(result.newAccount._id);
@@ -331,6 +369,7 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
           console.log(result); // Log the result
           console.log(result.newAccount._id);
           setAccountId(result.newAccount._id);
+          addFolderTemplate(result.newAccount._id);
           // updateContactsAccountId(result.newAccount._id);
           toast.success("Form submitted successfully"); // Display success toast
         })
@@ -341,7 +380,50 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
     }
     //todo contact
   };
+  const addFolderTemplate = (accountId) => {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
 
+    const raw = JSON.stringify({
+      accountId: accountId
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow"
+    };
+    console.log(raw)
+    console.log("Creating folder for account:", accountId);
+    fetch("http://127.0.0.1:8002/clientdocs/clients", requestOptions)
+      .then((response) => response.json())
+      .then((result) => console.log(result))
+      .catch((error) => console.error(error));
+  }
+
+  const assignfoldertemp = (accountId, foldertempId) => {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+  
+    const raw = JSON.stringify({
+      accountId: accountId,
+      foldertempId: foldertempId,
+    });
+  
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+  
+    console.log(raw);
+    fetch("http://127.0.0.1:8002/clientdocs/accountfoldertemp", requestOptions)
+      .then((response) => response.json())
+      .then((result) => console.log(result))
+      .catch((error) => console.error(error));
+  };
   const [phoneNumbers, setPhoneNumbers] = useState([]);
 
   // const handleDeletePhoneNumber = (id) => {
@@ -502,8 +584,8 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
     myHeaders.append("Content-Type", "application/json");
 
     const existingContactIds = contactData.map((contact) => contact._id);
-    const combinedContacts = [...new Set([...existingContactIds, ...contactsIds])]; 
-    
+    const combinedContacts = [...new Set([...existingContactIds, ...contactsIds])];
+
     const raw = JSON.stringify({
 
       contacts: combinedContacts,
@@ -606,7 +688,7 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
       console.error("API Error:", error);
     }
   };
-  
+
 
   const removecontactidfromaccount = (contactId) => {
     const requestOptions = {
@@ -653,24 +735,24 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
   const setFilteredContact = () => {
     console.log("Search Query:", searchQuery);
     console.log("All Contacts Data:", allContactData);
-  
+
     if (!searchQuery) {
       console.warn("Search query is empty");
       setFilteredContacts(allContactData); // Show all contacts if there's no search query
       return;
     }
-  
+
     const lowerCaseQuery = searchQuery.toLowerCase();
     const filtered = allContactData.filter((contact) => {
       console.log("Contact Name:", contact.name); // Log each contact name for inspection
       return contact.name && contact.name.toLowerCase().includes(lowerCaseQuery);
     });
-  
+
     setFilteredContacts(filtered);
     console.log("Filtered Contacts:", filtered); // Log the result of filtering
   };
 
-  
+
   console.log(allContactData)
   console.log(filteredContacts)
   const handleClickOpen = () => {
@@ -685,7 +767,7 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
   useEffect(() => {
     setFilteredContact();
   }, [searchQuery, allContactData]);
-  
+
 
   const handleLinkAccounts = () => {
     linkContactsToAccount(selectedContacts);
@@ -813,6 +895,28 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
                     <Box mt={2}>
                       <InputLabel sx={{ color: "black" }}>Team Member</InputLabel>
                       <Autocomplete multiple sx={{ mt: 2 }} options={options} size="small" getOptionLabel={(option) => option.label} value={selectedUser} onChange={handleUserChange} renderInput={(params) => <TextField {...params} variant="outlined" placeholder="Assignees" />} isOptionEqualToValue={(option, value) => option.value === value.value} />
+                    </Box>
+                    <Box>
+                      <Typography>Folder Template</Typography>
+                      <Autocomplete
+                        options={optionfolder}
+                        getOptionLabel={(option) => option.label}
+                        value={selectedTemplate}
+                        onChange={(event, newValue) => handleSelectTemplate(newValue)}
+                        isOptionEqualToValue={(option, value) => option.value === value.value}
+                        renderOption={(props, option) => (
+                          <Box
+                            component="li"
+                            {...props}
+                            sx={{ cursor: "pointer", margin: "5px 10px" }} // Add cursor pointer style
+                          >
+                            {option.label}
+                          </Box>
+                        )}
+                        renderInput={(params) => <TextField {...params} sx={{ backgroundColor: "#fff" }} placeholder="select folder template" variant="outlined" size="small" />}
+                        sx={{ width: "100%", marginTop: "8px" }}
+                        clearOnEscape // Enable clearable functionality
+                      />
                     </Box>
                   </Box>
                 </Box>

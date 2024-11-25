@@ -738,37 +738,19 @@
 
 import { Autocomplete, Box, Button, Typography, TextField } from '@mui/material';
 import React, { useState, useEffect } from 'react';
-
+import { useParams } from "react-router-dom";
 const Documents = () => {
   const API_KEY = process.env.REACT_APP_API_IP;
   const [folderTemplates, setFolderTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
-
+  const { data } = useParams();
+  console.log(data);
 
   useEffect(() => {
     fetchPipelineData();
   }, []);
-  // const fetchPipelineData = async () => {
-  //   try {
-  //     const url = `${API_KEY}/common/folder`;
-  //     const response = await fetch(url);
-  //     if (!response.ok) {
-  //       throw new Error('Failed to fetch folder templates');
-  //     }
-  //     const data = await response.json();
-  //     setFolderTemplates(data.folderTemplates || []);
-  //   } catch (error) {
-  //     console.error('Error fetching folder templates:', error);
-  //   }
-  // }
-  // };
-  // const optionpipeline = pipelineData.map((pipelineData) => ({
-  //   value: pipelineData._id,
-  //   label: pipelineData.templatename,
-  // }));
-
-
-
+ 
+ 
   const fetchPipelineData = async () => {
     try {
       const url = `${API_KEY}/common/folder`;
@@ -793,8 +775,8 @@ const Documents = () => {
 myHeaders.append("Content-Type", "application/json");
 
 const raw = JSON.stringify({
-  "accountId": "6742f32219d34e7964b1f0ee",
-  "foldertempId": "673eefcfa00261e31a20ceac"
+  accountId: data,
+foldertempId: selectedTemplate.value,
 });
 
 const requestOptions = {
@@ -806,9 +788,68 @@ const requestOptions = {
 console.log(raw)
 fetch("http://127.0.0.1:8002/clientdocs/accountfoldertemp", requestOptions)
   .then((response) => response.json())
-  .then((result) => console.log(result))
+  .then((result) => {
+    console.log(result)
+    fetchFolders(data);
+  })
   .catch((error) => console.error(error));
   }
+
+// Component to render folders and files recursively
+const FolderContents = ({ contents }) => {
+  return (
+    <ul>
+      {contents.map((item, index) => (
+        <li key={index}>
+          {item.type === 'folder' ? (
+            <details>
+              <summary>📁 {item.name}</summary>
+              <FolderContents contents={item.contents} />
+            </details>
+          ) : (
+            <span>📄 {item.name}</span>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+
+  const [folderdata, setData] = useState(null); // Store the API response
+  const [error, setError] = useState(null); // Store error if any
+  const [loading, setLoading] = useState(true); // Track loading state
+
+  const fetchFolders = async () => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8002/clientdocs/folders/${data}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      setData(result); // Set the fetched data
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+   fetchFolders(data);
+  }, []);
+
+  if (loading) {
+    return <p>Loading folder structure...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
+  
   return (
     <Box>
       <Typography variant="h6" gutterBottom>
@@ -843,6 +884,14 @@ fetch("http://127.0.0.1:8002/clientdocs/accountfoldertemp", requestOptions)
           Assign Template
         </Button>
       </Box>
+
+
+      <Typography>Show folders and file</Typography>
+      <Box> {folderdata && folderdata.contents ? (
+        <FolderContents contents={folderdata.contents} />
+      ) : (
+        <p>No contents found.</p>
+      )}</Box>
     </Box>
   );
 };

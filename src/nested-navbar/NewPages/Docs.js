@@ -1,8 +1,10 @@
 import React from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { Box, } from '@mui/material'
+import { useParams } from "react-router-dom";
 const Docs = () => {
-  const accountid = '661b6d50187951c779906e29'
+  const { data } =  useParams();
+  console.log(data)
   return (
 
     <Box className="Docs">
@@ -29,12 +31,12 @@ const Docs = () => {
             }
           }
         }}>
-          <NavLink to={`/accountsdash/docs/${accountid}/documents`} activeClassName="active">Documents</NavLink>
-          <NavLink to={`/accountsdash/docs/${accountid}/approvals`} activeClassName="active">Approvals</NavLink>
-          <NavLink to={`/accountsdash/docs/${accountid}/signatures`} activeClassName="active">Signatures</NavLink>
-          <NavLink to={`/accountsdash/docs/${accountid}/filerequests`} activeClassName="active">File Requests</NavLink>
-          <NavLink to={`/accountsdash/docs/${accountid}/trash`} activeClassName="active">Trash</NavLink>
-          <NavLink to={`/accountsdash/docs/${accountid}/irs`} activeClassName="active">IRS</NavLink>
+          <NavLink to={`/accountsdash/docs/${data}/documents`} activeClassName="active">Documents</NavLink>
+          <NavLink to={`/accountsdash/docs/${data}/approvals`} activeClassName="active">Approvals</NavLink>
+          <NavLink to={`/accountsdash/docs/${data}/signatures`} activeClassName="active">Signatures</NavLink>
+          <NavLink to={`/accountsdash/docs/${data}/filerequests`} activeClassName="active">File Requests</NavLink>
+          <NavLink to={`/accountsdash/docs/${data}/trash`} activeClassName="active">Trash</NavLink>
+          <NavLink to={`/accountsdash/docs/${data}/irs`} activeClassName="active">IRS</NavLink>
         </Box>
 
       </Box>
