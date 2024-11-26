@@ -1135,6 +1135,7 @@ const Pipeline = ({ charLimit = 4000 }) => {
     const handleDropWithDrawer = (job, stage) => {
       setSelectedJob(job);
       console.log(job)
+      console.log(job.AccountId)
       setTargetStage(stage);
       setDrawerOpen(true);
     };
