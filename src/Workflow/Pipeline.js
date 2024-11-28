@@ -195,7 +195,10 @@ const Pipeline = () => {
 
   const AutomationDrawer = ({ open, automations, onClose, onMoveJob, jobId, targetStage }) => {
     const INVOICE_API = process.env.REACT_APP_INVOICE_TEMP_URL;
-    const [automationType, setAutomationType] = useState('')
+    const PROPOSAL_API = process.env.REACT_APP_PROPOSAL_TEMP_URL;
+    const PROPOSAL_ACCOUNT_API = process.env.REACT_APP_PROPOSAL_URL;
+    const ORGANIZER_TEMP_API = process.env.REACT_APP_ORGANIZER_TEMP_URL;
+    const [automationType, setAutomationType] = useState([])
     const [automationTemp, setAutomationTemp] = useState('')
     const [automationAccountId, setAutomationAccountId] = useState('')
 
@@ -204,120 +207,291 @@ const Pipeline = () => {
       if (automations.length > 0) {
         setAutomationType(automations[0].type);
         setAutomationTemp(automations[0].template.value);
+        console.log(automations[0].template.value)
       }
       setAutomationAccountId(accountId);
     }, [automations]);
 
-   
- const [invoiveData, setInvoiceData] = useState('')
 // fetch invoive temp by id
-// const fetchinvoicetempbyid = async (automationTemp) => {
-//   const requestOptions = {
-//     method: "GET",
-//     redirect: "follow",
-//   };
-//   const url = `${INVOICE_API}/workflow/invoicetemp/invoicetemplate/${automationTemp}`;
-//   fetch(url, requestOptions)
-//     .then((response) => response.json())
-//     .then((result) => {
-//       // console.log("invoice data",result.invoiceTemplate.lineItems);
-//       // setInvoiceData(result.invoiceTemplate)
-//       return result.invoiceTemplate;
-
-//     })
-//     .catch((error) => console.error(error));
-// };
-const fetchinvoicetempbyid = async (automationTemp) => {
-  const requestOptions = {
-    method: "GET",
-    redirect: "follow",
-  };
-  const url = `${INVOICE_API}/workflow/invoicetemp/invoicetemplate/${automationTemp}`;
   
-  try {
-    const response = await fetch(url, requestOptions); // Fetch the data
-    const result = await response.json(); // Parse the JSON response
-    console.log("Fetched invoice template:", result.invoiceTemplate);
-    return result.invoiceTemplate; // Return the data
-  } catch (error) {
-    console.error("Error fetching invoice template:", error);
-    throw error; // Let the calling function handle the error
-  }
-};
+    const fetchinvoicetempbyid = async (automationTemp) => {
+      const requestOptions = {
+        method: "GET",
+        redirect: "follow",
+      };
+      const url = `${INVOICE_API}/workflow/invoicetemp/invoicetemplate/${automationTemp}`;
 
-const assignInvoiceToAccount =(invoiveData,automationTemp, automationAccountId)=>{
-  console.log("test assign invpoice",invoiveData,automationTemp, automationAccountId)
+      try {
+        const response = await fetch(url, requestOptions); // Fetch the data
+        const result = await response.json(); // Parse the JSON response
+        console.log("Fetched invoice template:", result.invoiceTemplate);
+        return result.invoiceTemplate; // Return the data
+      } catch (error) {
+        console.error("Error fetching invoice template:", error);
+        throw error; // Let the calling function handle the error
+      }
+    };
 
-  const myHeaders = new Headers();
-myHeaders.append("Content-Type", "application/json");
 
-const raw = JSON.stringify({
+// fetch proposal temp by id
+    const fetchproposalbyid = async (automationTemp) => {
+      const requestOptions = {
+        method: "GET",
+        redirect: "follow",
+      };
+      const url = `${PROPOSAL_API}/Workflow/proposalesandels/proposalesandels/${automationTemp}`;
+
+      try {
+        const response = await fetch(url, requestOptions); // Fetch the data
+        const result = await response.json(); // Parse the JSON response
+        console.log("Fetched proposalsels template:", result.proposalesAndElsTemplate);
+        return result.proposalesAndElsTemplate; // Return the data
+      } catch (error) {
+        console.error("Error fetching proposal template:", error);
+        throw error; // Let the calling function handle the error
+      }
+    };
+    
+    // fetch organizer temp by id
+    const fetchorganizertempbyid = async (automationTemp) => {
+      const requestOptions = {
+        method: "GET",
+        redirect: "follow",
+      };
+      const url = `${ORGANIZER_TEMP_API}/workflow/organizers/organizertemplate/${automationTemp}`;
+
+      try {
+        const response = await fetch(url, requestOptions); // Fetch the data
+        const result = await response.json(); // Parse the JSON response
+        console.log("Fetched organizer template:", result.organizerTemplate);
+        return result.organizerTemplate; // Return the data
+      } catch (error) {
+        console.error("Error fetching organizer template:", error);
+        throw error; // Let the calling function handle the error
+      }
+    };
+
+
+
+    const getCurrentDate = () => {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+      const day = String(today.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`; // Format: YYYY-MM-DD
+    };
+    
+   
+
+    const assignInvoiceToAccount = (invoiceData, automationTemp, automationAccountId) => {
+      console.log("Assigning invoice", invoiceData, automationTemp, automationAccountId);
+    
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+    
+      // Dynamically prepare the payload from invoiceData
+      const raw = JSON.stringify({
+        account: automationAccountId,
+        invoicenumber: "", // Fill in if required
+        invoicedate: getCurrentDate(), // Today's date
+        description: invoiceData.description || "",
+        invoicetemplate: automationTemp,
+        paymentMethod: invoiceData.paymentMethod || "",
+        teammember: "673060953342d61826f80208", // Fill in if required
+        payInvoicewithcredits: invoiceData.payInvoicewithcredits || false,
+        emailinvoicetoclient: invoiceData.sendEmailWhenInvCreated || false,
+        reminders: invoiceData.sendReminderstoClients || false,
+        daysuntilnextreminder: invoiceData.daysuntilnextreminder || null,
+        numberOfreminder: invoiceData.numberOfreminder || null,
+        scheduleinvoice: false, // Optional, adjust as needed
+        scheduleinvoicedate: "", // Optional, adjust as needed
+        scheduleinvoicetime: "", // Optional, adjust as needed
+        lineItems: invoiceData.lineItems.map(item => ({
+          productorService: item.productorService || "",
+          description: item.description || "",
+          rate: item.rate || "",
+          quantity: item.quantity || "",
+          amount: item.amount || "",
+          tax: item.tax || false,
+        })),
+        summary: {
+          subtotal: invoiceData.summary.subtotal || "",
+          taxRate: invoiceData.summary.taxRate || "",
+          taxTotal: invoiceData.summary.taxTotal || "",
+          total: invoiceData.summary.total || "",
+        },
+      });
+    
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
+   
+      fetch("http://127.0.0.1:7650/workflow/invoices/invoice", requestOptions)
+        .then(response => response.json())
+        .then(result => console.log("Invoice assigned successfully:", result))
+        .catch(error => console.error("Error assigning invoice:", error));
+    };
+   
   
-  account: automationAccountId,
-  invoicenumber: "2050",
-  invoicedate: "2024-11-21T18:30:00.000Z",
-  description: "weawedswed",
-  invoicetemplate: automationTemp,
-  paymentMethod: "Bank Debits",
-  teammember: "6735a07dd84dbd141e489674",
-  payInvoicewithcredits: false,
-  emailinvoicetoclient: false,
-  reminders: false,
-  daysuntilnextreminder: null,
-  numberOfreminder: null,
-  scheduleinvoice: false,
-  scheduleinvoicedate: "2024-05-07T18:30:00.000Z",
-  scheduleinvoicetime: "12.00",
-  lineItems: [
-    {
-      productorService: "new",
-      description: "new description",
-      rate: 15,
-      quantity: 1,
-      amount: 15,
-      tax: true,
-      
-    },
-    {
-      productorService: "dfdfd",
-      description: "vbffgfdf",
-      rate: 5000,
-      quantity: 1,
-      amount: 5000,
-      tax: true,
+    const assignProposalToAccount =(proposalesandelsData, automationTemp, automationAccountId)=>{
+      console.log("Assigning proposal", proposalesandelsData, automationTemp, automationAccountId);
+     
+
+    
+        const options = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            accountids: [automationAccountId],
+            proposaltemplateid: automationTemp,
+            templatename: proposalesandelsData.templatename,
+            teammember: proposalesandelsData.teammember,
+            proposalname: proposalesandelsData.proposalname,
+            introduction: proposalesandelsData.introduction,
+            terms: proposalesandelsData.terms,
+            servicesandinvoices: proposalesandelsData.servicesandinvoices,
+            introductiontext: proposalesandelsData.introductiontext,
+            custommessageinemail: proposalesandelsData.custommessageinemail,
+            custommessageinemailtext: proposalesandelsData.custommessageinemailtext,
+            reminders: proposalesandelsData.reminders,
+            daysuntilnextreminder: proposalesandelsData.daysuntilnextreminder,
+            numberofreminder: proposalesandelsData.numberofreminder,
+            introductiontextname: proposalesandelsData.introductiontextname,
+            termsandconditionsname: proposalesandelsData.termsandconditionsname,
+            termsandconditions: proposalesandelsData.termsandconditions,
+            lineItems:proposalesandelsData.lineItems,
+            summary:proposalesandelsData.summary,
+            Addinvoiceoraskfordeposit:proposalesandelsData.Addinvoiceoraskfordeposit,
+            Additemizedserviceswithoutcreatinginvoices:proposalesandelsData.Additemizedserviceswithoutcreatinginvoices,
+            invoicetemplatename:proposalesandelsData.invoicetemplatename,
+            invoiceteammember:proposalesandelsData.invoiceteammember,
+            issueinvoice:proposalesandelsData.issueinvoice,
+            specificdate:proposalesandelsData.specificdate,
+            specifictime:proposalesandelsData.specifictime,
+            description:proposalesandelsData.description,
+            notetoclient:proposalesandelsData.notetoclient,
+            paymentterms:proposalesandelsData.paymentterms,
+            paymentduedate:proposalesandelsData.paymentduedate,
+            paymentamount:proposalesandelsData.paymentamount,
+            active: true,
+          }),
+        };
+  
+        const url = `${PROPOSAL_ACCOUNT_API}/proposalandels/proposalaccountwise/`;
+        console.log(url); // Log the URL for debugging
+        console.log(options.body); // Log request body for debugging
+  
+        fetch(url, options)
+
+
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`Request failed with status ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((result) => {
+            console.log(result.message);
+            if (result?.message === "ProposalesandelsAccountwise created successfully") {
+              toast.success("ProposalesandelsAccountwise created successfully");
+              
+            } else {
+              toast.error(result.message || "Failed to create ProposalesAndEls");
+            }
+          })
+          .catch((error) => {
+            console.error("Fetch Error:", error);
+            toast.error("An error occurred while updating ProposalesAndEls.");
+          });
+    
      
     }
-  ],
-  summary: {
-    subtotal: 5015,
-    taxRate: 0,
-    taxTotal: 0,
-    total: 5015,
     
-  }
-});
-
-const requestOptions = {
-  method: "POST",
-  headers: myHeaders,
-  body: raw,
-  redirect: "follow"
-};
-
-fetch("http://127.0.0.1:7650/workflow/invoices/invoice", requestOptions)
-  .then((response) => response.text())
-  .then((result) => console.log(result))
-  .catch((error) => console.error(error));
-
-}
 
 
-    const selectAutomationApi = async(automationType, automationTemp, automationAccountId) => {
+    const assignOrganizerToAccount = (organizerData,automationTemp, automationAccountId)=>{
+      console.log("Assigning proposal", organizerData, automationTemp, automationAccountId);
+
+      const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    const raw = JSON.stringify({
+      accountid: automationAccountId,
+      organizertemplateid: automationTemp,
+      reminders: organizerData.reminders,
+      noofreminders: organizerData.noOfReminder,
+      daysuntilnextreminder: organizerData.daysuntilNextReminder,
+      // jobid: ["661e495d11a097f731ccd6e8"],
+      sections:organizerData.sections,
+        // selectedOrganizerTempData?.sections?.map((section) => ({
+        //   name: section?.text || "",
+        //   id: section?.id?.toString() || "",
+        //   text: section?.text || "",
+        //   sectionsettings: {
+        //     conditional: section?.sectionsettings?.conditional || false,
+        //     conditions: section?.sectionsettings?.conditions || [],
+        //   },
+        //   formElements:
+        //     section?.formElements?.map((question) => ({
+        //       type: question?.type || "",
+        //       id: question?.id || "",
+        //       sectionid: question?.sectionid || "",
+        //       options:
+        //         question?.options?.map((option) => ({
+        //           id: option?.id || "",
+        //           text: option?.text || "",
+        //           selected: option?.selected || false,
+        //         })) || [],
+        //       text: question?.text || "",
+        //       textvalue: question?.textvalue || "",
+        //       questionsectionsettings: {
+        //         required: question?.questionsectionsettings?.required || false,
+        //         prefilled: question?.questionsectionsettings?.prefilled || false,
+        //         conditional: question?.questionsectionsettings?.conditional || false,
+        //         conditions: question?.questionsectionsettings?.conditions || [],
+        //         descriptionEnabled: question?.questionsectionsettings?.descriptionEnabled || false,
+        //         description: question?.questionsectionsettings?.description || "",
+        //         mode: question?.questionsectionsettings?.mode || "Any"  
+        //       }
+              
+        //     })) || [],
+           
+        // })) || [],
+      
+       
+      active: true,
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+
+    console.log(raw);
+    const url = `${ORGANIZER_TEMP_API}/workflow/orgaccwise/organizeraccountwise/org`;
+
+    fetch(url, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        console.log(result);
+       
+        toast.success("New organizer created successfully");
+       
+      })
+      .catch((error) => console.error(error));
+    }
+    const selectAutomationApi = async (automationType, automationTemp, automationAccountId) => {
       if (!automationType || !automationTemp || !automationAccountId) {
         console.error("Missing required parameters");
         return;
       }
-      console.log("viayak test",automationType,automationTemp,automationAccountId)
+      console.log("viayak test", automationType, automationTemp, automationAccountId)
 
       switch (automationType) {
         case 'Send Invoice':
@@ -325,19 +499,43 @@ fetch("http://127.0.0.1:7650/workflow/invoices/invoice", requestOptions)
           try {
             const invoiceData = await fetchinvoicetempbyid(automationTemp); // Await the fetched data
             console.log("Fetched invoice data", invoiceData);
-            setInvoiceData(invoiceData); // Update the state (if needed for re-rendering)
-        
+            // setInvoiceData(invoiceData); // Update the state (if needed for re-rendering)
+
             // Proceed with further logic
-            // assignInvoiceToAccount(invoiveData, automationTemp, automationAccountId);
+            assignInvoiceToAccount(invoiceData, automationTemp, automationAccountId);
           } catch (error) {
             console.error("Error processing 'Send Invoice':", error);
           }
-          break;
+          // break;
 
-        case 'Create Organizer':
-          console.log(`Creating organizer with template: ${automationTemp}, Account ID: ${automationAccountId}`);
-          // Add logic to handle creating organizer
-          break;
+
+          case 'Create Organizer':
+          console.log(`Processing 'Create Organizer' with template: ${automationTemp}, Account ID: ${automationAccountId}`);
+          try {
+            const organizerData = await fetchorganizertempbyid(automationTemp); // Await the fetched data
+            console.log("Fetched organizer data", organizerData);
+            // setInvoiceData(invoiceData); // Update the state (if needed for re-rendering)
+
+            // Proceed with further logic
+            assignOrganizerToAccount(organizerData, automationTemp, automationAccountId);
+          } catch (error) {
+            console.error("Error processing 'Send Invoice':", error);
+          }
+          // break;
+
+        case 'Send Proposal/Els':
+          console.log(`Creating Proposals with template: ${automationTemp}, Account ID: ${automationAccountId}`);
+          try {
+            const proposalesandelsData = await fetchproposalbyid(automationTemp); // Await the fetched data
+            console.log("Fetched Proposals data", proposalesandelsData);
+            // setInvoiceData(invoiceData); // Update the state (if needed for re-rendering)
+
+            // Proceed with further logic
+             assignProposalToAccount(proposalesandelsData, automationTemp, automationAccountId);
+          } catch (error) {
+            console.error("Error processing 'Send Invoice':", error);
+          }
+          // break;
 
         case 'Send Email':
           console.log(`Sending email with template: ${automationTemp}, Account ID: ${automationAccountId}`);
@@ -362,10 +560,10 @@ fetch("http://127.0.0.1:7650/workflow/invoices/invoice", requestOptions)
             .then((response) => response.json())
             .then((result) => {
               console.log(result)
-              toast.success("mail send successfully")
+              
             })
             .catch((error) => console.error(error));
-          break;
+          // break;
 
         default:
           console.warn(`Unhandled automation type: ${automationType}`);
@@ -376,7 +574,7 @@ fetch("http://127.0.0.1:7650/workflow/invoices/invoice", requestOptions)
 
     return (
       <Drawer anchor="right" open={open} onClose={onClose}>
-        <Box sx={{ width: 300, padding: 2 }}>
+        <Box sx={{ width: 500, padding: 2 }}>
           <Typography variant="h6">Automations</Typography>
           <Typography variant="body1"><strong>Account Name:</strong> {accountName}</Typography>
 
@@ -429,7 +627,71 @@ fetch("http://127.0.0.1:7650/workflow/invoices/invoice", requestOptions)
     );
   };
 
+ // const assignInvoiceToAccount = (invoiveData, automationTemp, automationAccountId) => {
+    //   console.log("test assign invpoice", invoiveData, automationTemp, automationAccountId)
 
+    //   const myHeaders = new Headers();
+    //   myHeaders.append("Content-Type", "application/json");
+
+    //   const raw = JSON.stringify({
+
+    //     account: automationAccountId,
+    //     invoicenumber: "",
+    //     invoicedate: getCurrentDate(),
+    //     description: "",
+    //     invoicetemplate: automationTemp,
+    //     paymentMethod: "",
+    //     teammember: "",
+    //     payInvoicewithcredits: false,
+    //     emailinvoicetoclient: false,
+    //     reminders: false,
+    //     daysuntilnextreminder: null,
+    //     numberOfreminder: null,
+    //     scheduleinvoice: false,
+    //     scheduleinvoicedate: "",
+    //     scheduleinvoicetime: "",
+    //     lineItems: [
+    //       {
+    //         productorService: "",
+    //         description: "",
+    //         rate: "",
+    //         quantity: "",
+    //         amount: "",
+    //         tax: "",
+
+    //       },
+    //       {
+    //         productorService: "",
+    //         description: "",
+    //         rate: "",
+    //         quantity: "",
+    //         amount: "",
+    //         tax: "",
+
+    //       }
+    //     ],
+    //     summary: {
+    //       subtotal: "",
+    //       taxRate: "",
+    //       taxTotal: "",
+    //       total: "",
+
+    //     }
+    //   });
+
+    //   const requestOptions = {
+    //     method: "POST",
+    //     headers: myHeaders,
+    //     body: raw,
+    //     redirect: "follow"
+    //   };
+
+    //   fetch("http://127.0.0.1:7650/workflow/invoices/invoice", requestOptions)
+    //     .then((response) => response.text())
+    //     .then((result) => console.log(result))
+    //     .catch((error) => console.error(error));
+
+    // }
   const JobCard = ({ job }) => {
     const [{ isDragging }, drag] = useDrag({
       type: "JOB_CARD",
