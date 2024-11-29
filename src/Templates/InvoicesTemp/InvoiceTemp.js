@@ -1183,18 +1183,18 @@ const InvoiceTemp = () => {
                           <Typography variant="body2">Client-facing itemized list of products and services</Typography>
                         </Box>
 
-                        <Box sx={{ overflow: "auto", width: "100%" }}>
-                          <Table>
+                        <Box sx={{ overflowX: "auto", width: "100%" }}>
+                          <Table sx={{ minWidth: "800px", tableLayout: "fixed" }}>
                             <TableHead>
                               <TableRow>
-                                <TableCell sx={{ position: "sticky", left: 0, backgroundColor: "white", zIndex: 1 }}>Product or service</TableCell>
-                                <TableCell>Description</TableCell>
-                                <TableCell>Rate</TableCell>
-                                <TableCell>Qty</TableCell>
-                                <TableCell>Amount</TableCell>
-                                <TableCell>Tax</TableCell>
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
+                                <TableCell sx={{ position: "sticky", left: 0, backgroundColor: "white", zIndex: 1 ,width: "150px"}}>Product or service</TableCell>
+                                <TableCell sx={{ width: "200px" }}>Description</TableCell>
+  <TableCell sx={{ width: "100px" }}>Rate</TableCell>
+  <TableCell sx={{ width: "80px" }}>Qty</TableCell>
+  <TableCell sx={{ width: "120px" }}>Amount</TableCell>
+  <TableCell sx={{ width: "100px" }}>Tax</TableCell>
+  <TableCell sx={{ width: "50px" }}></TableCell>
+  <TableCell sx={{ width: "50px" }}></TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>

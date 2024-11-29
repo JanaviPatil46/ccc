@@ -183,6 +183,11 @@ const MyStepperUpdate = () => {
   }));
 
   useEffect(() => {
+    // Simulate filtered shortcuts based on some logic (e.g., search)
+    setFilteredShortcuts(shortcuts.filter((shortcut) => shortcut.title.toLowerCase().includes("")));
+  }, [shortcuts]);
+
+  useEffect(() => {
     // Set shortcuts based on selected option
     if (selectedOption === "contacts") {
       const contactShortcuts = [
@@ -266,6 +271,7 @@ const MyStepperUpdate = () => {
 
   const handleCloseDropdown = () => {
     setAnchorEl(null);
+    setShowDropdown(false);
   };
 
   const handleProposalName = (e) => {
@@ -748,7 +754,7 @@ const MyStepperUpdate = () => {
             // fetchPrprosalsAllData();
             // navigate("/firmtemp/templates/proposals");
             toast.success("ProposalesAndEls Created successfully");
-            proposalSendMail();
+            // proposalSendMail();
           } else {
             toast.error(result.message || "Failed to Created ProposalesAndEls");
           }
@@ -818,7 +824,7 @@ const MyStepperUpdate = () => {
               // fetchPrprosalsAllData();
               // navigate("/firmtemp/templates/proposals");
               toast.success("ProposalesAndEls Created successfully");
-              proposalSendMail();
+              // proposalSendMail();
             } else {
               toast.error(result.message || "Failed to create ProposalesAndEls");
             }
@@ -889,7 +895,7 @@ const MyStepperUpdate = () => {
               // fetchPrprosalsAllData();
               // navigate("/firmtemp/templates/proposals");
               toast.success("ProposalesAndEls Created successfully");
-              proposalSendMail();
+              // proposalSendMail();
             } else {
               toast.error(result.message || "Failed to Create ProposalesAndEls");
             }
@@ -1232,7 +1238,43 @@ const MyStepperUpdate = () => {
                   <Box ml={3}>
                     <label className="custom-input-label">Proposal name (visible to clients)</label>
                     <TextField fullWidth value={proposalName + selectedShortcut} onChange={handleProposalName} placeholder="Proposal name (visible to clients)" size="small" sx={{ mt: 2, backgroundColor: "#fff" }} />
-                    <Box>
+                    {/* <Box>
+                      <Button variant="contained" color="primary" onClick={toggleDropdown} sx={{ mt: 2 }}>
+                        Add Shortcode
+                      </Button>
+
+                      <Popover
+                        open={showDropdown}
+                        anchorEl={anchorEl}
+                        onClose={handleCloseDropdown}
+                        anchorOrigin={{
+                          vertical: "bottom",
+                          horizontal: "left",
+                        }}
+                        transformOrigin={{
+                          vertical: "top",
+                          horizontal: "left",
+                        }}
+                      >
+                        <Box>
+                          <List className="dropdown-list" sx={{ width: "300px", height: "300px", cursor: "pointer" }}>
+                            {filteredShortcuts.map((shortcut, index) => (
+                              <ListItem key={index} onClick={() => handleAddShortcut(shortcut.value)}>
+                                <ListItemText
+                                  primary={shortcut.title}
+                                  primaryTypographyProps={{
+                                    style: {
+                                      fontWeight: shortcut.isBold ? "bold" : "normal",
+                                    },
+                                  }}
+                                />
+                              </ListItem>
+                            ))}
+                          </List>
+                        </Box>
+                      </Popover>
+                    </Box> */}
+ <Box>
                       <Button variant="contained" color="primary" onClick={toggleDropdown} sx={{ mt: 2 }}>
                         Add Shortcode
                       </Button>
@@ -1268,6 +1310,7 @@ const MyStepperUpdate = () => {
                         </Box>
                       </Popover>
                     </Box>
+
                   </Box>
                 </Grid>
               </Grid>

@@ -505,7 +505,7 @@ const AccountOrganizer = () => {
         setSelectedOrganizerTemplate(selectedOrganizerTemplate);
         console.log(selectedOrganizerTemplate);
         toast.success("New organizer created successfully");
-        organizerSendEmail()
+        // organizerSendEmail()
         navigate(`/accountsdash/organizers/${data}`);
       })
       .catch((error) => console.error(error));

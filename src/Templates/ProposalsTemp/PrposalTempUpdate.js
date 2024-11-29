@@ -191,6 +191,7 @@ const MyStepperUpdate = () => {
 
   const handleCloseDropdown = () => {
     setAnchorEl(null);
+    setShowDropdown(false);
   };
 
   const handleProposalName = (e) => {

@@ -27,21 +27,22 @@ const Proposals = () => {
     setTempIdGet(_id);
   };
 
-  useEffect(() => {
-    fetchPrprosalsAllData(data);
-  }, []);
+ 
 
   //delete template
   const handleEdit = (_id) => {
     navigate(`/accountsdash/proposals/${data}/update/` + _id);
     console.log(_id);
   };
-
-  //delete template
+  useEffect(() => {
+    fetchPrprosalsAllData(data);
+  }, []);
+  
+  // Delete template
   const handleDelete = (_id) => {
     // Show a confirmation prompt
     const isConfirmed = window.confirm("Are you sure you want to delete this Job template?");
-
+  
     // Proceed with deletion if confirmed
     if (isConfirmed) {
       const requestOptions = {
@@ -59,9 +60,9 @@ const Proposals = () => {
         .then((result) => {
           console.log(result);
           toast.success("Item deleted successfully");
-          setShowForm(false);
-          fetchPrprosalsAllData();
-          // fetchServiceData();
+  
+          // Fetch the updated data after deletion
+          fetchPrprosalsAllData(data);
         })
         .catch((error) => {
           console.error(error);
@@ -69,24 +70,73 @@ const Proposals = () => {
         });
     }
   };
-
+  
   const fetchPrprosalsAllData = async (data) => {
     try {
       const url = `${PROPOSAL_API}/proposalandels/proposalaccountwise/proposalbyaccount/${data}`;
-
+  
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Failed to fetch Proposals templates");
       }
       const result = await response.json();
-      console.log(result.proposalesandelsAccountwise)
+      console.log(result.proposalesandelsAccountwise);
       setProposalsTemplates(result.proposalesandelsAccountwise);
-    
     } catch (error) {
-      console.error("Error fetching Proposals  templates:", error);
+      console.error("Error fetching Proposals templates:", error);
     }
   };
+  
+  //delete template
+  // const handleDelete = (_id) => {
+  //   // Show a confirmation prompt
+  //   const isConfirmed = window.confirm("Are you sure you want to delete this Job template?");
 
+  //   // Proceed with deletion if confirmed
+  //   if (isConfirmed) {
+  //     const requestOptions = {
+  //       method: "DELETE",
+  //       redirect: "follow",
+  //     };
+  //     const url = `${PROPOSAL_API}/proposalandels/proposalaccountwise/`;
+  //     fetch(url + _id, requestOptions)
+  //       .then((response) => {
+  //         if (!response.ok) {
+  //           throw new Error("Failed to delete item");
+  //         }
+  //         return response.json();
+  //       })
+  //       .then((result) => {
+  //         console.log(result);
+          
+  //         toast.success("Item deleted successfully");
+         
+  //       })
+  //       .catch((error) => {
+  //         console.error(error);
+  //         toast.error("Failed to delete item");
+  //       });
+  //   }
+  // };
+
+  // const fetchPrprosalsAllData = async (data) => {
+  //   try {
+  //     const url = `${PROPOSAL_API}/proposalandels/proposalaccountwise/proposalbyaccount/${data}`;
+
+  //     const response = await fetch(url);
+  //     if (!response.ok) {
+  //       throw new Error("Failed to fetch Proposals templates");
+  //     }
+  //     const result = await response.json();
+  //     console.log(result.proposalesandelsAccountwise)
+  //     setProposalsTemplates(result.proposalesandelsAccountwise);
+    
+  //   } catch (error) {
+  //     console.error("Error fetching Proposals  templates:", error);
+  //   }
+  // };
+
+ 
   return (
 
     <Box sx={{ mt: 2 }}>

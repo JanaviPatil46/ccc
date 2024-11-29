@@ -232,6 +232,7 @@ const MyStepper = () => {
 
   const handleCloseDropdown = () => {
     setAnchorEl(null);
+    setShowDropdown(false);
   };
 
   const handleProposalName = (e) => {
@@ -1213,6 +1214,8 @@ const MyStepper = () => {
                         </Box>
                       </Popover>
                     </Box>
+
+
                   </Box>
                 </Grid>
               </Grid>
