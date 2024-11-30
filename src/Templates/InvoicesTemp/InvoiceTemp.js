@@ -1176,25 +1176,25 @@ const InvoiceTemp = () => {
                     ></Box>
                   </Grid>
                   <Grid item xs={26} sm={5.8}>
-                    <Box className="invoice-section-three">
-                      <div className="invoice-section-three">
+                    <Box >
+                     
                         <Box sx={{ margin: "20px 0 10px 0" }}>
                           <Typography variant="h6">Line items</Typography>
                           <Typography variant="body2">Client-facing itemized list of products and services</Typography>
                         </Box>
 
-                        <Box sx={{ overflowX: "auto", width: "100%" }}>
-                          <Table sx={{ minWidth: "800px", tableLayout: "fixed" }}>
+                        <Box  sx={{overflow: "auto", width: "100%"  }}>
+                          <Table >
                             <TableHead>
                               <TableRow>
-                                <TableCell sx={{ position: "sticky", left: 0, backgroundColor: "white", zIndex: 1 ,width: "150px"}}>Product or service</TableCell>
-                                <TableCell sx={{ width: "200px" }}>Description</TableCell>
-  <TableCell sx={{ width: "100px" }}>Rate</TableCell>
-  <TableCell sx={{ width: "80px" }}>Qty</TableCell>
-  <TableCell sx={{ width: "120px" }}>Amount</TableCell>
-  <TableCell sx={{ width: "100px" }}>Tax</TableCell>
-  <TableCell sx={{ width: "50px" }}></TableCell>
-  <TableCell sx={{ width: "50px" }}></TableCell>
+                                <TableCell sx={{ position: "sticky", left: 0, backgroundColor: "white", zIndex: 1 , width: '20%'}}>Product or service</TableCell>
+                                <TableCell >Description</TableCell>
+                                <TableCell >Rate</TableCell>
+                                <TableCell >Qty</TableCell>
+                                <TableCell >Amount</TableCell>
+                                <TableCell >Tax</TableCell>
+                                <TableCell>Settings</TableCell>
+                               
                               </TableRow>
                             </TableHead>
                             <TableBody>
@@ -1268,7 +1268,7 @@ const InvoiceTemp = () => {
                           </Button>
                         </Box>
 
-                        <div className="one-time-summary" style={{}}>
+                      
                           <Typography variant="h6">Summary</Typography>
                           <Table sx={{ backgroundColor: "#fff" }}>
                             <TableHead sx={{ height: "5px" }}>
@@ -1308,8 +1308,8 @@ const InvoiceTemp = () => {
                               </TableRow>
                             </TableBody>
                           </Table>
-                        </div>
-                      </div>
+                      
+                   
 
                       <Box sx={{ mb: 10, mt: 2 }}>
                         <Typography variant="h6" mb={1}>

@@ -354,6 +354,7 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
         state: cStateProvince,
         city: cCity,
         postalCode: cZipPostalCode,
+        foldertemplate: selectedTemplate.value
       });
       console.log(raw);
       const requestOptions = {
@@ -380,6 +381,7 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
     }
     //todo contact
   };
+  const CLIENT_DOCS_API = process.env.REACT_APP_CLIENT_DOCS_MANAGE
   const addFolderTemplate = (accountId) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -396,7 +398,7 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
     };
     console.log(raw)
     console.log("Creating folder for account:", accountId);
-    fetch("http://127.0.0.1:8002/clientdocs/clients", requestOptions)
+    fetch(`${CLIENT_DOCS_API}/clientdocs/clients`, requestOptions)
       .then((response) => response.json())
       .then((result) => console.log(result))
       .catch((error) => console.error(error));
@@ -419,7 +421,7 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
     };
   
     console.log(raw);
-    fetch("http://127.0.0.1:8002/clientdocs/accountfoldertemp", requestOptions)
+    fetch(`${CLIENT_DOCS_API}/clientdocs/accountfoldertemp`, requestOptions)
       .then((response) => response.json())
       .then((result) => console.log(result))
       .catch((error) => console.error(error));
@@ -963,7 +965,28 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
                         <Autocomplete multiple sx={{ mt: 2 }} options={options} size="small" getOptionLabel={(option) => option.label} value={selectedUser} onChange={handleUserChange} renderInput={(params) => <TextField {...params} variant="outlined" placeholder="Assignees" />} isOptionEqualToValue={(option, value) => option.value === value.value} />
                       </Box>
                     </Box>
-
+                    <Box>
+                      <Typography>Folder Template</Typography>
+                      <Autocomplete
+                        options={optionfolder}
+                        getOptionLabel={(option) => option.label}
+                        value={selectedTemplate}
+                        onChange={(event, newValue) => handleSelectTemplate(newValue)}
+                        isOptionEqualToValue={(option, value) => option.value === value.value}
+                        renderOption={(props, option) => (
+                          <Box
+                            component="li"
+                            {...props}
+                            sx={{ cursor: "pointer", margin: "5px 10px" }} // Add cursor pointer style
+                          >
+                            {option.label}
+                          </Box>
+                        )}
+                        renderInput={(params) => <TextField {...params} sx={{ backgroundColor: "#fff" }} placeholder="select folder template" variant="outlined" size="small" />}
+                        sx={{ width: "100%", marginTop: "8px" }}
+                        clearOnEscape // Enable clearable functionality
+                      />
+                    </Box>
                     <>
                       <Typography variant="h6" gutterBottom mt={3}>
                         Address

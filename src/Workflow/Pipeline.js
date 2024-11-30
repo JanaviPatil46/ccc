@@ -23,7 +23,7 @@ import dayjs from "dayjs";
 const Pipeline = ({ charLimit = 4000 }) => {
   const PIPELINE_API = process.env.REACT_APP_PIPELINE_TEMP_URL;
   const JOBS_API = process.env.REACT_APP_ADD_JOBS_URL;
-
+  const AUTOMATION_API = process.env.REACT_APP_AUTOMATION_API;
   const [pipelineData, setPipelineData] = useState([]);
   const [selectedPipeline, setSelectedPipeline] = useState(null);
   const [selectedPipelineOption, setSelectedPipelineOption] = useState(null);
@@ -512,7 +512,7 @@ const Pipeline = ({ charLimit = 4000 }) => {
             redirect: "follow"
           };
 
-          fetch("http://127.0.0.1:8003/automations/", requestOptions)
+          fetch(`$(AUTOMATION_API)/automations/`, requestOptions)
             .then((response) => response.json())
             .then((result) => {
               console.log(result)

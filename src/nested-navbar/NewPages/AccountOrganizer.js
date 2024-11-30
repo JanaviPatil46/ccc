@@ -442,6 +442,7 @@ const AccountOrganizer = () => {
       noofreminders: noOfReminder,
       daysuntilnextreminder: daysuntilNextReminder,
       jobid: ["661e495d11a097f731ccd6e8"],
+      fileUploadPath:'',
       sections:
         selectedOrganizerTempData?.sections?.map((section) => ({
           name: section?.text || "",

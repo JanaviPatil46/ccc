@@ -413,7 +413,9 @@ const Pipelines = () => {
       .then((response) => response.json())
       .then((result) => {
         setJobData(result.jobList || []);
+        console.log("joblist",result.jobList)
         const pipelineIds = result.jobList.map((job) => job.PipelineId);
+        console.log("Pipeline IDs:", pipelineIds);
         pipelineIds.forEach((id) => fetchPipelineData(id));
       })
       .catch((error) => {
@@ -422,6 +424,7 @@ const Pipelines = () => {
   };
 
   const fetchPipelineData = async (pipelineId) => {
+    console.log("test",pipelineId)
     setLoading(true);
     try {
       const url = `${PIPELINE_API}/workflow/pipeline/pipeline/${pipelineId}`;
@@ -485,7 +488,7 @@ const Pipelines = () => {
             pipeline={pipeline}
             jobData={jobData}
             moveJob={moveJob}
-            fetchJobList={fetchJobList} // Passing the fetchJobList function
+            fetchJobList={fetchJobList}
             data={data}
           />
         ))}

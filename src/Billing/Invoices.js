@@ -1079,99 +1079,82 @@ const Invoices = ({ charLimit = 4000 }) => {
               {/* <Box >
                                 <MaterialReactTable columns={columns} table={table} />
                             </Box> */}
-              <Box sx={{ overflowX: "auto", width: "100%" }}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>PRODUCT OR SERVICE</TableCell>
-                      <TableCell>DESCRIPTION</TableCell>
-                      <TableCell>RATE</TableCell>
-                      <TableCell>QTY</TableCell>
-                      <TableCell>AMOUNT</TableCell>
-                      <TableCell>TAX</TableCell>
-                      <TableCell />
-                      <TableCell />
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row, index) => (
-                      <TableRow key={index}>
-                        <TableCell>
-                          {/* <CreatableSelect
-                            placeholder="Product or Service"
-                            options={serviceoptions}
-                            value={serviceoptions.find((option) => option.label === row.productName) || { label: row.productName, value: row.productName }}
-                            onChange={(selectedOption) => handleServiceChange(index, selectedOption)}
-                            onInputChange={(inputValue, actionMeta) => handleServiceInputChange(inputValue, actionMeta, index)}
-                            isClearable
-                            styles={{
-                              container: (provided) => ({
-                                ...provided,
-                                width: "180px",
-                              }),
-                              control: (provided) => ({
-                                ...provided,
-                                width: "180px",
-                              }),
-                            }}
-                          /> */}
-                          <CreatableSelect
-                            // placeholder='Product or Service'
-                            placeholder={row.isDiscount ? "Reason for discount" : "Product or Service"}
-                            options={serviceoptions}
-                            // value={serviceoptions.find(option => option.label === row.productName) || { label: row.productName, value: row.productName }}
-                            value={row.productName ? serviceoptions.find((option) => option.label === row.productName) || { label: row.productName, value: row.productName } : null}
-                            onChange={(selectedOption) => handleServiceChange(index, selectedOption)}
-                            onInputChange={(inputValue, actionMeta) => handleServiceInputChange(inputValue, actionMeta, index)}
-                            isClearable
-                            styles={{
-                              container: (provided) => ({ ...provided, width: "180px" }),
-                              control: (provided) => ({ ...provided, width: "180px" }),
-                              menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
-                            }}
-                            menuPortalTarget={document.body}
-                          />
-                        </TableCell>
+               <Box  sx={{overflow: "auto", width: "100%"  }}>
+                          <Table >
+                            <TableHead>
+                              <TableRow>
+                                <TableCell sx={{ position: "sticky", left: 0, backgroundColor: "white", zIndex: 1 , width: '20%'}}>Product or service</TableCell>
+                                <TableCell >Description</TableCell>
+                                <TableCell >Rate</TableCell>
+                                <TableCell >Qty</TableCell>
+                                <TableCell >Amount</TableCell>
+                                <TableCell >Tax</TableCell>
+                                <TableCell>Settings</TableCell>
+                               
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {rows.map((row, index) => (
+                                <TableRow key={index}>
+                                  <TableCell sx={{ position: "sticky", left: 0, backgroundColor: "white", zIndex: 1 }}>
+                                    <CreatableSelect
+                                      // placeholder='Product or Service'
+                                      placeholder={row.isDiscount ? "Reason for discount" : "Product or Service"}
+                                      options={serviceoptions}
+                                      // value={serviceoptions.find(option => option.label === row.productName) || { label: row.productName, value: row.productName }}
+                                      value={row.productName ? serviceoptions.find((option) => option.label === row.productName) || { label: row.productName, value: row.productName } : null}
+                                      onChange={(selectedOption) => handleServiceChange(index, selectedOption)}
+                                      onInputChange={(inputValue, actionMeta) => handleServiceInputChange(inputValue, actionMeta, index)}
+                                      isClearable
+                                      styles={{
+                                        container: (provided) => ({ ...provided, width: "180px" }),
+                                        control: (provided) => ({ ...provided, width: "180px" }),
+                                        menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
+                                      }}
+                                      menuPortalTarget={document.body}
+                                    />
+                                  </TableCell>
 
-                        <TableCell>
-                          <input type="text" name="description" value={row.description} onChange={(e) => handleInputChange(index, e)} style={{ border: "none" }} placeholder="Description" />
-                        </TableCell>
-                        <TableCell>
-                          <input type="text" name="rate" value={row.rate} onChange={(e) => handleInputChange(index, e)} style={{ border: "none" }} />
-                        </TableCell>
-                        <TableCell>
-                          <input type="text" name="qty" value={row.qty} onChange={(e) => handleInputChange(index, e)} style={{ border: "none" }} />
-                        </TableCell>
-                        <TableCell className={row.isDiscount ? "discount-amount" : ""}>{row.amount}</TableCell>
-                        <TableCell>
-                          <Checkbox name="tax" checked={row.tax} onChange={(e) => handleInputChange(index, e)} />
-                        </TableCell>
-                        {/* <TableCell>
-                                                    <IconButton>
-                                                        <BsThreeDotsVertical />
-                                                    </IconButton>
-                                                </TableCell> */}
-                        <TableCell>
-                          <IconButton onClick={(event) => handleMenuOpen(event, index)}>
-                            <BsThreeDotsVertical />
-                          </IconButton>
-                          <Menu anchorEl={anchorElNew} open={Boolean(anchorElNew) && selectedRow === index} onClose={handleMenuClose} anchorOrigin={{ vertical: "top", horizontal: "left" }} transformOrigin={{ vertical: "top", horizontal: "left" }}>
-                            <MenuItem onClick={() => handleEditService(row, index)}>Edit</MenuItem>
-                            <MenuItem onClick={handleDeleteService}>Delete</MenuItem>
-                            <MenuItem onClick={() => handleSaveAsNewService(row)}>Save as new service</MenuItem>
-                            <MenuItem onClick={handleDuplicate}>Duplicate</MenuItem>
-                          </Menu>
-                        </TableCell>
-                        <TableCell>
-                          <IconButton onClick={() => deleteRow(index)}>
-                            <RiCloseLine />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </Box>
+                                  <TableCell>
+                                    <input type="text" name="description" value={row.description} onChange={(e) => handleInputChange(index, e)} style={{ border: "none" }} placeholder="Description" />
+                                  </TableCell>
+
+                                  <TableCell>
+                                    <input type="text" name="rate" value={row.rate} onChange={(e) => handleInputChange(index, e)} style={{ border: "none" }} />
+                                  </TableCell>
+
+                                  <TableCell>
+                                    <input type="text" name="qty" value={row.qty} onChange={(e) => handleInputChange(index, e)} style={{ border: "none" }} />
+                                  </TableCell>
+
+                                  <TableCell>{row.amount}</TableCell>
+
+                                  <TableCell>
+                                    <Checkbox name="tax" checked={row.tax} onChange={(e) => handleInputChange(index, e)} />
+                                  </TableCell>
+
+                                  <TableCell>
+                                    <IconButton onClick={(event) => handleMenuOpen(event, index)}>
+                                      <BsThreeDotsVertical />
+                                    </IconButton>
+                                    <Menu anchorEl={anchorElNew} open={Boolean(anchorElNew) && selectedRow === index} onClose={handleMenuClose} anchorOrigin={{ vertical: "top", horizontal: "left" }} transformOrigin={{ vertical: "top", horizontal: "left" }}>
+                                      <MenuItem onClick={() => handleEditService(row, index)}>Edit</MenuItem>
+                                      <MenuItem onClick={handleDeleteService}>Delete</MenuItem>
+                                      <MenuItem onClick={() => handleSaveAsNewService(row)}>Save as new service</MenuItem>
+                                      <MenuItem onClick={handleDuplicate}>Duplicate</MenuItem>
+                                    </Menu>
+                                  </TableCell>
+
+                                  <TableCell>
+                                    <IconButton onClick={() => deleteRow(index)}>
+                                      <RiCloseLine />
+                                    </IconButton>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </Box>
 
               <Box style={{ display: "flex", alignItems: "center", gap: "20px", marginTop: "20px" }}>
                 <Box onClick={() => addRow()} style={{ display: "flex", alignItems: "center", gap: "5px", cursor: "pointer", color: "blue", fontSize: "18px" }}>
