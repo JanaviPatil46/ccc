@@ -1184,6 +1184,7 @@ const Invoices = ({ charLimit = 4000 }) => {
                     <TableBody>
                       <TableRow>
                         <TableCell>
+                        $
                           <input type="number" value={subtotal} onChange={handleSubtotalChange} style={{ border: "none" }} />
                         </TableCell>
                         <TableCell>

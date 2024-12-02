@@ -16,6 +16,7 @@ const PipelineTempUpdate = () => {
   const USER_API = process.env.REACT_APP_USER_URL;
   const SORTJOBS_API = process.env.REACT_APP_SORTJOBS_URL;
   const PROPOSAL_API = process.env.REACT_APP_PROPOSAL_TEMP_URL;
+  const ORGANIZER_TEMP_API = process.env.REACT_APP_ORGANIZER_TEMP_URL;
   const { id } = useParams();
   const theme = useTheme();
   const navigate = useNavigate();
@@ -405,10 +406,12 @@ const PipelineTempUpdate = () => {
   const [addEmailTemplates, setAddEmailTemplates] = useState([]);
   const [addInvoiceTemplates, setAddInvoiceTemplates] = useState([]);
   const [addProposalsandElsTeplates, setAddProposalsandElsTeplates] = useState([]);
+  const [addOrganizerTemplates, setAddOrganizerTemplates] = useState([]);
   useEffect(() => {
     fetchEmailTemplates();
     fectInvoiceTemplates();
     fectProposalandElsTemp();
+    fetchOrganizerTemplates();
   }, []);
   const fetchEmailTemplates = async () => {
     try {
@@ -452,6 +455,23 @@ const PipelineTempUpdate = () => {
     value: temp._id,
     label: temp.templatename,
   }));
+
+  
+  const fetchOrganizerTemplates = async () => {
+    try {
+      const url = `${ORGANIZER_TEMP_API}/workflow/organizers/organizertemplate`;
+      const response = await fetch(url);
+      const data = await response.json();
+      setAddOrganizerTemplates(data.OrganizerTemplates);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  const organizerOptions = addOrganizerTemplates.map((temp) => ({
+    value: temp._id,
+    label: temp.templatename,
+  }));
+
   const [selectedtemp, setselectedTemp] = useState();
   const handletemp = (selectedOptions) => {
     setselectedTemp(selectedOptions);
@@ -819,6 +839,104 @@ const PipelineTempUpdate = () => {
             </Drawer>
           </>
         );
+        case "Create Organizer":
+          return (
+            <>
+              <Box p={2}>
+                <Grid item >
+                  <Typography mb={1}>Select template</Typography>
+                  <Autocomplete
+                    options={organizerOptions}
+                    getOptionLabel={(option) => option.label}
+                    value={selectedtemp}
+                    onChange={(event, newValue) => handletemp(newValue)}
+                    isOptionEqualToValue={(option, value) =>
+                      option.value === value.value
+                    }
+                    renderOption={(props, option) => (
+                      <Box
+                        component="li"
+                        {...props}
+                        sx={{ cursor: "pointer", margin: "5px 10px" }} // Add cursor pointer style
+                      >
+                        {option.label}
+                      </Box>
+                    )}
+                    renderInput={(params) => (
+                      <>
+                        <TextField
+                          {...params}
+                          // helperText={templateError}
+                          sx={{ backgroundColor: "#fff" }}
+                          placeholder="Select Template"
+                          variant="outlined"
+                          size="small"
+                        />
+                      </>
+                    )}
+                    sx={{ width: "100%", marginTop: "8px" }}
+                    clearOnEscape // Enable clearable functionality
+                  />
+                  {selectedTags.length > 0 && (
+                    <Grid container alignItems="center" gap={1}>
+                      <Typography>Only for:</Typography>
+                      <Grid item>{selectedTagElements}</Grid>
+                    </Grid>
+                  )}
+                  <Button variant="text" onClick={handleAddConditions}>Add Conditions</Button>
+  
+  
+  
+                </Grid>
+                <Button variant="contained" onClick={handleSaveAutomation(stageSelected)}>
+                  Save Automation
+                </Button>
+              </Box>
+              {/* Condition tags for automation */}
+              <Drawer anchor="right" open={isConditionsFormOpen} onClose={handleGoBack} PaperProps={{ sx: { width: "550px", padding: 2 } }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <IconButton onClick={handleGoBack}>
+                    <IoMdArrowRoundBack fontSize="large" color="blue" />
+                  </IconButton>
+                  <Typography variant="h6">Add conditions</Typography>
+                </Box>
+  
+                <Box sx={{ padding: 2 }}>
+                  <Typography variant="body1">Apply automation only for accounts with these tags</Typography>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    variant="outlined"
+                    placeholder="Search..."
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    InputProps={{
+                      startAdornment: <AiOutlineSearch style={{ marginRight: 8 }} />,
+                    }}
+                    sx={{ marginTop: 2 }}
+                  />
+  
+                  <Box sx={{ marginTop: 2 }}>
+                    {filteredTags.map((tag) => (
+                      <Box key={tag._id} sx={{ display: "flex", alignItems: "center", gap: 3, borderBottom: "1px solid grey", paddingBottom: 1 }}>
+                        <Checkbox checked={tempSelectedTags.includes(tag)} onChange={() => handleCheckboxChange(tag)} />
+                        <Chip label={tag.tagName} sx={{ backgroundColor: tag.tagColour, color: "#fff", fontWeight: "500", borderRadius: "20px", marginRight: 1 }} />
+                      </Box>
+                    ))}
+                  </Box>
+  
+                  <Box sx={{ display: "flex", gap: 2, marginTop: 2 }}>
+                    <Button variant="contained" color="primary" disabled={!isAnyCheckboxChecked} onClick={handleAddTags}>
+                      Add
+                    </Button>
+                    <Button variant="outlined" color="primary" onClick={handleGoBack}>
+                      Cancel
+                    </Button>
+                  </Box>
+                </Box>
+              </Drawer>
+            </>
+          );
       // Add cases for other actions here
       default:
         return null;
@@ -1075,6 +1193,13 @@ const PipelineTempUpdate = () => {
                                 }
                               >
                                 Send Proposal/Els
+                              </MenuItem>
+                              <MenuItem
+                                onClick={() =>
+                                  handleAddAutomation(stageSelected, "Create Organizer")
+                                }
+                              >
+                                Create Organizer
                               </MenuItem>
                             </Menu>
 

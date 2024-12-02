@@ -997,9 +997,9 @@ const Communication = () => {
                                 Linked Jobs
                               </Typography>
                               <Box sx={{ ml: 'auto', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <Typography color={'#1976d3'} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                {/* <Typography color={'#1976d3'} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                   <AddCircleIcon /> Client request
-                                </Typography>
+                                </Typography> */}
                                 <Typography color={'#1976d3'} onClick={handleAddClientTask}>
                                   Show Client task
                                 </Typography>
@@ -1072,23 +1072,44 @@ const Communication = () => {
                                         <Box
                                           key={desc._id}
 
+                                          // sx={{
+                                          //   marginBottom: '10px',
+                                          //   // backgroundColor: '#dbe1e8',
+                                          //   //  backgroundColor: '#eff7ff', 
+                                          //   backgroundColor: desc.fromwhome === 'admin' ? '#ffcccc' : desc.fromwhome === 'client' ? '#eff7ff' : '#dbe1e8',
+                                          //   border: '1px solid transparent',
+                                          //   borderRadius: '12px',
+                                          //   padding: '30px 20px',
+                                          //   width: 'fit-content',
+                                          //   textAlign: 'left',
+
+                                          //   marginLeft: desc.fromwhome === 'admin' ? 'auto' : '10px',  // Align right for admin
+                                          //   marginRight: desc.fromwhome === 'client' ? 'auto' : '10px', // Align left for client
+                                          //   boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                                          //   position: 'relative',
+                                          //   borderBottomRightRadius: '1px',
+                                          // }}
+
                                           sx={{
-                                            marginBottom: '10px',
-                                            // backgroundColor: '#dbe1e8',
-                                            //  backgroundColor: '#eff7ff', 
-                                            backgroundColor: desc.fromwhome === 'admin' ? '#ffcccc' : desc.fromwhome === 'client' ? '#eff7ff' : '#dbe1e8',
+                                            mb: '10px',
+                                            backgroundColor:
+                                              desc.fromwhome === 'admin'
+                                                ? '#ffcccc'
+                                                : desc.fromwhome === 'client'
+                                                  ? '#eff7ff'
+                                                  : '#dbe1e8',
                                             border: '1px solid transparent',
                                             borderRadius: '12px',
                                             padding: '30px 20px',
                                             width: 'fit-content',
                                             textAlign: 'left',
-
-                                            marginLeft: desc.fromwhome === 'admin' ? 'auto' : '10px',  // Align right for admin
-                                            marginRight: desc.fromwhome === 'client' ? 'auto' : '10px', // Align left for client
                                             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                                             position: 'relative',
                                             borderBottomRightRadius: '1px',
+                                            ml: desc.fromwhome === 'client' ? 'auto' : '10px',
+                                            mr: desc.fromwhome === 'admin' ? 'auto' : '10px',
                                           }}
+
                                         >
                                           <strong style={{ display: 'flex', alignItems: "center", justifyContent: 'space-between', marginBottom: '5px', color: '#333', }}>
                                             {desc.fromwhome}

@@ -70,7 +70,38 @@ const Proposals = () => {
         });
     }
   };
-  
+  const handlePrint = async (_id) => {
+    try {
+      const url = `${PROPOSAL_API}/proposalandels/proposalaccountwise/${_id}`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Failed to fetch proposal for printing");
+      }
+      const proposalData = await response.json();
+      console.log(proposalData)
+      const printWindow = window.open("", "_blank");
+      printWindow.document.write(`
+        <html>
+        <head>
+          <title>Print Proposal</title>
+        </head>
+        <body>
+          <h1>${proposalData.proposalesandelsAccountwise.proposalname}</h1>
+         <h6>${proposalData.proposalesandelsAccountwise.termsandconditions}</h6>
+         
+
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+    } catch (error) {
+      console.error("Error printing proposal:", error);
+      toast.error("Failed to print proposal");
+    }
+  };
   const fetchPrprosalsAllData = async (data) => {
     try {
       const url = `${PROPOSAL_API}/proposalandels/proposalaccountwise/proposalbyaccount/${data}`;
@@ -220,6 +251,9 @@ const Proposals = () => {
                         </Typography>
                         <Typography sx={{ fontSize: "12px", fontWeight: "bold" }} onClick={() => handleEdit(row._id)}>
                          Edit   
+                        </Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: "bold" }} onClick={() => handlePrint(row._id)}>
+                         Print
                         </Typography>
                       </Box>
                     )}
