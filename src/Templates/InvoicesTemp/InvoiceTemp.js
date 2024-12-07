@@ -16,6 +16,8 @@ import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import { MaterialReactTable, useMaterialReactTable } from "material-react-table";
 import CreatableSelect from "react-select/creatable";
 import Editor from "../Texteditor/Editor";
+import PlagiarismIcon from '@mui/icons-material/Plagiarism';
+import CloseIcon from '@mui/icons-material/Close';
 
 const InvoiceTemp = () => {
   const INVOICE_API = process.env.REACT_APP_INVOICE_TEMP_URL;
@@ -539,7 +541,7 @@ const InvoiceTemp = () => {
       calculateTotal(subtotal, taxRate);
     };
     calculateSubtotal();
-  }, [rows,taxRate]);
+  }, [rows, taxRate]);
 
   //shortcode for  switch btn
 
@@ -934,6 +936,9 @@ const InvoiceTemp = () => {
 
   console.log(totalamount);
 
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   return (
     <Container>
       {!showForm ? (
@@ -949,9 +954,135 @@ const InvoiceTemp = () => {
           <Box>
             <form>
               <Box>
-                <Typography variant="h5" gutterBottom>
-                  Create Invoice Template
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Typography variant="h5" gutterBottom>
+                    Create Invoice Template
+                  </Typography>
+
+                  <Box onClick={handleOpen} sx={{ color: '#1168bf', display: 'flex', cursor: 'pointer' }}>
+                    <PlagiarismIcon />
+                    <Typography>Preview</Typography>
+                  </Box>
+
+
+                </Box>
+
+
+                <Box >
+                  <Drawer
+                    anchor="right"
+                    open={open}
+                    onClose={handleClose}
+                    PaperProps={{
+                      sx: {
+                        width: "70%",
+                      },
+                    }}
+                  >
+                    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+                      {/* Drawer Header */}
+                      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: 2 }}>
+                        <Typography variant="h6">Preview</Typography>
+                        <Box onClick={handleClose} sx={{ cursor: 'pointer', color: '#1976d3' }}>
+                          <CloseIcon />
+                        </Box>
+                      </Box>
+                      <Divider />
+
+                      <Box m={5} fontSize={35}>
+                        <b>Invoice</b>
+                      </Box>
+
+                      <Box sx={{ display: 'flex', flexDirection: 'column', ml: 5 }}>
+                        <b>Description:</b> {description}
+                      </Box>
+
+
+
+                      <Box sx={{ overflow: "auto", width: "100%" }}>
+                        <Table >
+                          <TableHead>
+                            <TableRow>
+                              <TableCell sx={{ position: "sticky", left: 0, backgroundColor: "white", zIndex: 1, width: '20%' }}>Product or service</TableCell>
+
+                              <TableCell >Rate</TableCell>
+                              <TableCell >Qty</TableCell>
+                              <TableCell >Amount</TableCell>
+                              {/* <TableCell >Tax</TableCell> */}
+
+
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {rows.map((row, index) => (
+                              <TableRow key={index}>
+                                <TableCell sx={{ position: "sticky", left: 0, backgroundColor: "white", zIndex: 1 }}>
+                                  <Typography>{row.productName}</Typography>
+                                </TableCell>
+
+
+
+                                <TableCell>
+
+                                  <Typography>{row.rate}</Typography>
+                                </TableCell>
+
+                                <TableCell>
+                                  <Typography>{row.qty}</Typography>
+
+                                </TableCell>
+
+                                <TableCell>{row.amount}</TableCell>
+
+
+
+
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </Box>
+
+                      <Typography variant="h6">Summary</Typography>
+
+
+
+                      <Box
+  sx={{
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-end", // Align items to the right
+    marginTop: 2,
+    gap: 2,
+  }}
+>
+   <Typography sx={{ width: "10%" }}>Subtotal: {subtotal}</Typography>
+                        <Typography sx={{ width: "10%" }}>Tax Rate: {taxRate}%</Typography>
+                        <Typography>Tax Total: {taxTotal.toFixed(2)}</Typography>
+                        <Typography sx={{ width: "10%" }}>Total: {totalAmount}</Typography>
+</Box>
+
+
+
+
+
+                      {/* Drawer Actions */}
+                      <Box sx={{ p: 4, display: "flex", alignItems: "center", gap: 2, m: 2, }}>
+                        <Button
+                          variant="contained" color="primary"
+                        // onClick={sendSaveChatMail}
+
+                        >
+                          Save
+                        </Button>
+                        <Button onClick={handleClose} variant="outlined">
+                          Cancel
+                        </Button>
+                      </Box>
+                    </Box>
+                  </Drawer>
+                </Box>
+
                 <Box mt={2} mb={2}>
                   <hr />
                 </Box>
@@ -1079,7 +1210,7 @@ const InvoiceTemp = () => {
                                 fullWidth
                                 value={clientmsg}
                                 onChange={(e) => setClientmsg(e.target.value)}
-                                // setClientmsg
+                              // setClientmsg
                               />
                             </Box>
 
@@ -1177,139 +1308,139 @@ const InvoiceTemp = () => {
                   </Grid>
                   <Grid item xs={26} sm={5.8}>
                     <Box >
-                     
-                        <Box sx={{ margin: "20px 0 10px 0" }}>
-                          <Typography variant="h6">Line items</Typography>
-                          <Typography variant="body2">Client-facing itemized list of products and services</Typography>
-                        </Box>
 
-                        <Box  sx={{overflow: "auto", width: "100%"  }}>
-                          <Table >
-                            <TableHead>
-                              <TableRow>
-                                <TableCell sx={{ position: "sticky", left: 0, backgroundColor: "white", zIndex: 1 , width: '20%'}}>Product or service</TableCell>
-                                <TableCell >Description</TableCell>
-                                <TableCell >Rate</TableCell>
-                                <TableCell >Qty</TableCell>
-                                <TableCell >Amount</TableCell>
-                                <TableCell >Tax</TableCell>
-                                <TableCell>Settings</TableCell>
-                               
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {rows.map((row, index) => (
-                                <TableRow key={index}>
-                                  <TableCell sx={{ position: "sticky", left: 0, backgroundColor: "white", zIndex: 1 }}>
-                                    <CreatableSelect
-                                      // placeholder='Product or Service'
-                                      placeholder={row.isDiscount ? "Reason for discount" : "Product or Service"}
-                                      options={serviceoptions}
-                                      // value={serviceoptions.find(option => option.label === row.productName) || { label: row.productName, value: row.productName }}
-                                      value={row.productName ? serviceoptions.find((option) => option.label === row.productName) || { label: row.productName, value: row.productName } : null}
-                                      onChange={(selectedOption) => handleServiceChange(index, selectedOption)}
-                                      onInputChange={(inputValue, actionMeta) => handleServiceInputChange(inputValue, actionMeta, index)}
-                                      isClearable
-                                      styles={{
-                                        container: (provided) => ({ ...provided, width: "180px" }),
-                                        control: (provided) => ({ ...provided, width: "180px" }),
-                                        menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
-                                      }}
-                                      menuPortalTarget={document.body}
-                                    />
-                                  </TableCell>
+                      <Box sx={{ margin: "20px 0 10px 0" }}>
+                        <Typography variant="h6">Line items</Typography>
+                        <Typography variant="body2">Client-facing itemized list of products and services</Typography>
+                      </Box>
 
-                                  <TableCell>
-                                    <input type="text" name="description" value={row.description} onChange={(e) => handleInputChange(index, e)} style={{ border: "none" }} placeholder="Description" />
-                                  </TableCell>
+                      <Box sx={{ overflow: "auto", width: "100%" }}>
+                        <Table >
+                          <TableHead>
+                            <TableRow>
+                              <TableCell sx={{ position: "sticky", left: 0, backgroundColor: "white", zIndex: 1, width: '20%' }}>Product or service</TableCell>
+                              <TableCell >Description</TableCell>
+                              <TableCell >Rate</TableCell>
+                              <TableCell >Qty</TableCell>
+                              <TableCell >Amount</TableCell>
+                              <TableCell >Tax</TableCell>
+                              <TableCell>Settings</TableCell>
 
-                                  <TableCell>
-                                    <input type="text" name="rate" value={row.rate} onChange={(e) => handleInputChange(index, e)} style={{ border: "none" }} />
-                                  </TableCell>
-
-                                  <TableCell>
-                                    <input type="text" name="qty" value={row.qty} onChange={(e) => handleInputChange(index, e)} style={{ border: "none" }} />
-                                  </TableCell>
-
-                                  <TableCell>{row.amount}</TableCell>
-
-                                  <TableCell>
-                                    <Checkbox name="tax" checked={row.tax} onChange={(e) => handleInputChange(index, e)} />
-                                  </TableCell>
-
-                                  <TableCell>
-                                    <IconButton onClick={(event) => handleMenuOpen(event, index)}>
-                                      <BsThreeDotsVertical />
-                                    </IconButton>
-                                    <Menu anchorEl={anchorElNew} open={Boolean(anchorElNew) && selectedRow === index} onClose={handleMenuClose} anchorOrigin={{ vertical: "top", horizontal: "left" }} transformOrigin={{ vertical: "top", horizontal: "left" }}>
-                                      <MenuItem onClick={() => handleEditService(row, index)}>Edit</MenuItem>
-                                      <MenuItem onClick={handleDeleteService}>Delete</MenuItem>
-                                      <MenuItem onClick={() => handleSaveAsNewService(row)}>Save as new service</MenuItem>
-                                      <MenuItem onClick={handleDuplicate}>Duplicate</MenuItem>
-                                    </Menu>
-                                  </TableCell>
-
-                                  <TableCell>
-                                    <IconButton onClick={() => deleteRow(index)}>
-                                      <RiCloseLine />
-                                    </IconButton>
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </Box>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: "20px", marginTop: "10px" }}>
-                          <Button onClick={() => addRow()} startIcon={<AiOutlinePlusCircle />} sx={{ color: "blue", fontSize: "15px" }}>
-                            Line item
-                          </Button>
-                          <Button onClick={() => addRow(true)} startIcon={<CiDiscount1 />} sx={{ color: "blue", fontSize: "15px" }}>
-                            Discount
-                          </Button>
-                        </Box>
-
-                      
-                          <Typography variant="h6">Summary</Typography>
-                          <Table sx={{ backgroundColor: "#fff" }}>
-                            <TableHead sx={{ height: "5px" }}>
-                              <TableRow>
-                                <TableCell sx={{ width: "10%" }}>Subtotal</TableCell>
-                                <TableCell sx={{ width: "10%" }}>Tax Rate</TableCell>
-                                <TableCell sx={{ width: "10%" }}>Tax Total</TableCell>
-                                <TableCell sx={{ width: "10%" }}>Total</TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              <TableRow>
-                                <TableCell>
-                                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                                    $
-                                    <input
-                                      // type="number"
-                                      value={subtotal}
-                                      onChange={handleSubtotalChange}
-                                      style={{ border: "none", width: "50%" }}
-                                    />
-                                  </Box>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {rows.map((row, index) => (
+                              <TableRow key={index}>
+                                <TableCell sx={{ position: "sticky", left: 0, backgroundColor: "white", zIndex: 1 }}>
+                                  <CreatableSelect
+                                    // placeholder='Product or Service'
+                                    placeholder={row.isDiscount ? "Reason for discount" : "Product or Service"}
+                                    options={serviceoptions}
+                                    // value={serviceoptions.find(option => option.label === row.productName) || { label: row.productName, value: row.productName }}
+                                    value={row.productName ? serviceoptions.find((option) => option.label === row.productName) || { label: row.productName, value: row.productName } : null}
+                                    onChange={(selectedOption) => handleServiceChange(index, selectedOption)}
+                                    onInputChange={(inputValue, actionMeta) => handleServiceInputChange(inputValue, actionMeta, index)}
+                                    isClearable
+                                    styles={{
+                                      container: (provided) => ({ ...provided, width: "180px" }),
+                                      control: (provided) => ({ ...provided, width: "180px" }),
+                                      menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
+                                    }}
+                                    menuPortalTarget={document.body}
+                                  />
                                 </TableCell>
+
                                 <TableCell>
-                                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                                    <input
-                                      // type="number"
-                                      value={taxRate}
-                                      onChange={handleTaxRateChange}
-                                      style={{ border: "none", width: "50%" }}
-                                    />
-                                    %
-                                  </Box>
+                                  <input type="text" name="description" value={row.description} onChange={(e) => handleInputChange(index, e)} style={{ border: "none" }} placeholder="Description" />
                                 </TableCell>
-                                <TableCell>${taxTotal.toFixed(2)}</TableCell>
-                                <TableCell>${totalAmount}</TableCell>
+
+                                <TableCell>
+                                  <input type="text" name="rate" value={row.rate} onChange={(e) => handleInputChange(index, e)} style={{ border: "none" }} />
+                                </TableCell>
+
+                                <TableCell>
+                                  <input type="text" name="qty" value={row.qty} onChange={(e) => handleInputChange(index, e)} style={{ border: "none" }} />
+                                </TableCell>
+
+                                <TableCell>{row.amount}</TableCell>
+
+                                <TableCell>
+                                  <Checkbox name="tax" checked={row.tax} onChange={(e) => handleInputChange(index, e)} />
+                                </TableCell>
+
+                                <TableCell>
+                                  <IconButton onClick={(event) => handleMenuOpen(event, index)}>
+                                    <BsThreeDotsVertical />
+                                  </IconButton>
+                                  <Menu anchorEl={anchorElNew} open={Boolean(anchorElNew) && selectedRow === index} onClose={handleMenuClose} anchorOrigin={{ vertical: "top", horizontal: "left" }} transformOrigin={{ vertical: "top", horizontal: "left" }}>
+                                    <MenuItem onClick={() => handleEditService(row, index)}>Edit</MenuItem>
+                                    <MenuItem onClick={handleDeleteService}>Delete</MenuItem>
+                                    <MenuItem onClick={() => handleSaveAsNewService(row)}>Save as new service</MenuItem>
+                                    <MenuItem onClick={handleDuplicate}>Duplicate</MenuItem>
+                                  </Menu>
+                                </TableCell>
+
+                                <TableCell>
+                                  <IconButton onClick={() => deleteRow(index)}>
+                                    <RiCloseLine />
+                                  </IconButton>
+                                </TableCell>
                               </TableRow>
-                            </TableBody>
-                          </Table>
-                      
-                   
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </Box>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: "20px", marginTop: "10px" }}>
+                        <Button onClick={() => addRow()} startIcon={<AiOutlinePlusCircle />} sx={{ color: "blue", fontSize: "15px" }}>
+                          Line item
+                        </Button>
+                        <Button onClick={() => addRow(true)} startIcon={<CiDiscount1 />} sx={{ color: "blue", fontSize: "15px" }}>
+                          Discount
+                        </Button>
+                      </Box>
+
+
+                      <Typography variant="h6">Summary</Typography>
+                      <Table sx={{ backgroundColor: "#fff" }}>
+                        <TableHead sx={{ height: "5px" }}>
+                          <TableRow>
+                            <TableCell sx={{ width: "10%" }}>Subtotal</TableCell>
+                            <TableCell sx={{ width: "10%" }}>Tax Rate</TableCell>
+                            <TableCell sx={{ width: "10%" }}>Tax Total</TableCell>
+                            <TableCell sx={{ width: "10%" }}>Total</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell>
+                              <Box sx={{ display: "flex", alignItems: "center" }}>
+                                $
+                                <input
+                                  // type="number"
+                                  value={subtotal}
+                                  onChange={handleSubtotalChange}
+                                  style={{ border: "none", width: "50%" }}
+                                />
+                              </Box>
+                            </TableCell>
+                            <TableCell>
+                              <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <input
+                                  // type="number"
+                                  value={taxRate}
+                                  onChange={handleTaxRateChange}
+                                  style={{ border: "none", width: "50%" }}
+                                />
+                                %
+                              </Box>
+                            </TableCell>
+                            <TableCell>${taxTotal.toFixed(2)}</TableCell>
+                            <TableCell>${totalAmount}</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+
+
 
                       <Box sx={{ mb: 10, mt: 2 }}>
                         <Typography variant="h6" mb={1}>
@@ -1439,7 +1570,7 @@ const InvoiceTemp = () => {
                     placeholder="Rate"
                     size="small"
                     sx={{ mt: 1 }}
-                
+
                     value={selectedRowData?.rate || ""} // Use selected row data
                     onChange={(e) => setSelectedRowData({ ...selectedRowData, rate: e.target.value })}
                   />

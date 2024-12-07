@@ -395,7 +395,7 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
           setAccountData(result.newAccount)
           fetchAccountDataById(result.newAccount._id)
 
-          // updateContactsAccountId(result.newAccount._id);
+          //  updateContactsAccountId(result.newAccount._id);
           toast.success("Form submitted successfully"); // Display success toast
         })
         .catch((error) => {
@@ -515,10 +515,10 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
 
   // const [contacts, setContacts] = useState([{ firstName: "", middleName: "", lastName: "", contactName: "", companyName: "", note: "", ssn: "", email: "", login: "false", notify: "false", emailSync: "false", tags: [], phoneNumbers: [], country: "", streetAddress: "", city: "", state: "", postalCode: "", accountid: AccountId }]);
 
-  console.log(contacts);
+  // console.log(contacts);
 
   const addNewContact = () => {
-    setContacts([...contacts, { firstName: "", middleName: "", lastName: "", contactName: "", companyName: "", note: "", ssn: "", email: "", login: "false", notify: "false", emailSync: "false", tags: [], phoneNumbers: [], country: "", streetAddress: "", city: "", state: "", postalCode: "", accountid: AccountId }]);
+    setContacts([...contacts, { firstName: "", middleName: "", lastName: "", contactName: "", companyName: "", note: "", ssn: "", email: "", login: "false", notify: "false", emailSync: "false", tags: [], phoneNumbers: [], country: "", streetAddress: "", city: "", state: "", postalCode: "" }]);
     setContactCount(contactCount + 1);
   };
 
@@ -860,16 +860,16 @@ const AccountForm = ({ handleNewDrawerClose, handleDrawerClose }) => {
   };
 
 
-  console.log(allContactData)
-  console.log(filteredContacts)
+  // console.log(allContactData)
+  // console.log(filteredContacts)
   const handleClickOpen = () => {
     setOpen(true);
     fetchContacts();
     // setFilteredContact();
   };
 
-  console.log(contactData)
-  console.log(filteredContacts)
+  // console.log(contactData)
+  // console.log(filteredContacts)
 
   useEffect(() => {
     setFilteredContact();
