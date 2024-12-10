@@ -19,6 +19,7 @@ import { RxCross2 } from "react-icons/rx";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import CreatableSelect from "react-select/creatable";
 import { useNavigate } from "react-router-dom";
+import PlagiarismIcon from '@mui/icons-material/Plagiarism';
 const Invoices = ({ charLimit = 4000 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -902,6 +903,11 @@ const Invoices = ({ charLimit = 4000 }) => {
 
   console.log(totalamount);
 
+  //preview drawer
+  const [previewDrawerOpen, setpreviewDrawerOpen] = useState(false);
+  const handleOpenpreviewDrawer = () => setpreviewDrawerOpen(true);
+  const handleClosepreviewDrawer = () => setpreviewDrawerOpen(false);
+
   return (
     <Box>
       <Button type="button" variant="contained" onClick={handleOpen}>
@@ -922,12 +928,30 @@ const Invoices = ({ charLimit = 4000 }) => {
           },
         }}
       >
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: 2 }}>
-          <Typography variant="h6">Create Invoice</Typography>
-          <IconButton onClick={handleClose}>
-            <CloseIcon />
-          </IconButton>
-        </Box>
+        <Box
+  sx={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 2,
+    borderBottom: "1px solid #ccc", // Add horizontal line
+  }}
+>
+  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+    Create Invoice Template
+  </Typography>
+  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+    <Typography color="primary" sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+      <PlagiarismIcon sx={{ marginRight: 0.5 }} fontSize="small" />
+      Preview
+    </Typography>
+
+    <Box onClick={handleClose}>
+    <CloseIcon />
+    </Box>
+  </Box>
+  
+</Box>
         <Divider />
         <Box mt={3} p={2} sx={{ height: "80vh", overflowY: "auto" }} className="create-invoice">
           <Box>
