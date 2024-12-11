@@ -786,6 +786,7 @@ const Communication = () => {
     console.log("Updated Tasks:", updatedTasks);
   };
 
+
   const handleDeleteTask = (groupIndex, taskId) => {
     const updatedTasks = adminChatClientsTask.map((group, idx) =>
       idx === groupIndex ? group.filter((task) => task.id !== taskId) : group
@@ -812,7 +813,8 @@ const Communication = () => {
       redirect: "follow"
     };
 
-    fetch(`${CHATTOCLIENT_API}/chats/chatsaccountwise/addclienttask`, requestOptions)
+    // fetch(`${CHATTOCLIENT_API}/chats/chatsaccountwise/addclienttask`, requestOptions)
+    fetch("http://127.0.0.1:9090/chats/chatsaccountwise/addclienttask", requestOptions)
       .then((response) => response.json())
       .then((result) => {
         console.log(result);
@@ -945,6 +947,319 @@ const Communication = () => {
                 </Grid>
                 {/* Second Grid: Shown on Expand */}
                 <Grid item xs={6} ml={3}>
+                  {expanded && (
+                    <Box>
+                      {/* <Grid container spacing={3} sx={{ height: 'auto', mt: 2, }}>
+                        <Grid item xs={showClientTaskGrid ? 9 : 12} >
+                          <Box ml={1} >
+                            <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
+                              <Typography fontSize={23}>
+                                <strong>{adminChatSubject}</strong>
+
+
+                              </Typography>
+                              <MoreVertIcon onClick={handleMenuOpen} sx={{ color: '#1976d3', cursor: 'pointer' }} />
+                            </Box>
+                            <Divider sx={{ mt: 2 }} />
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: '15px', mt: 2 }}>
+                              <Typography
+                                onClick={() => handleContentClick('chat')}
+                                sx={{
+                                  cursor: 'pointer',
+                                  fontWeight: selectedContent === 'chat' ? 'bold' : 'normal',
+                                  color: selectedContent === 'chat' ? '#1976d3' : 'inherit',
+                                  borderBottom: selectedContent === 'chat' ? '3px solid #1976d3' : 'none', 
+                                  paddingBottom: '4px', 
+                                }}
+                              >
+                                Chat
+                              </Typography>
+                              <Typography
+                                onClick={() => handleContentClick('reminders')}
+                                sx={{
+                                  cursor: 'pointer',
+                                  fontWeight: selectedContent === 'reminders' ? 'bold' : 'normal',
+                                  color: selectedContent === 'reminders' ? '#1976d3' : 'inherit',
+                                  borderBottom: selectedContent === 'reminders' ? '3px solid #1976d3' : 'none', 
+                                  paddingBottom: '4px', 
+                                }}
+                              >
+                                Reminders
+                              </Typography>
+                              <Typography
+                                onClick={() => handleContentClick('linkedjobs')}
+                                sx={{
+                                  cursor: 'pointer',
+                                  fontWeight: selectedContent === 'linkedjobs' ? 'bold' : 'normal',
+                                  color: selectedContent === 'linkedjobs' ? '#1976d3' : 'inherit',
+                                  borderBottom: selectedContent === 'linkedjobs' ? '3px solid #1976d3' : 'none', 
+                                  paddingBottom: '4px', 
+                                }}
+                              >
+                                Linked Jobs
+                              </Typography>
+                              <Box sx={{ ml: 'auto', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
+                               
+                                <Typography color={'#1976d3'} onClick={handleAddClientTask}>
+                                  Show Client task
+                                </Typography>
+                              </Box>
+                            </Box>
+                            <Divider sx={{ mt: 2 }} />
+                           
+
+                            <Menu
+                              anchorEl={anchorEl}
+                              open={Boolean(anchorEl)}
+                              onClose={handleMenuClose}
+                            >
+                              <MenuItem
+                                onClick={() => {
+                                  const newStatus = isActiveTrue ? 'Archive' : 'Active';
+                                  setActiveorarchive(newStatus);
+                                  handleClickDialog(); 
+                                 
+                                }}
+                              >
+                                {isActiveTrue ? 'Archive' : 'Active'}
+                              </MenuItem>
+
+
+
+                              <Dialog
+                                open={openDialog}
+                                onClose={handleCloseDialog}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                              >
+                                <Box display="flex" alignItems="center" justifyContent="space-between">
+                                  <DialogTitle id="alert-dialog-title" style={{ display: 'flex', alignItems: 'center' }}>
+                                    {"Archive chat?"}
+                                  </DialogTitle>
+                                  <CloseIcon onClick={handleCloseDialog} sx={{ cursor: 'pointer' }} />
+                                </Box>
+
+                                <Divider />
+                                <DialogContent>
+                                  <DialogContentText id="alert-dialog-description">
+                                    If this chat is no longer active, please archive it. This will remove it from the 'Active' queue for both you and the client.
+
+                                  </DialogContentText>
+                                </DialogContent>
+                                <DialogActions>
+
+                                  <Button variant="contained" onClick={ArchiveChat} autoFocus>
+                                    Agree
+                                  </Button>
+
+                                  <Button onClick={handleCloseDialog}>Cancel</Button>
+                                </DialogActions>
+                              </Dialog>
+                              <MenuItem onClick={DeleteChat} sx={{ color: '#eb5858' }} >Delete</MenuItem>
+                            </Menu>
+                            <Box mt={2}>
+                              <Box>
+                                {selectedContent === 'chat' && (
+                                  <Box sx={{ width: '100%', mb: 6, }}>
+                                    <Box
+                                      sx={{
+                                        overflowY: 'auto',
+                                        height: '18vh',
+                                        paddingRight: '10px',
+                                      }}
+                                    >
+                                      {adminChatDiscription?.map((desc, index) => (
+                                        <Box
+                                          key={desc._id}
+
+                                         
+
+                                          sx={{
+                                            mb: '10px',
+                                            backgroundColor:
+                                              desc.fromwhome === 'admin'
+                                                ? '#ffcccc'
+                                                : desc.fromwhome === 'client'
+                                                  ? '#eff7ff'
+                                                  : '#dbe1e8',
+                                            border: '1px solid transparent',
+                                            borderRadius: '12px',
+                                            padding: '30px 20px',
+                                            width: 'fit-content',
+                                            textAlign: 'left',
+                                            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                                            position: 'relative',
+                                            borderBottomRightRadius: '1px',
+                                            ml: desc.fromwhome === 'client' ? 'auto' : '10px',
+                                            mr: desc.fromwhome === 'admin' ? 'auto' : '10px',
+                                          }}
+
+                                        >
+                                          <strong style={{ display: 'flex', alignItems: "center", justifyContent: 'space-between', marginBottom: '5px', color: '#333', }}>
+                                            {desc.fromwhome}
+                                          
+
+                                            <Box>
+                                              <BorderColorIcon onClick={() => handleEditClick(desc)} sx={{ cursor: 'pointer', color: 'rgb(25, 118, 211)', }} />
+                                              <DeleteIcon onClick={() => handleDeleteClick(desc)} sx={{ color: '#eb5858', cursor: 'pointer' }} />
+                                            </Box>
+
+                                          </strong>
+                                          <p
+                                            style={{
+                                              margin: 0,
+                                              fontSize: '14px',
+                                              lineHeight: '1.5',
+                                              color: '#555',
+
+                                            }}
+                                            dangerouslySetInnerHTML={{
+                                              __html: typeof desc.message === 'string' ? desc.message.replace(/<[^>]+>/g, '') : desc.message,
+                                            }}
+                                          />
+                                          <span
+                                            style={{
+                                              display: 'block',
+                                              marginTop: '8px',
+                                              fontSize: '12px',
+                                              color: '#aaa',
+                                              textAlign: 'right',
+                                              padding: 3
+                                            }}
+                                          >
+                                          </span>
+
+
+
+                                        </Box>
+                                      ))}
+                                    </Box>
+                                    {!isEditing && (
+                                      <Box sx={{ width: '100%', mb: 6 }}>
+                                        <Box mt={5}>
+
+                                          <Editor onChange={handleEditorChange} />
+                                        </Box>
+                                        <Box sx={{ mt: 8, display: 'flex', justifyContent: 'flex-end' }}>
+                                          <Button onClick={updateChatDescription} variant="contained">Send</Button>
+                                        </Box>
+                                      </Box>
+                                    )}
+                                    {isEditing && selectedMessage && (
+                                      <Box>
+                                        <Editor
+                                          onChange={handleEditEditorChange}
+                                          initialContent={selectedMessage}
+                                        />
+                                        <Box sx={{ mt: 8, display: 'flex', justifyContent: 'flex-end' }}>
+                                          <Button onClick={updateMsgs} variant="contained">Send</Button>
+                                          <Button onClick={handleCancelEdit} sx={{ ml: 2 }}>Cancel</Button>
+                                        </Box>
+                                      </Box>
+                                    )}
+
+                                  </Box>
+                                )}
+                              </Box>
+                              {selectedContent === 'reminders' && (
+                                <TextField
+                                  label="Reminders"
+                                  variant="outlined"
+                                  fullWidth
+                                  sx={{ mt: 2 }}
+                                />
+                              )}
+                              {selectedContent === 'linkedjobs' && (
+                                <Typography>Linked jobs</Typography>
+                              )}
+                            </Box>
+
+                          </Box>
+                        </Grid>
+                       
+                        <Grid item xs={2}>
+                          {showClientTaskGrid && (
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                height: '90vh',
+                                ml: 1,
+                                borderLeft: '1px solid #697991',
+                                width: '100%',
+                              }}
+                            >
+                              {adminChatClientsTask && adminChatClientsTask.length > 0 ? (
+                                adminChatClientsTask.map((taskGroup, groupIndex) => (
+                                  <Box key={groupIndex} >
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                      <Typography fontSize={25} whiteSpace="nowrap">
+                                        <b>Client tasks</b>
+                                      </Typography>
+                                      <Button
+
+                                        size="small"
+                                        startIcon={<AddCircleIcon sx={{ fontSize: 12 }} />}
+                                        sx={{ ml: 2, whiteSpace: 'nowrap' }}
+                                        onClick={() => handleAddTask(groupIndex)}
+                                      >
+                                        Add Task
+                                      </Button>
+                                    </Box>
+                                    <Divider sx={{ mt: 2, mb: 5, width: '100%' }} />
+
+                                 
+
+                                    <Box m={1} width="300%">
+                                      {taskGroup.length > 0 ? (
+                                        taskGroup.map((task, taskIndex) => {
+                                         
+                                          console.log("Task:", taskGroup);
+                                          const isChecked = task.checked === "true";
+                                          return (
+                                            <Box key={task.id} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                                              <Checkbox
+                                                checked={isChecked}
+                                                onChange={() => handleCheckboxChange(task.id, task.checked)}
+                                              />
+                                              <TextField
+                                                fullWidth
+                                                variant="outlined"
+                                                value={task.text}
+                                                onChange={(e) =>
+                                                  handleTaskTextChange(groupIndex, taskIndex, e.target.value)
+                                                }
+                                              />
+
+                                              <IconButton
+                                                color="error"
+                                                onClick={() => handleDeleteTask(groupIndex, task.id)}
+                                              >
+                                                <DeleteIcon />
+                                              </IconButton>
+                                            </Box>
+                                          );
+                                        })
+                                      ) : (
+                                        <Typography>No tasks in this group</Typography>
+                                      )}
+                                    </Box>
+
+                                    <Box mt={2} m={2} whiteSpace={'nowrap'}>
+                                      <Button onClick={resendClientTask} variant="outlined"> Resend client task</Button>
+                                    </Box>
+                                  </Box>
+                                ))
+                              ) : (
+                                <Box>No tasks available</Box>
+                              )}
+                            </Box>
+                          )}
+                        </Grid>
+                      </Grid> */}
+
+
+<Grid item xs={10} ml={3}>
                   {expanded && (
                     <Box>
                       <Grid container spacing={3} sx={{ height: 'auto', mt: 2, }}>
@@ -1109,7 +1424,6 @@ const Communication = () => {
                                             ml: desc.fromwhome === 'client' ? 'auto' : '10px',
                                             mr: desc.fromwhome === 'admin' ? 'auto' : '10px',
                                           }}
-
                                         >
                                           <strong style={{ display: 'flex', alignItems: "center", justifyContent: 'space-between', marginBottom: '5px', color: '#333', }}>
                                             {desc.fromwhome}
@@ -1309,6 +1623,13 @@ const Communication = () => {
                     </Box>
                   )}
                 </Grid>
+
+
+                    </Box>
+                  )}
+                </Grid>
+
+
               </Grid>
 
 
