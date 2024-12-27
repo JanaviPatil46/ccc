@@ -841,6 +841,7 @@ const CreateOrganizerUpdate = ({ OrganizerData, onClose }) => {
 
   const ORGANIZER_TEMP_API = process.env.REACT_APP_ORGANIZER_TEMP_URL;
   const { data } = useParams();
+  console.log(data)
   const [selectedAccounts, setSelectedAccounts] = useState([]);
   const [selectedOrganizerTemplate, setSelectedOrganizerTemplate] = useState(null);
 

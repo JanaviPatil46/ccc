@@ -4,7 +4,7 @@ import { Box, IconButton, List, ListItem, ListItemIcon, ListItemText, Collapse, 
 import { ChevronLeft, ChevronRight, Brightness4, Brightness7 } from "@mui/icons-material";
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, redirect } from "react-router-dom";
 import axios from "axios";
 import "./Sidebar.css";
 import iconMapping from './icons/index';
@@ -176,16 +176,18 @@ function Sidebar() {
     //console.log(token);
 
     const data = await res.json();
-    //console.log(data);
+    console.log(data);
     if (data.message === "Invalid token") {
       // console.log("error page");
       navigate("/login");
+   
     } else {
       // console.log("user verify");
       setLoginData(data);
       setloginsData(data.user.id);
       if (data.user.role === "Admin") {
         fetchUserData(data.user.id);
+        getadminsignup(data.user.id)
         navigate("/");
       } else if (data.user.role === "Client") {
         navigate("/clientDash/home");
@@ -203,10 +205,13 @@ function Sidebar() {
   useEffect(() => {
     DashboardValid();
     setData(true);
+     
+ 
   }, []);
 
   const [userData, setUserData] = useState("");
   const [username, setUsername] = useState("");
+  const [profilePicture,setProfilePicture] = useState("");   
 
   const fetchUserData = async (id) => {
     const maxLength = 15;
@@ -218,6 +223,7 @@ function Sidebar() {
       redirect: "follow",
     };
     const url = `${LOGIN_API}/common/user/${id}`;
+    console.log(id)
     fetch(url + loginsData, requestOptions)
       .then((response) => response.json())
       .then((result) => {
@@ -227,6 +233,8 @@ function Sidebar() {
         }
         // console.log(userData)
         setUsername(result.username);
+        // setProfilePicture(result.profilePicture)
+        console.log(result)
       });
   };
   const truncateString = (str, maxLength) => {
@@ -236,6 +244,30 @@ function Sidebar() {
       return str;
     }
   };
+
+  const getadminsignup = async (id) => {
+    console.log("tset",id)
+    const requestOptions = {
+      method: "GET",
+      redirect: "follow",
+    };
+  
+    const url = `${LOGIN_API}/admin/adminsignup/${id}`;
+    console.log(id)
+    fetch(url + loginsData, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        console.log("id", result);
+        const profilePicFilename = result.admin.profilePicture.split("\\").pop(); // Extract filename
+
+        setProfilePicture(`${LOGIN_API}/uploads/${profilePicFilename}`);
+        console.log(profilePicture)
+       
+      });
+  };
+ 
+
+
   return (
     <div className="grid-container">
       <header className="header" >
@@ -349,6 +381,8 @@ function Sidebar() {
                     <div className="info" >
                       <div>
                         <img src={user} alt="user" className="user-icon" style={{ height: "50px", width: "50px" }} />
+                        <img src={profilePicture} alt="user" className="user-icon" style={{ height: "50px", width: "50px" }} />
+                        
                       </div>
                       <span className="hidden-text" >
                         <b>{username}</b>

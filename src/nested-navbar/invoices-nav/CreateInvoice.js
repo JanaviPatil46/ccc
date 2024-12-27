@@ -12,7 +12,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { RiCloseLine } from "react-icons/ri";
 import "../../Billing/Invoices";
 import { toast } from "react-toastify";
-// import { useNavigate } from "react-router-dom";
+
 import { MaterialReactTable, useMaterialReactTable } from "material-react-table";
 import { CiMenuKebab } from "react-icons/ci";
 import CreatableSelect from "react-select/creatable";
@@ -25,10 +25,10 @@ const CreateInvoice = ({ charLimit = 4000, onClose }) => {
   const ACCOUNT_API = process.env.REACT_APP_ACCOUNTS_URL;
   const SERVICE_API = process.env.REACT_APP_SERVICES_URL;
   const INVOICE_API = process.env.REACT_APP_INVOICE_TEMP_URL;
-
+  const CONTACT_API=process.env.REACT_APP_CONTACTS_URL;
   const { data } = useParams();
   const theme = useTheme();
-  //   const navigate = useNavigate();
+ 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [invoiceTemplates, setInvoiceTemplates] = useState([]);
   const [selectedaccount, setSelectedaccount] = useState(null);
@@ -240,14 +240,14 @@ const CreateInvoice = ({ charLimit = 4000, onClose }) => {
           label: result.invoiceTemplate.paymentMethod,
         };
         setPaymentMode(paymentMethod);
-        // Assuming lineitems is an array of objects and each object matches the structure needed for rows
+      
         console.log(result.invoiceTemplate.lineItems);
         const lineitems = result.invoiceTemplate.lineItems.map((item) => ({
           productName: item.productorService || "",
           description: item.description || "",
-          rate: String(item.rate || "$0.00"), // Convert rate to string
-          qty: String(item.quantity || "1"), // Convert qty to string
-          amount: String(item.amount || "$0.00"), // Convert amount to string
+          rate: String(item.rate || "$0.00"),
+          qty: String(item.quantity || "1"), 
+          amount: String(item.amount || "$0.00"), 
           tax: item.tax || false,
           isDiscount: item.isDiscount || false,
         }));
@@ -412,18 +412,7 @@ const CreateInvoice = ({ charLimit = 4000, onClose }) => {
     setTaxTotal(tax);
     setTotalAmount((subtotal + tax).toFixed(2));
   };
-  // useEffect(() => {
-  //   const calculateSubtotal = () => {
-  //     let subtotal = 0;
-  //     rows.forEach((row) => {
-  //       subtotal += parseFloat(row.amount.replace("$", "")) || 0;
-  //     });
-  //     console.log(subtotal);
-  //     setSubtotal(subtotal);
-  //     calculateTotal(subtotal, taxRate);
-  //   };
-  //   calculateSubtotal();
-  // }, [rows]);
+  
   useEffect(() => {
     const calculateSubtotal = () => {
       let subtotal = 0;
@@ -432,7 +421,7 @@ const CreateInvoice = ({ charLimit = 4000, onClose }) => {
         if (row.tax) {
           subtotal += parseFloat(row.amount.replace("$", "")) || 0;
         }
-        // subtotal += parseFloat(row.amount.replace("$", "")) || 0;
+        
       });
       console.log(subtotal);
       setSubtotal(subtotal);
@@ -536,13 +525,7 @@ const CreateInvoice = ({ charLimit = 4000, onClose }) => {
     setSelectedRow(null);
   };
 
-  // const handleEditService = (row) => {
-  //   console.log("Row data:", row);
 
-  //   setSelectedRowData(row);
-  //   handleMenuClose();
-  //   setIsEditDrawerOpen(true);
-  // };
   const handleEditService = (row, index) => {
     console.log("Row data:", row);
 
@@ -551,17 +534,7 @@ const CreateInvoice = ({ charLimit = 4000, onClose }) => {
     handleMenuClose();
     setIsEditDrawerOpen(true);
   };
-  // const handleSaveChanges = () => {
-  //   if (selectedRowIndex !== null) {
-  //     const updatedRows = [...rows];
-  //     updatedRows[selectedRowIndex] = { ...selectedRowData }; // Update the row with new data
-  //     setRows(updatedRows); // Update the state with the new rows
-
-  //     console.log("Updated Rows:", updatedRows);
-  //   }
-
-  //   handleEditDrawerClose();
-  // };
+ 
   const handleSaveChanges = () => {
     if (selectedRowIndex !== null) {
       const updatedRows = [...rows];
@@ -609,14 +582,14 @@ const CreateInvoice = ({ charLimit = 4000, onClose }) => {
   const [rate, setrate] = useState("$ 0.00");
   const [service, setService] = useState(false);
   const handleRateChange = (e) => {
-    // Remove the dollar sign and any non-numeric characters, and keep the input as a number
+   
     const value = e.target.value.replace(/[^0-9.]/g, "");
 
-    // Update the rate, ensuring it includes the $ symbol
+   
     setrate(`$ ${value}`);
   };
   const Rateoptions = [
-    // { label: "Select Rate Type", value: "" },
+  
     { label: "Item", value: "item" },
     { label: "Hour", value: "hour" },
   ];
@@ -633,7 +606,7 @@ const CreateInvoice = ({ charLimit = 4000, onClose }) => {
   const handleServiceSwitch = (checked) => {
     setSelectedRowData((prevState) => ({
       ...prevState,
-      tax: checked, // Update the tax value when switch is toggled
+      tax: checked, 
     }));
   };
 
@@ -668,8 +641,7 @@ const CreateInvoice = ({ charLimit = 4000, onClose }) => {
         if (result && result.message === "ServiceTemplate created successfully") {
           toast.success("ServiceTemplate created successfully");
           handleNewDrawerClose();
-          // fetchServicesData();
-          // Clear form fields
+      
           setservicename("");
           setdiscription("");
           setrate("");
@@ -782,53 +754,109 @@ const CreateInvoice = ({ charLimit = 4000, onClose }) => {
 
   console.log(totalamount);
 
-   //preview drawer
-   const [previewDrawerOpen, setpreviewDrawerOpen] = useState(false);
-   const handleOpenpreviewDrawer = () => setpreviewDrawerOpen(true);
-   const handleClosepreviewDrawer = () => setpreviewDrawerOpen(false);
  
+      //preview drawer
+  const [previewDrawerOpen, setpreviewDrawerOpen] = useState(false);
+  const handleOpenpreviewDrawer = () => setpreviewDrawerOpen(true);
+  const handleClosepreviewDrawer = () => setpreviewDrawerOpen(false);
+
+  const [firstContactEmail, setFirstContactEmail] = useState("");
+  
+  const contactMail = () => {
+    const requestOptions = {
+      method: "GET",
+      redirect: "follow",
+    };
+
+    console.log("Calling API with ID:", selectedaccount?.value); // Debug log
+
+    fetch(`${CONTACT_API}/accounts/accountdetails/accountdetailslist/listbyid/${selectedaccount?.value}`, requestOptions)
+      .then((response) => {
+        console.log("Response status:", response.status); // Debug log
+        return response.json();
+      })
+      .then((result) => {
+        console.log("API Result:", result); // Debug log
+
+        if (result?.accountlist?.Contacts && Array.isArray(result.accountlist.Contacts)) {
+          const email = result.accountlist.Contacts[0]?.email;
+          if (email) {
+            console.log("First Contact Email:", email); // Debug log
+            setFirstContactEmail(email); // Update state
+          } else {
+            console.error("First contact does not have an email.");
+            setFirstContactEmail("No email available"); // Handle missing email
+          }
+        } else {
+          console.error("No contacts found in the response.");
+          setFirstContactEmail("No email available"); // Handle missing contacts
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching contacts:", error);
+        setFirstContactEmail("Error fetching email"); // Handle fetch error
+      });
+  };
+  useEffect(() => {
+    if (selectedaccount?.value) {
+      contactMail();
+    }
+  }, [selectedaccount]);
+
+
+
+
+
+
+
+
+
   return (
     <Box>
-     <Box
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: 3,
+          borderBottom: "1px solid #ccc",
+        }}
+      >
+
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+          Create Invoice Template
+        </Typography>
+
+
+        <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between",
             alignItems: "center",
-            padding: 3,
-            borderBottom: "1px solid #ccc",
+            gap: 2,
           }}
         >
 
-          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            Create Invoice Template
-          </Typography>
-
-
           <Box
+            onClick={handleOpenpreviewDrawer}
             sx={{
               display: "flex",
               alignItems: "center",
-              gap: 2,
+              cursor: "pointer",
+              color: "primary.main",
             }}
           >
-
-            <Box
-              onClick={handleOpenpreviewDrawer}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                cursor: "pointer",
-                color: "primary.main",
-              }}
-            >
-              <PlagiarismIcon sx={{ marginRight: 0.5 }} fontSize="small" />
-              <Typography color="primary">Preview</Typography>
-            </Box>
+            <PlagiarismIcon sx={{ marginRight: 0.5 }} fontSize="small" />
+            <Typography color="primary">Preview</Typography>
+          </Box>
 
 
-           
+          <Box onClick={handleClosepreviewDrawer} sx={{ cursor: "pointer" }}>
+            <CloseIcon />
           </Box>
         </Box>
+      </Box>
+
+
 
         <Box>
           <Drawer
@@ -860,7 +888,42 @@ const CreateInvoice = ({ charLimit = 4000, onClose }) => {
                 >
                   Invoice
                 </Typography>
-                <Table >
+
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Typography sx={{ marginBottom: 2, ml: 2, fontSize: 13 }}>
+                    {selectedaccount?.label || 'Default Text'}
+                  </Typography>
+                  <Typography fontSize={13}>
+                    Invoice number: <Typography component="span" sx={{ color: '#cbd5e1', mr: 2, marginBottom: 2, fontSize: 13 }}>[INVOICE_NUMBER]</Typography>
+                  </Typography>
+                </Box>
+
+
+
+                {/* <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Typography sx={{ marginBottom: 2, ml: 2, fontSize: 13 }} >{firstContactEmail || "No email available"}</Typography>
+                  <Typography fontSize={13}>
+                    Date: <Typography component="span" sx={{ mr: 2, marginBottom: 2, fontSize: 13 }}>
+                      {startDate ? startDate.format('YYYY-MM-DD') : 'N/A'}
+                    </Typography>
+                  </Typography>
+                </Box> */}
+
+
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Typography sx={{ marginBottom: 2, ml: 2, fontSize: 13 }} >{firstContactEmail || "No email available"}</Typography>
+                  <Typography fontSize={13}>
+                    Date: <Typography component="span" sx={{ mr: 2, marginBottom: 2, fontSize: 13 }}>
+                      {startDate ? startDate.format('YYYY-MM-DD') : 'N/A'}
+                    </Typography>
+                  </Typography>
+                </Box>
+
+                <Box sx={{ ml: 2, marginBottom: 5, }} >
+                  <Typography sx={{ fontSize: 13 }}>Description: {description}</Typography>
+                </Box>
+
+                <Table sx={{ marginBottom: 5 }} >
                   <TableHead >
                     <TableRow sx={{ background: "#fff8f5" }}>
                       <TableCell>
@@ -921,6 +984,7 @@ const CreateInvoice = ({ charLimit = 4000, onClose }) => {
                   <strong>Total:</strong> ${totalAmount || '0.00'}
                 </Typography>
               </Box>
+
 
               {/* Footer Buttons */}
               <Box

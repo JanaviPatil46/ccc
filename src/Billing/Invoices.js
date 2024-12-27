@@ -27,6 +27,8 @@ const Invoices = ({ charLimit = 4000 }) => {
   const ACCOUNT_API = process.env.REACT_APP_ACCOUNTS_URL;
   const SERVICE_API = process.env.REACT_APP_SERVICES_URL;
   const INVOICE_NEW = process.env.REACT_APP_INVOICES_URL;
+
+  const CONTACT_API=process.env.REACT_APP_CONTACTS_URL;
   const [open, setOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [payInvoice, setIsPayInvoice] = useState(false);
@@ -703,6 +705,7 @@ const Invoices = ({ charLimit = 4000 }) => {
     }
 
     handleEditDrawerClose();
+    contactMail()
   };
 
   const handleDeleteService = () => {
@@ -908,6 +911,72 @@ const Invoices = ({ charLimit = 4000 }) => {
   const handleOpenpreviewDrawer = () => setpreviewDrawerOpen(true);
   const handleClosepreviewDrawer = () => setpreviewDrawerOpen(false);
 
+  const [firstContactEmail, setFirstContactEmail] = useState("");
+  //contact mail
+  // const contactMail = () => {
+  //   const requestOptions = {
+  //     method: "GET",
+  //     redirect: "follow",
+  //   };
+
+  //   fetch(`http://127.0.0.1:7000/accounts/accountdetails/accountdetailslist/listbyid/${selectedaccount?.value}`, requestOptions)
+  //     .then((response) => response.json())
+  //     .then((result) => {
+  //       if (result?.accountlist?.Contacts && Array.isArray(result.accountlist.Contacts)) {
+  //         // Get the first contact's email
+  //         const email = result.accountlist.Contacts[0]?.email;
+  //         if (email) {
+  //           setFirstContactEmail(email); // Update state with the email
+  //         } else {
+  //           console.error("First contact does not have an email.");
+  //         }
+  //       } else {
+  //         console.error("No contacts found in the response.");
+  //       }
+  //     })
+  //     .catch((error) => console.error("Error fetching contacts:", error));
+  // };
+  const contactMail = () => {
+    const requestOptions = {
+      method: "GET",
+      redirect: "follow",
+    };
+
+    console.log("Calling API with ID:", selectedaccount?.value); // Debug log
+
+    fetch(`${CONTACT_API}/accounts/accountdetails/accountdetailslist/listbyid/${selectedaccount?.value}`, requestOptions)
+      .then((response) => {
+        console.log("Response status:", response.status); // Debug log
+        return response.json();
+      })
+      .then((result) => {
+        console.log("API Result:", result); // Debug log
+
+        if (result?.accountlist?.Contacts && Array.isArray(result.accountlist.Contacts)) {
+          const email = result.accountlist.Contacts[0]?.email;
+          if (email) {
+            console.log("First Contact Email:", email); // Debug log
+            setFirstContactEmail(email); // Update state
+          } else {
+            console.error("First contact does not have an email.");
+            setFirstContactEmail("No email available"); // Handle missing email
+          }
+        } else {
+          console.error("No contacts found in the response.");
+          setFirstContactEmail("No email available"); // Handle missing contacts
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching contacts:", error);
+        setFirstContactEmail("Error fetching email"); // Handle fetch error
+      });
+  };
+  useEffect(() => {
+    if (selectedaccount?.value) {
+      contactMail();
+    }
+  }, [selectedaccount]);
+
   return (
     <Box>
       <Button type="button" variant="contained" onClick={handleOpen}>
@@ -1001,7 +1070,42 @@ const Invoices = ({ charLimit = 4000 }) => {
                 >
                   Invoice
                 </Typography>
-                <Table >
+
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Typography sx={{ marginBottom: 2, ml: 2, fontSize: 13 }}>
+                    {selectedaccount?.label || 'Default Text'}
+                  </Typography>
+                  <Typography fontSize={13}>
+                    Invoice number: <Typography component="span" sx={{ color: '#cbd5e1', mr: 2, marginBottom: 2, fontSize: 13 }}>[INVOICE_NUMBER]</Typography>
+                  </Typography>
+                </Box>
+
+
+
+                {/* <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Typography sx={{ marginBottom: 2, ml: 2, fontSize: 13 }} >{firstContactEmail || "No email available"}</Typography>
+                  <Typography fontSize={13}>
+                    Date: <Typography component="span" sx={{ mr: 2, marginBottom: 2, fontSize: 13 }}>
+                      {startDate ? startDate.format('YYYY-MM-DD') : 'N/A'}
+                    </Typography>
+                  </Typography>
+                </Box> */}
+
+
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Typography sx={{ marginBottom: 2, ml: 2, fontSize: 13 }} >{firstContactEmail || "No email available"}</Typography>
+                  <Typography fontSize={13}>
+                    Date: <Typography component="span" sx={{ mr: 2, marginBottom: 2, fontSize: 13 }}>
+                      {startDate ? startDate.format('YYYY-MM-DD') : 'N/A'}
+                    </Typography>
+                  </Typography>
+                </Box>
+
+                <Box sx={{ ml: 2, marginBottom: 5, }} >
+                  <Typography sx={{ fontSize: 13 }}>Description: {description}</Typography>
+                </Box>
+
+                <Table sx={{ marginBottom: 5 }} >
                   <TableHead >
                     <TableRow sx={{ background: "#fff8f5" }}>
                       <TableCell>
@@ -1062,6 +1166,7 @@ const Invoices = ({ charLimit = 4000 }) => {
                   <strong>Total:</strong> ${totalAmount || '0.00'}
                 </Typography>
               </Box>
+
 
               {/* Footer Buttons */}
               <Box

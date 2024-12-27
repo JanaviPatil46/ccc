@@ -30,6 +30,7 @@ const Invoices = ({ charLimit = 4000 }) => {
   const ACCOUNT_API = process.env.REACT_APP_ACCOUNTS_URL;
   const SERVICE_API = process.env.REACT_APP_SERVICES_URL;
   const INVOICE_NEW = process.env.REACT_APP_INVOICES_URL;
+  const CONTACT_API= process.env.REACT_APP_CONTACTS_URL;
   const { _id } = useParams();
   const [open, setOpen] = useState(false);
   const [description, setDescription] = useState("");
@@ -438,7 +439,7 @@ const Invoices = ({ charLimit = 4000 }) => {
       calculateTotal(subtotal, taxRate);
     };
     calculateSubtotal();
-  }, [rows,taxRate]);
+  }, [rows, taxRate]);
   const lineItems = rows.map((item) => ({
     productorService: item.productName, // Assuming productName maps to productorService
     description: item.description,
@@ -970,142 +971,235 @@ const Invoices = ({ charLimit = 4000 }) => {
 
   console.log(totalamount);
 
-    //preview drawer
-    const [previewDrawerOpen, setpreviewDrawerOpen] = useState(false);
-    const handleOpenpreviewDrawer = () => setpreviewDrawerOpen(true);
-    const handleClosepreviewDrawer = () => setpreviewDrawerOpen(false);
+  //preview drawer
+  const [previewDrawerOpen, setpreviewDrawerOpen] = useState(false);
+  const handleOpenpreviewDrawer = () => setpreviewDrawerOpen(true);
+  const handleClosepreviewDrawer = () => setpreviewDrawerOpen(false);
+
+
+  const [firstContactEmail, setFirstContactEmail] = useState("");
+  //contact mail
+  // const contactMail = () => {
+  //   const requestOptions = {
+  //     method: "GET",
+  //     redirect: "follow",
+  //   };
+
+  //   fetch(`http://127.0.0.1:7000/accounts/accountdetails/accountdetailslist/listbyid/${selectedaccount?.value}`, requestOptions)
+  //     .then((response) => response.json())
+  //     .then((result) => {
+  //       if (result?.accountlist?.Contacts && Array.isArray(result.accountlist.Contacts)) {
+  //         // Get the first contact's email
+  //         const email = result.accountlist.Contacts[0]?.email;
+  //         if (email) {
+  //           setFirstContactEmail(email); // Update state with the email
+  //         } else {
+  //           console.error("First contact does not have an email.");
+  //         }
+  //       } else {
+  //         console.error("No contacts found in the response.");
+  //       }
+  //     })
+  //     .catch((error) => console.error("Error fetching contacts:", error));
+  // };
+  const contactMail = () => {
+    const requestOptions = {
+      method: "GET",
+      redirect: "follow",
+    };
+  
+    console.log("Calling API with ID:", selectedaccount?.value); // Debug log
+  
+    fetch(`${CONTACT_API}/accounts/accountdetails/accountdetailslist/listbyid/${selectedaccount?.value}`, requestOptions)
+      .then((response) => {
+        console.log("Response status:", response.status); // Debug log
+        return response.json();
+      })
+      .then((result) => {
+        console.log("API Result:", result); // Debug log
+        
+        if (result?.accountlist?.Contacts && Array.isArray(result.accountlist.Contacts)) {
+          const email = result.accountlist.Contacts[0]?.email;
+          if (email) {
+            console.log("First Contact Email:", email); // Debug log
+            setFirstContactEmail(email); // Update state
+          } else {
+            console.error("First contact does not have an email.");
+            setFirstContactEmail("No email available"); // Handle missing email
+          }
+        } else {
+          console.error("No contacts found in the response.");
+          setFirstContactEmail("No email available"); // Handle missing contacts
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching contacts:", error);
+        setFirstContactEmail("Error fetching email"); // Handle fetch error
+      });
+  };
+  
+  useEffect(() => {
+    if (selectedaccount?.value) {
+      contactMail();
+    }
+  }, [selectedaccount]);
+
+
   return (
     <Box>
-     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 2 }}>
-  <Typography variant="h6">Edit Invoice</Typography>
-  <Box
-    onClick={handleOpenpreviewDrawer}
-    sx={{
-      display: "flex",
-      alignItems: "center",
-      cursor: "pointer",
-      color: "primary.main",
-    }}
-  >
-    <PlagiarismIcon sx={{ marginRight: 0.5 }} fontSize="small" />
-    <Typography color="primary">Preview</Typography>
-  </Box>
-</Box>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 2 }}>
+        <Typography variant="h6">Edit Invoice</Typography>
+        <Box
+          onClick={handleOpenpreviewDrawer}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            cursor: "pointer",
+            color: "primary.main",
+          }}
+        >
+          <PlagiarismIcon sx={{ marginRight: 0.5 }} fontSize="small" />
+          <Typography color="primary">Preview</Typography>
+        </Box>
+      </Box>
       <Divider />
 
       <Box>
-          <Drawer
-            anchor="right"
-            open={previewDrawerOpen}
-            onClose={handleClosepreviewDrawer}
-            PaperProps={{
-              sx: {
-                width: 800,
-                p: 2,
-                background: '#f8fafc',
+        <Drawer
+          anchor="right"
+          open={previewDrawerOpen}
+          onClose={handleClosepreviewDrawer}
+          PaperProps={{
+            sx: {
+              width: 800,
+              p: 2,
+              background: '#f8fafc',
 
-              },
-            }}
-          >
-            <Box sx={{ padding: 4 }}>
-              {/* Invoice Header */}
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Typography>Preview</Typography>
-                <CloseIcon sx={{ cursor: "pointer", color: "rgb(24, 118, 211)" }} onClick={handleClosepreviewDrawer} />
-              </Box>
-              <Divider sx={{ mt: 2 }} />
-
-              {/* Table */}
-              <TableContainer component={Paper} sx={{ background: '#fdfdfd', marginBottom: 4, height: { xs: '50vh', md: 'auto' }, mt: 4 }}>
-                <Typography
-                  variant="h5"
-                  sx={{ color: '#ff6700', fontWeight: 'bold', marginBottom: 2, ml: 2, mt: 2 }}
-                >
-                  Invoice
-                </Typography>
-                <Table >
-                  <TableHead >
-                    <TableRow sx={{ background: "#fff8f5" }}>
-                      <TableCell>
-                        <strong>Product/Service</strong>
-                      </TableCell>
-
-                      <TableCell>
-                        <strong>Description</strong>
-                      </TableCell>
-
-                      <TableCell align="right">
-                        <strong>Rate ($)</strong>
-                      </TableCell>
-                      <TableCell align="right">
-                        <strong>Qty</strong>
-                      </TableCell>
-                      <TableCell align="right">
-                        <strong>Amount</strong>
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{row.productName}</TableCell>
-                        <TableCell>{row.description}</TableCell>
-                        <TableCell align="right">{row.rate || '$0.00'}</TableCell>
-                        <TableCell align="right">{row.qty || '1'}</TableCell>
-                        <TableCell align="right">{row.amount || '$0.00'}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-
-              {/* Summary Section */}
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-end',
-                  marginRight: 3,
-                  mt: 0
-                }}
-              >
-                <Typography sx={{ textAlign: 'right', width: '100%' }}>
-                  <strong>Subtotal:</strong> ${subtotal || '0.00'}
-                </Typography>
-                <Typography sx={{ textAlign: 'right', width: '100%' }}>
-                  <strong>Tax Rate:</strong> {taxRate || '0.00'}%
-                </Typography>
-                <Typography sx={{ textAlign: 'right', width: '100%' }}>
-                  <strong>Tax Total:</strong> ${taxTotal?.toFixed(2) || '0.00'}
-                </Typography>
-                <Typography
-                  sx={{ textAlign: 'right', fontWeight: 'bold', width: '100%', marginTop: 1 }}
-                >
-                  <strong>Total:</strong> ${totalAmount || '0.00'}
-                </Typography>
-              </Box>
-
-              {/* Footer Buttons */}
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  marginTop: 3,
-                }}
-              >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={createinvoice}
-
-                >
-                  Save & Exit
-                </Button>
-
-              </Box>
+            },
+          }}
+        >
+          <Box sx={{ padding: 4 }}>
+            {/* Invoice Header */}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Typography>Preview</Typography>
+              <CloseIcon sx={{ cursor: "pointer", color: "rgb(24, 118, 211)" }} onClick={handleClosepreviewDrawer} />
             </Box>
-          </Drawer>
-        </Box>
+            <Divider sx={{ mt: 2 }} />
+
+            {/* Table */}
+            <TableContainer component={Paper} sx={{ background: '#fdfdfd', marginBottom: 4, height: { xs: '50vh', md: 'auto' }, mt: 4 }}>
+              <Typography
+                variant="h5"
+                sx={{ color: '#ff6700', fontWeight: 'bold', marginBottom: 2, ml: 2, mt: 2 }}
+              >
+                Invoice
+              </Typography>
+
+              <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Typography sx={{ marginBottom: 2, ml: 2, fontSize: 13 }}>
+                    {selectedaccount?.label || 'Default Text'}
+                  </Typography>
+                  <Typography fontSize={13}>
+                    Invoice number: <Typography component="span" sx={{ color: '#cbd5e1', mr: 2, marginBottom: 2, fontSize: 13 }}>[INVOICE_NUMBER]</Typography>
+                  </Typography>
+                </Box>
+
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Typography sx={{ marginBottom: 2, ml: 2, fontSize: 13 }} >{firstContactEmail || "No email available"}</Typography>
+                  <Typography fontSize={13}>
+                    Date: <Typography component="span" sx={{ mr: 2, marginBottom: 2, fontSize: 13 }}>
+                      {startDate ? startDate.format('YYYY-MM-DD') : 'N/A'}
+                    </Typography>
+                  </Typography>
+                </Box>
+
+                <Box sx={{ ml: 2, marginBottom: 5, }} >
+                  <Typography sx={{ fontSize: 13 }}>Description: {description}</Typography>
+                </Box>
+
+              <Table sx={{ marginBottom: 10}} >
+                <TableHead >
+                  <TableRow sx={{ background: "#fff8f5" }}>
+                    <TableCell>
+                      <strong>Product/Service</strong>
+                    </TableCell>
+
+                    <TableCell>
+                      <strong>Description</strong>
+                    </TableCell>
+
+                    <TableCell align="right">
+                      <strong>Rate ($)</strong>
+                    </TableCell>
+                    <TableCell align="right">
+                      <strong>Qty</strong>
+                    </TableCell>
+                    <TableCell align="right">
+                      <strong>Amount</strong>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{row.productName}</TableCell>
+                      <TableCell>{row.description}</TableCell>
+                      <TableCell align="right">{row.rate || '$0.00'}</TableCell>
+                      <TableCell align="right">{row.qty || '1'}</TableCell>
+                      <TableCell align="right">{row.amount || '$0.00'}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            {/* Summary Section */}
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-end',
+                marginRight: 3,
+                mt: 0
+              }}
+            >
+              <Typography sx={{ textAlign: 'right', width: '100%' }}>
+                <strong>Subtotal:</strong> ${subtotal || '0.00'}
+              </Typography>
+              <Typography sx={{ textAlign: 'right', width: '100%' }}>
+                <strong>Tax Rate:</strong> {taxRate || '0.00'}%
+              </Typography>
+              <Typography sx={{ textAlign: 'right', width: '100%' }}>
+                <strong>Tax Total:</strong> ${taxTotal?.toFixed(2) || '0.00'}
+              </Typography>
+              <Typography
+                sx={{ textAlign: 'right', fontWeight: 'bold', width: '100%', marginTop: 1 }}
+              >
+                <strong>Total:</strong> ${totalAmount || '0.00'}
+              </Typography>
+            </Box>
+
+            {/* Footer Buttons */}
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                marginTop: 3,
+              }}
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={createinvoice}
+
+              >
+                Save & Exit
+              </Button>
+
+            </Box>
+          </Box>
+        </Drawer>
+      </Box>
 
       <Box mt={3} p={2} sx={{ height: "80vh", overflowY: "auto" }} className="create-invoice">
         <Box>
@@ -1291,9 +1385,9 @@ const Invoices = ({ charLimit = 4000 }) => {
                     <TextField
                       variant="outlined"
                       fullWidth
-                      // value={clientmsg}
-                      // onChange={(e) => setClientmsg(e.target.value)}
-                      // setClientmsg
+                    // value={clientmsg}
+                    // onChange={(e) => setClientmsg(e.target.value)}
+                    // setClientmsg
                     />
                   </Box>
                   <Box>
@@ -1599,7 +1693,7 @@ const Invoices = ({ charLimit = 4000 }) => {
                     <Box width="50%">
                       <Typography sx={{ color: "black" }}>Rate</Typography>
                       <TextField
-                      
+
                         name="Rate"
                         placeholder="Rate"
                         size="small"

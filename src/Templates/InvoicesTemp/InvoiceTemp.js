@@ -1066,7 +1066,28 @@ const InvoiceTemp = () => {
                         >
                           Invoice
                         </Typography>
-                        <Table >
+                        <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Typography sx={{ color: '#cbd5e1', marginBottom: 2, ml: 2,fontSize:13 }} >[ACCOUNT_NAME]</Typography>
+                          <Typography fontSize={13}>
+                            Invoice number: <Typography component="span" sx={{ color: '#cbd5e1', mr: 2, marginBottom: 2,fontSize:13 }}>[INVOICE_NUMBER]</Typography>
+                          </Typography>
+                        </Box>
+
+
+                        <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Typography sx={{ color: '#cbd5e1', marginBottom: 2, ml: 2,fontSize:13 }} >[CONTACT_NAME]</Typography>
+                          <Typography fontSize={13}>
+                           Date: <Typography component="span" sx={{ color: '#cbd5e1', mr: 2, marginBottom: 2 ,fontSize:13}}>[DATE]</Typography>
+                          </Typography>
+                        </Box>
+
+                        <Box sx={{ml: 2, marginBottom: 5,}} >
+                          <Typography sx={{ fontSize: 13 }}>Description: {description}</Typography> 
+                        </Box>
+
+
+
+                        <Table sx={{marginBottom: 10,}} >
                           <TableHead >
                             <TableRow sx={{ background: "#fff8f5" }}>
                               <TableCell>
@@ -1127,6 +1148,8 @@ const InvoiceTemp = () => {
                           <strong>Total:</strong> ${totalAmount || '0.00'}
                         </Typography>
                       </Box>
+
+                      <Box>{clientNote}</Box>
 
                       {/* Footer Buttons */}
                       <Box

@@ -5,7 +5,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { RiCloseLine } from "react-icons/ri";
 import Select from "react-select";
 import { toast } from "react-toastify";
-import { useMediaQuery, Box,Drawer,Paper, TableContainer, MenuItem, Menu, Button, Autocomplete, Typography, Container, Table, TableHead, TableBody, TableRow, TableCell, IconButton, Grid, TextField, InputLabel, Switch, FormControlLabel, Divider, List, ListItem, ListItemText, Popover, Checkbox } from "@mui/material";
+import { useMediaQuery, Box, Drawer, Paper, TableContainer, MenuItem, Menu, Button, Autocomplete, Typography, Container, Table, TableHead, TableBody, TableRow, TableCell, IconButton, Grid, TextField, InputLabel, Switch, FormControlLabel, Divider, List, ListItem, ListItemText, Popover, Checkbox } from "@mui/material";
 import { RxCross2 } from "react-icons/rx";
 import { useTheme } from "@mui/material/styles";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
@@ -862,131 +862,7 @@ const InvoiceTempUpdate = () => {
                 <hr />
               </Box> */}
 
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Typography variant="h5" gutterBottom>
-                Edit Invoice Template
-                </Typography>
-
-                <Box onClick={handleOpen} sx={{ color: '#1168bf', display: 'flex', cursor: 'pointer', justifyContent: 'flex-end' }}>
-                  <PlagiarismIcon />
-                  <Typography>Preview</Typography>
-                </Box>
-                      
-                <Box>
-                  <Drawer
-                    anchor="right"
-                    open={open}
-                    onClose={handleClose}
-                    PaperProps={{
-                      sx: {
-                        width: 800,
-                        p: 2,
-                        background: '#f8fafc',
-
-                      },
-                    }}
-                  >
-                    <Box sx={{ padding: 4 }}>
-                      {/* Invoice Header */}
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Typography>Preview</Typography>
-                        <CloseIcon sx={{ cursor: "pointer", color: "rgb(24, 118, 211)" }} onClick={handleClose} />
-                      </Box>
-                      <Divider sx={{ mt: 2 }} />
-
-                      {/* Table */}
-                      <TableContainer component={Paper} sx={{ background: '#fdfdfd', marginBottom: 4, height: { xs: '50vh', md: 'auto' }, mt: 4 }}>
-                        <Typography
-                          variant="h5"
-                          sx={{ color: '#ff6700', fontWeight: 'bold', marginBottom: 2, ml: 2, mt: 2 }}
-                        >
-                          Invoice
-                        </Typography>
-                        <Table >
-                          <TableHead >
-                            <TableRow sx={{ background: "#fff8f5" }}>
-                              <TableCell>
-                                <strong>Product/Service</strong>
-                              </TableCell>
-
-                              <TableCell>
-                                <strong>Description</strong>
-                              </TableCell>
-
-                              <TableCell align="right">
-                                <strong>Rate ($)</strong>
-                              </TableCell>
-                              <TableCell align="right">
-                                <strong>Qty</strong>
-                              </TableCell>
-                              <TableCell align="right">
-                                <strong>Amount</strong>
-                              </TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {rows.map((row, index) => (
-                              <TableRow key={index}>
-                                <TableCell>{row.productName}</TableCell>
-                                <TableCell>{row.description}</TableCell>
-                                <TableCell align="right">{row.rate || '$0.00'}</TableCell>
-                                <TableCell align="right">{row.qty || '1'}</TableCell>
-                                <TableCell align="right">{row.amount || '$0.00'}</TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-
-                      {/* Summary Section */}
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'flex-end',
-                          marginRight: 3,
-                          mt: 0
-                        }}
-                      >
-                        <Typography sx={{ textAlign: 'right', width: '100%' }}>
-                          <strong>Subtotal:</strong> ${subtotal || '0.00'}
-                        </Typography>
-                        <Typography sx={{ textAlign: 'right', width: '100%' }}>
-                          <strong>Tax Rate:</strong> {taxRate || '0.00'}%
-                        </Typography>
-                        <Typography sx={{ textAlign: 'right', width: '100%' }}>
-                          <strong>Tax Total:</strong> ${taxTotal?.toFixed(2) || '0.00'}
-                        </Typography>
-                        <Typography
-                          sx={{ textAlign: 'right', fontWeight: 'bold', width: '100%', marginTop: 1 }}
-                        >
-                          <strong>Total:</strong> ${totalAmount || '0.00'}
-                        </Typography>
-                      </Box>
-
-                      {/* Footer Buttons */}
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          marginTop: 3,
-                        }}
-                      >
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={createInvoiceTemp}
-
-                        >
-                          Save & Exit
-                        </Button>
-
-                      </Box>
-                    </Box>
-                  </Drawer>
-                </Box>
-
-              </Box>
+              
               <Box mt={2} mb={2}>
                 <hr />
               </Box>
