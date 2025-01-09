@@ -64,7 +64,7 @@ border-bottom: 1px solid grey;
 .main::-webkit-scrollbar-thumb:hover {
   background-color: #555; /* Darker color on hover */
 }
-
+ 
 
 
 .company-name-text,.menu-text{

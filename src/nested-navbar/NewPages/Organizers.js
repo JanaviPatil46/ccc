@@ -11,7 +11,7 @@ const Organizers = () => {
   const [openMenuId, setOpenMenuId] = useState(null);
   const ORGANIZER_TEMP_API = process.env.REACT_APP_ORGANIZER_TEMP_URL;
   const { data } = useParams();
-  console.log(data);
+  console.log('iddd',data);
   const navigate = useNavigate();
 
   const [organizerTemplatesData, setOrganizerTemplatesData] = useState([]);
@@ -20,8 +20,9 @@ const Organizers = () => {
 
   const fetchOrganizerTemplates = async (accountid) => {
     try {
-      const url = `${ORGANIZER_TEMP_API}/workflow/orgaccwise/organizeraccountwise/organizerbyaccount/${accountid}`;
-      console.log(url);
+      const url = `http://127.0.0.1:7600/workflow/orgaccwise/organizeraccountwise/${isActiveTrue}/${accountid}`;
+
+      console.log("|URLLL",url);
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Failed to fetch email templates");
@@ -29,11 +30,80 @@ const Organizers = () => {
       const data = await response.json();
       console.log(data);
       setOrganizerTemplatesData(data.organizerAccountWise);
+      console.log('orgData:',data.organizerAccountWise )
+      // if (isActiveTrue === true) {
+      //   setActiveButton("active");
+      //   setActiveorarchive("Archive");
+      // }
+      // else if (isActiveTrue === false) {
+      //   setActiveButton("archived");
+      //   setActiveorarchive("Active");
+      // }
+
     } catch (error) {
       console.error("Error fetching email templates:", error);
     }
   };
+//for active & Archived
+const [activeButton, setActiveButton] = useState("active");
+  const [isActiveTrue, setIsActiveTrue] = useState(true);
+  const [activeorarchive, setActiveorarchive] = React.useState('Active');
 
+  const handleActiveClick = () => {
+    setIsActiveTrue(true);
+    setActiveButton("active");
+    setActiveorarchive("Archive");
+    // fetchOrganizerTemplates(data,true)
+    fetchOrganizerTemplates()
+    console.log("Active action triggered.");
+  };
+
+  const handleArchivedClick = () => {
+    setIsActiveTrue(false);
+    setActiveButton("archived");
+    setActiveorarchive("Active");
+    // fetchOrganizerTemplates(data,false)
+    fetchOrganizerTemplates()
+    console.log("Archive action triggered.");
+  };
+
+  const handleArchive=(_id)=>{
+   console.log(_id)
+    // handleSubmit(id);
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const raw = JSON.stringify({
+      active: !isActiveTrue,
+    });
+    console.log(raw);
+    const requestOptions = {
+      method: "PATCH",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+    const url = `${ORGANIZER_TEMP_API}/workflow/orgaccwise/organizeraccountwise/${_id}`
+
+    fetch(url, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        console.log(result);
+        // console.log(result.updatedAccount); // Log the result
+        // setAccountId(result.updatedAccount._id);
+        toast.success("orgnizer updated successfully"); // Display success toast
+        fetchOrganizerTemplates(data);
+      })
+      .catch((error) => {
+        console.error(error); // Log the error
+        toast.error("An error occurred while submitting the form"); // Display error toast
+      });
+    
+  }
+
+    
+
+  //
   const handleSealed = (_id, issealed) => {
     // navigate('OrganizerTempUpdate/' + _id)
     const myHeaders = new Headers();
@@ -51,6 +121,8 @@ const Organizers = () => {
     };
 
     fetch(`${ORGANIZER_TEMP_API}/workflow/orgaccwise/organizeraccountwise/${_id}`, requestOptions)
+ 
+  
       .then((response) => response.json())
       .then((result) => {
         console.log(result);
@@ -84,6 +156,7 @@ const Organizers = () => {
       };
       const url = `${ORGANIZER_TEMP_API}/workflow/orgaccwise/organizeraccountwise/`;
       fetch(url + _id, requestOptions)
+
         .then((response) => {
           if (!response.ok) {
             throw new Error("Failed to delete item");
@@ -104,7 +177,8 @@ const Organizers = () => {
   };
   useEffect(() => {
     fetchOrganizerTemplates(data);
-  }, []);
+  }, [isActiveTrue]);
+
 
   const [selectedOrganizer, SetSelectedOrganizer] = useState({});
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
@@ -237,9 +311,45 @@ const Organizers = () => {
 
   return (
     <Box sx={{ mt: 2 }}>
-      <Button variant="contained" onClick={handleCreateInvoiceClick} sx={{ mb: 3 }}>
-        New Organizer
-      </Button>
+    <Box display="flex" justifyContent="space-between" alignItems="center">
+  {/* Left side buttons */}
+  <Box>
+  <Button
+            style={{
+              backgroundColor: activeButton === "active" ? "blue" : "transparent",
+              color: activeButton === "active" ? "white" : "black",
+              fontWeight: activeButton === "active" ? "bold" : "normal",
+            }}
+            onClick={handleActiveClick}
+          >
+            Active
+          </Button>
+
+          <Button
+            style={{
+              backgroundColor: activeButton === "archived" ? "blue" : "transparent",
+              color: activeButton === "archived" ? "white" : "black",
+              fontWeight: activeButton === "archived" ? "bold" : "normal",
+            }}
+            onClick={handleArchivedClick}
+          >
+            Archived
+          </Button>
+  </Box>
+  
+  {/* Right side button */}
+  <Box>
+    <Button 
+      variant="contained" 
+      onClick={handleCreateInvoiceClick} 
+      sx={{ mb: 3 }}
+    >
+      New Organizer
+    </Button>
+  </Box>
+</Box>
+
+      
       {/* <MaterialReactTable columns={columns} table={table} /> */}
       <Paper>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -265,7 +375,7 @@ const Organizers = () => {
               </TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+          {/* <TableBody>
             {organizerTemplatesData.map((row) => (
               <TableRow key={row._id}>
                 <TableCell>
@@ -275,7 +385,7 @@ const Organizers = () => {
                 </TableCell>
                 <TableCell>{row.updatedAt}</TableCell>
                 <TableCell></TableCell>
-                <TableCell>{row.organizertemplateid.sections.length}</TableCell> {/* Show the number of sections */}
+                <TableCell>{row.organizertemplateid.sections.length}</TableCell> 
                 <TableCell>{row.issealed ? <Chip label="Sealed" color="primary" /> : null}</TableCell>
                 <TableCell sx={{ textAlign: "end" }}>
                   <IconButton onClick={() => toggleMenu(row._id)} style={{ color: "#2c59fa" }}>
@@ -289,7 +399,7 @@ const Organizers = () => {
                           boxShadow: 1,
                           borderRadius: 1,
                           p: 1,
-                          // left:0,
+                          
                           right: "30px",
                           m: 2,
                           top: "10px",
@@ -297,10 +407,10 @@ const Organizers = () => {
                           textAlign: "start",
                         }}
                       >
-                        {/* <Typography sx={{ fontSize: '12px', fontWeight: 'bold' }}>Publice to Marketplace</Typography> */}
+                        
                         <Typography
                           sx={{ fontSize: "12px", fontWeight: "bold" }}
-                          // onClick={() => handleSealed(row._id)}
+                        
                           onClick={() => handleSealed(row._id, !row.issealed)}
                         >
                           {row.issealed ? "Unseal" : "Seal"}
@@ -312,7 +422,93 @@ const Organizers = () => {
                         <Typography sx={{ fontSize: "12px", fontWeight: "bold" }} onClick={() => handleEdit(row._id)}>
                           Change Answers    
                         </Typography>
+                        <Typography sx={{ fontSize: "12px", fontWeight: "bold" }}>
+                          Archived
+                        </Typography>
+
                         <Typography sx={{ fontSize: "12px", fontWeight: "bold" }} onClick={() => printOrganizerData(row._id)}>
+                          Print
+                        </Typography>
+
+                      </Box>
+                    )}
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody> */}
+          <TableBody>
+            {organizerTemplatesData.map((row) => (
+              <TableRow key={row._id}>
+                <TableCell>
+                  <Typography
+                    sx={{ color: "#2c59fa", cursor: "pointer", fontWeight: "bold" }}
+                    onClick={() => handleEdit(row._id)}
+                  >
+                    {row.organizertemplateid?.organizerName || "N/A"}
+                  </Typography>
+                </TableCell>
+                <TableCell>{row.updatedAt}</TableCell>
+                <TableCell></TableCell>
+                <TableCell>
+                  {row.organizertemplateid?.sections?.length || 0} {/* Fallback to 0 */}
+                </TableCell>
+                <TableCell>
+                  {row.issealed ? <Chip label="Sealed" color="primary" /> : null}
+                </TableCell>
+                <TableCell sx={{ textAlign: "end" }}>
+                  <IconButton
+                    onClick={() => toggleMenu(row._id)}
+                    style={{ color: "#2c59fa" }}
+                  >
+                    <CiMenuKebab style={{ fontSize: "25px" }} />
+                    {openMenuId === row._id && (
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          zIndex: 1,
+                          backgroundColor: "#fff",
+                          boxShadow: 1,
+                          borderRadius: 1,
+                          p: 1,
+                          right: "30px",
+                          m: 2,
+                          top: "10px",
+                          width: "150px",
+                          textAlign: "start",
+                        }}
+                      >
+                        <Typography
+                          sx={{ fontSize: "12px", fontWeight: "bold" }}
+                          onClick={() => handleSealed(row._id, !row.issealed)}
+                        >
+                          {row.issealed ? "Unseal" : "Seal"}
+                        </Typography>
+                        <Typography
+                          sx={{ fontSize: "12px", color: "red", fontWeight: "bold" }}
+                          onClick={() => handleDelete(row._id)}
+                        >
+                          Delete
+                        </Typography>
+                        <Typography
+                          sx={{ fontSize: "12px", fontWeight: "bold" }}
+                          onClick={() => handleEdit(row._id)}
+                        >
+                          Change Answers
+                        </Typography>
+                        <Typography
+                          onClick={() => handleArchive(row._id)}
+                          
+                          sx={{ fontSize: "12px", fontWeight: "bold" }}>
+                          Archived
+                        </Typography>
+
+
+
+                        <Typography
+                          sx={{ fontSize: "12px", fontWeight: "bold" }}
+                          onClick={() => printOrganizerData(row._id)}
+                        >
                           Print
                         </Typography>
                       </Box>
@@ -322,6 +518,7 @@ const Organizers = () => {
               </TableRow>
             ))}
           </TableBody>
+
         </Table>
       </Paper>
 

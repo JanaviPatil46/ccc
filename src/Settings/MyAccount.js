@@ -10,7 +10,6 @@ import { useTheme } from "@mui/material/styles";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
-
 import { Switch, FormControlLabel, Checkbox } from "@mui/material";
 import HelpOutlineRoundedIcon from "@mui/icons-material/HelpOutlineRounded";
 import { NavLink } from "react-router-dom";
@@ -28,9 +27,9 @@ const MyAccount = () => {
   const LOGIN_API = process.env.REACT_APP_USER_LOGIN;
   const [showSaveButtons, setShowSaveButtons] = useState(false);
   const [showUpdatePassButton, setShowUpdatePassButton] = useState(false);
-  const [newPasShow, setNewPassShow] = useState(false);
+
   const [passShow, setPassShow] = useState(false);
-  const [cpassShow, setCPassShow] = useState(false);
+
   const { logindata } = useContext(LoginContext);
   const [userdata, setuserdata] = useState();
   const [admindata, setadmindata] = useState();
@@ -102,46 +101,7 @@ const MyAccount = () => {
     }
   };
 
- 
-  // const handleSaveButtonClick = () => {
-  //   const myHeaders = new Headers();
-  //   myHeaders.append("Content-Type", "application/json");
 
-  //   const raw = JSON.stringify({
-  //     firstName: firstName,
-  //     middleName: middleName,
-  //     lastName: lastname,
-  //     phoneNumber: phonenumber,
-  //   });
-
-  //   const requestOptions = {
-  //     method: "PATCH",
-  //     headers: myHeaders,
-  //     body: raw,
-  //     redirect: "follow",
-  //   };
-
-  //   const url = `${LOGIN_API}/admin/adminsignup/${admindata._id}`;
-  //   console.log(admindata._id)
-    
-  //   fetch(url, requestOptions)
-
-  //     .then((response) => response.text())
-  //     .then((result) => {
-  //       console.log(result);
-  //       toast.success("Data updated successful!");
-  //       // window.location.reload();
-  //       updateProfilePicture();
-  //       fetchAdminData();
-  //       setIsEditable(false);
-  //       setShowSaveButtons(false);
-      
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //       toast.error("An error occurred!");
-  //     });
-  // };
   const handleSaveButtonClick = async () => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -161,16 +121,23 @@ const MyAccount = () => {
     };
   
     const url = `${LOGIN_API}/admin/adminsignup/${admindata._id}`;
+    console.log(url)
     console.log(admindata._id);
   
     try {
       const response = await fetch(url, requestOptions);
       const result = await response.text();
       console.log(result);
+
+
+
+
+
       toast.success("Data updated successfully!");
   
       updateProfilePicture(); 
-      await fetchAdminData(); // Ensure this completes
+  
+      await fetchAdminData();  
       setIsEditable(false);
       setShowSaveButtons(false);
     } catch (error) {
@@ -362,7 +329,7 @@ const MyAccount = () => {
   const handleCheckboxChange = () => {
     setIsChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isCheckedRef.current = newChecked; // Update the ref with the new value
+      isCheckedRef.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -370,10 +337,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handlePaymentsCheckboxChange = () => {
-    // setIsPaymentsChecked(!isPaymentsChecked);
+    
     setIsPaymentsChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isPaymentsCheckedRef.current = newChecked; // Update the ref with the new value
+      isPaymentsCheckedRef.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -381,10 +348,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleOrganizersCheckboxChange = () => {
-    // setIsOrganizersChecked(!isOrganizersChecked);
+  
     setIsOrganizersChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isOrganizersCheckedref.current = newChecked; // Update the ref with the new value
+      isOrganizersCheckedref.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -392,10 +359,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleUploadsCheckboxChange = () => {
-    // setIsUploadsChecked(!isUploadsChecked);
+    
     setIsUploadsChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isUploadsCheckedref.current = newChecked; // Update the ref with the new value
+      isUploadsCheckedref.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -403,10 +370,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleSignaturesCheckboxChange = () => {
-    // setIsSignaturesChecked(!isSignaturesChecked);
+    
     setIsSignaturesChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isSignaturesCheckedref.current = newChecked; // Update the ref with the new value
+      isSignaturesCheckedref.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -414,10 +381,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleApprovalsCheckboxChange = () => {
-    // setIsApprovalsChecked(!isApprovalsChecked);
+  
     setIsApprovalsChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isApprovalsCheckedref.current = newChecked; // Update the ref with the new value
+      isApprovalsCheckedref.current = newChecked;
       return newChecked;
     });
     setTimeout(() => {
@@ -425,10 +392,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleUploadingCheckboxChange = () => {
-    // setIsUploadingChecked(!isUploadingChecked);
+    
     setIsUploadingChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isUploadingCheckedref.current = newChecked; // Update the ref with the new value
+      isUploadingCheckedref.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -436,10 +403,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleTasksCheckboxChange = () => {
-    // setIsTasksChecked(!isTasksChecked);
+ 
     setIsTasksChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isTasksCheckedref.current = newChecked; // Update the ref with the new value
+      isTasksCheckedref.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -447,10 +414,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleMessagesCheckboxChange = () => {
-    // setIsMessagesChecked(!isMessagesChecked);
+    
     setIsMessagesChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isMessagesCheckedref.current = newChecked; // Update the ref with the new value
+      isMessagesCheckedref.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -458,10 +425,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleNewEmailCheckboxChange = () => {
-    // setIsNewEmailChecked(!isNewEmailChecked);
+  
     setIsNewEmailChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isNewEmailCheckedref.current = newChecked; // Update the ref with the new value
+      isNewEmailCheckedref.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -469,10 +436,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleProposalsCheckboxChange = () => {
-    // setIsProposalsChecked(!isProposalsChecked);
+    
     setIsProposalsChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isProposalsCheckedref.current = newChecked; // Update the ref with the new value
+      isProposalsCheckedref.current = newChecked;
       return newChecked;
     });
     setTimeout(() => {
@@ -480,10 +447,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleJobsCheckboxChange = () => {
-    // setIsJobsChecked(!isJobsChecked);
+   
     setIsJobsChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isJobsCheckedref.current = newChecked; // Update the ref with the new value
+      isJobsCheckedref.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -491,10 +458,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleMentionsCheckboxChange = () => {
-    // setIsMentionsChecked(!isMentionsChecked);
+   
     setIsMentionsChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isMentionsCheckedref.current = newChecked; // Update the ref with the new value
+      isMentionsCheckedref.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -502,10 +469,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleSmsCheckboxChange = () => {
-    // setIsSmsChecked(!isSmsChecked);
+  
     setIsSmsChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isSmsCheckedref.current = newChecked; // Update the ref with the new value
+      isSmsCheckedref.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -514,10 +481,10 @@ const MyAccount = () => {
   };
 
   const handleEmailCheckboxChange = () => {
-    // setIsEmailChecked(!isEmailChecked);
+   
     setIsEmailChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isEmailCheckedRef.current = newChecked; // Update the ref with the new value
+      isEmailCheckedRef.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -525,10 +492,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handlePaymentsEmailCheckboxChange = () => {
-    // setIsPaymentsEmailChecked(!isPaymentsEmailChecked);
+   
     setIsPaymentsEmailChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isPaymentsEmailCheckedRef.current = newChecked; // Update the ref with the new value
+      isPaymentsEmailCheckedRef.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -536,10 +503,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleOrganizersEmailCheckboxChange = () => {
-    // setIsOrganizersEmailChecked(!isOrganizersEmailChecked);
+   
     setIsOrganizersEmailChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isOrganizersEmailCheckedRef.current = newChecked; // Update the ref with the new value
+      isOrganizersEmailCheckedRef.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -547,10 +514,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleUploadsEmailCheckboxChange = () => {
-    // setIsUploadsEmailChecked(!isUploadsEmailChecked);
+ 
     setIsUploadsEmailChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isUploadsEmailCheckedRef.current = newChecked; // Update the ref with the new value
+      isUploadsEmailCheckedRef.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -558,10 +525,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleSignaturesEmailCheckboxChange = () => {
-    // setIsSignaturesEmailChecked(!isSignaturesEmailChecked);
+ 
     setIsSignaturesEmailChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isSignaturesEmailCheckedRef.current = newChecked; // Update the ref with the new value
+      isSignaturesEmailCheckedRef.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -569,10 +536,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleApprovalsEmailCheckboxChange = () => {
-    // setIsApprovalsEmailChecked(!isApprovalsEmailChecked);
+ 
     setIsApprovalsEmailChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isApprovalsEmailCheckedRef.current = newChecked; // Update the ref with the new value
+      isApprovalsEmailCheckedRef.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -583,7 +550,7 @@ const MyAccount = () => {
     setIsUploadingEmailChecked(!isUploadingEmailChecked);
     setIsUploadingEmailChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isUploadingEmailCheckedRef.current = newChecked; // Update the ref with the new value
+      isUploadingEmailCheckedRef.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -591,10 +558,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleTasksEmailCheckboxChange = () => {
-    // setIsTasksEmailChecked(!isTasksEmailChecked);
+ 
     setIsTasksEmailChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isTasksEmailCheckedRef.current = newChecked; // Update the ref with the new value
+      isTasksEmailCheckedRef.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -602,10 +569,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleMessagesEmailCheckboxChange = () => {
-    // setIsMessagesEmailChecked(!isMessagesEmailChecked);
+    
     setIsMessagesEmailChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isMessagesEmailCheckedRef.current = newChecked; // Update the ref with the new value
+      isMessagesEmailCheckedRef.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -613,10 +580,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleNewEmailEmailCheckboxChange = () => {
-    // setIsNewEmailEmailChecked(!isNewEmailEmailChecked);
+  
     setIsNewEmailEmailChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isNewEmailEmailCheckedRef.current = newChecked; // Update the ref with the new value
+      isNewEmailEmailCheckedRef.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -624,10 +591,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleProposalsEmailCheckboxChange = () => {
-    // setIsProposalsEmailChecked(!isProposalsEmailChecked);
+   
     setIsProposalsEmailChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isProposalsEmailCheckedRef.current = newChecked; // Update the ref with the new value
+      isProposalsEmailCheckedRef.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -635,10 +602,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleJobsEmailCheckboxChange = () => {
-    // setIsJobsEmailChecked(!isJobsEmailChecked);
+  
     setIsJobsEmailChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isJobsEmailCheckedRef.current = newChecked; // Update the ref with the new value
+      isJobsEmailCheckedRef.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -646,10 +613,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleMentionsEmailCheckboxChange = () => {
-    // setIsMentionsEmailChecked(!isMentionsEmailChecked);
+   
     setIsMentionsEmailChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isMentionsEmailCheckedRef.current = newChecked; // Update the ref with the new value
+      isMentionsEmailCheckedRef.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -657,10 +624,10 @@ const MyAccount = () => {
     }, 0);
   };
   const handleSmsEmailCheckboxChange = () => {
-    // setIsSmsEmailChecked(!isSmsEmailChecked);
+    
     setIsSmsEmailChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      isSmsEmailCheckedRef.current = newChecked; // Update the ref with the new value
+      isSmsEmailCheckedRef.current = newChecked; 
       return newChecked;
     });
     setTimeout(() => {
@@ -711,9 +678,7 @@ const MyAccount = () => {
         console.log(result);
         if (result && result.message === "Notification updated successfully") {
           toast.success("Notification settings updated successfully");
-          // setTimeout(() => {
-          //   window.location.reload();
-          // }, 1000);
+       
         } else {
           toast.error(result.message || "Failed to update Notification");
         }
@@ -724,89 +689,7 @@ const MyAccount = () => {
   const [notificationdata, setNotificationData] = useState();
 
   
-  //     method: "GET",
-  //     redirect: "follow",
-  //   };
-  //   const url = `${LOGIN_API}/admin/notification/notificationbyuser/${id}`;
-  //   try {
-  //     const response = await fetch(url, requestOptions);
-  //     if (!response.ok) {
-  //       throw new Error("Failed to fetch notifications");
-  //     }
-  //     const result = await response.text();
-  //     const notification = JSON.parse(result);
-  //     setNotificationData(notification.notification);
-
-  //     if (notification && Array.isArray(notification.notification.notifications)) {
-  //       notification.notification.notifications.forEach((notif) => {
-  //         switch (notif.notificationDescription) {
-  //           case "Invoices":
-  //             setIsChecked(notif.inbox);
-  //             setIsEmailChecked(notif.email);
-  //             break;
-  //           case "Payments":
-  //             setIsPaymentsChecked(notif.inbox);
-  //             setIsPaymentsEmailChecked(notif.email);
-  //             break;
-  //           case "Organizers":
-  //             setIsOrganizersChecked(notif.inbox);
-  //             setIsOrganizersEmailChecked(notif.email);
-  //             break;
-  //           case "Uploads":
-  //             setIsUploadsChecked(notif.inbox);
-  //             setIsUploadsEmailChecked(notif.email);
-  //             break;
-  //           case "E-signatures":
-  //             setIsSignaturesChecked(notif.inbox);
-  //             setIsSignaturesEmailChecked(notif.email);
-  //             break;
-  //           case "Approvals":
-  //             setIsApprovalsChecked(notif.inbox);
-  //             setIsApprovalsEmailChecked(notif.email);
-  //             break;
-  //           case "Done uploading":
-  //             setIsUploadingChecked(notif.inbox);
-  //             setIsUploadingEmailChecked(notif.email);
-  //             break;
-  //           case "Tasks":
-  //             setIsTasksChecked(notif.inbox);
-  //             setIsTasksEmailChecked(notif.email);
-  //             break;
-  //           case "Messages":
-  //             setIsMessagesChecked(notif.inbox);
-  //             setIsMessagesEmailChecked(notif.email);
-  //             break;
-  //           case "New mail":
-  //             setIsNewEmailChecked(notif.inbox);
-  //             setIsNewEmailEmailChecked(notif.email);
-  //             break;
-  //           case "Proposals":
-  //             setIsProposalsChecked(notif.inbox);
-  //             setIsProposalsEmailChecked(notif.email);
-  //             break;
-  //           case "Jobs":
-  //             setIsJobsChecked(notif.inbox);
-  //             setIsJobsEmailChecked(notif.email);
-  //             break;
-  //           case "Mentions":
-  //             setIsMentionsChecked(notif.inbox);
-  //             setIsMentionsEmailChecked(notif.email);
-  //             break;
-  //           case "SMS":
-  //             setIsSmsChecked(notif.inbox);
-  //             setIsSmsEmailChecked(notif.email);
-  //             break;
-  //           default:
-  //             console.error("Unknown notification type:", notif.notificationDescription);
-  //         }
-  //       });
-  //     } else {
-  //       console.error("Notifications array is not defined or not an array");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching notification data:", error);
-  //   }
-  // };
+ 
   const fetchNotificationData = async (id) => {
     const requestOptions = {
       method: "GET",
@@ -924,20 +807,19 @@ const MyAccount = () => {
         setShowAlert(false);
         setIsLoginEditable(true);
         setShowUpdatePassButton(true);
-        // setShowAlert(false);
-        // updatePassword(result.user._id )
+      
       })
       .catch((error) => {
         console.error(error);
       });
   };
-  console.log(userUpdate);
+  // console.log(userUpdate);
   const updatePassword = () => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("id", userUpdate._id);
 
-    // myHeaders.append("Authorization", token);
+ 
 
     // console.log(token)
     const raw = JSON.stringify({
@@ -954,8 +836,7 @@ const MyAccount = () => {
 
     const url = new URL(baseUrl);
 
-    // url.searchParams.append("id", id);
-    // url.searchParams.append("token", token);
+   
 
     fetch(url, requestOptions)
       .then((response) => {
@@ -969,25 +850,20 @@ const MyAccount = () => {
         setIsLoginEditable(false);
         setPassword("");
         setCpassword("");
-        // Handle success, if needed
+   
       })
       .catch((error) => {
         console.error("Error updating password:", error.message);
-        // Handle error, if needed
+      
       });
   };
-  // const [password, setPassword] = useState("");
+  
   //for password
   const [showPassword, setShowPassword] = React.useState(false);
 
-  
   //for confiem password
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
-
-  const [confirmPassword, setConfirmPassword] = useState("");
-  
-  
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -1049,33 +925,7 @@ const MyAccount = () => {
   };
  
   const [selectedFile, setSelectedFile] = useState(null);
-  // const updateProfilePicture =  () => {
-  //   if (!selectedFile) {
-  //     console.error("No file selected");
-  //     return; // Exit early if no file is selected
-  //   }
-  
-  //   const formdata = new FormData();
-  //   formdata.append("ProfilePicture", selectedFile);
-  
-  //   const requestOptions = {
-  //     method: "PATCH",
-  //     body: formdata,
-  //     redirect: "follow",
-  //   };
-  
-  //   try {
-  //     const response =  fetch(
-  //       `${LOGIN_API}/admin/adminsignup/${admindata._id}`,
-  //       requestOptions
-  //     );
-  //     const result =  response.json();
-  //     console.log(result);
-  //   } catch (error) {
-  //     console.error("Error updating profile picture:", error);
-  //     throw error; // Ensure errors propagate to the caller
-  //   }
-  // };
+ 
   
   const updateProfilePicture = () => {
     const formdata = new FormData();
@@ -1092,13 +942,14 @@ const MyAccount = () => {
       };
 
       fetch(`${LOGIN_API}/admin/adminsignup/${admindata._id}`, requestOptions)
-        .then((response) => response.text())
+        .then((response) => response.json())
         .then((result) => console.log(result))
         .catch((error) => console.error(error));
     } else {
       console.error("No file selected"); // This will execute if no file is selected
     }
   };
+
   const [error, setError] = useState(""); // Error state
   const [profilePicture, setProfilePicture] = useState("");
   const handleFileChange = (event) => {
@@ -1146,7 +997,7 @@ const MyAccount = () => {
 
           <Box>
             {/* Header */}
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px",borderBottom:'1px solid #f1f1f1',p:1.5 }}>
               <Typography variant="h6">Personal details</Typography>
               {isEditable ? (
                 <Button onClick={() => setIsEditable(false)} sx={{ color: "#1168bf", fontWeight: "bold" }}>
@@ -1200,6 +1051,49 @@ const MyAccount = () => {
             </Box>
 
             {/* Upload Photo Section */}
+            {/* <Box sx={{ marginBottom: "20px" }}>
+              {!profilePicture ? (
+                <>
+                  <Button
+                    variant="text"
+                    component="label"
+                    sx={{ color: "#1168bf", textTransform: "none" }}
+                  >
+                    Upload Photo
+                    <input
+                      type="file"
+                      hidden
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      
+                    />
+                  </Button>
+                </>
+              ) : (
+                <Box sx={{ display: "flex", gap: 2 }}>
+                  <Button
+                    variant="text"
+                    component="label"
+                    sx={{ color: "#1168bf", textTransform: "none" }}
+                  >
+                    Edit Photo
+                    <input
+                      type="file"
+                      hidden
+                      accept="image/*"
+                      onChange={handleFileChange}
+                    />
+                  </Button>
+                  <Button
+                    variant="text"
+                    onClick={handleDeletePhoto}
+                    sx={{ color: "#ff1744", textTransform: "none" }}
+                  >
+                    close
+                  </Button>
+                </Box>
+              )}
+            </Box> */}
             <Box sx={{ marginBottom: "20px" }}>
               {!profilePicture ? (
                 <>
@@ -1237,8 +1131,14 @@ const MyAccount = () => {
                     onClick={handleDeletePhoto}
                     sx={{ color: "#ff1744", textTransform: "none" }}
                   >
-                    close
+                    Close
                   </Button>
+                </Box>
+              )}
+              {/* Error message display */}
+              {error && (
+                <Box sx={{ color: "red", marginTop: "10px", fontSize: "14px" }}>
+                  {error}
                 </Box>
               )}
             </Box>
@@ -1250,9 +1150,12 @@ const MyAccount = () => {
                   <TextField
                     label="First name"
                     value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                     onChange={(e) => setFirstName(e.target.value)}
                     size="small"
                     fullWidth
+                    InputProps={{
+                      readOnly: true
+                    }}
                   />
                   <TextField
                     label="Middle name"
@@ -1260,6 +1163,9 @@ const MyAccount = () => {
                     onChange={(e) => setMiddleName(e.target.value)}
                     size="small"
                     fullWidth
+                    InputProps={{
+                      readOnly: true
+                    }}
                   />
                   <TextField
                     label="Last name"
@@ -1267,6 +1173,9 @@ const MyAccount = () => {
                     onChange={(e) => setLastName(e.target.value)}
                     size="small"
                     fullWidth
+                    InputProps={{
+                      readOnly: true
+                    }}
                   />
                   <TextField
                     label="Phone number"
@@ -1274,6 +1183,9 @@ const MyAccount = () => {
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     size="small"
                     fullWidth
+                    InputProps={{
+                      readOnly: true
+                    }}
                   />
                 </Box>
                 <Box sx={{ display: "flex", gap: 2 }}>
@@ -1405,7 +1317,7 @@ const MyAccount = () => {
                   />
 
                 </Box>
-                <Box>
+                <Box mt={2}>
                   <Typography htmlFor="confirmPassword">Confirm Password</Typography>
                   <OutlinedInput
                     type={showConfirmPassword ? "text" : "password"}
@@ -1414,8 +1326,7 @@ const MyAccount = () => {
                     size="small"
                     disabled={!isLoginEditable}
                     placeholder="Confirm Password"
-                    // onChange={handleConfirmPasswordChange}
-                    // onPaste={handleConfirmPasswordPaste} // Allow pasting
+                    
                     sx={{ width: "100%", borderRadius: "10px", mt: 1 }}
                     endAdornment={
                       <InputAdornment position="end" sx={{ cursor: "pointer" }} onClick={handleToggleCPasswordVisibility}>

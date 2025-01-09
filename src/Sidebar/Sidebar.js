@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect,useContext  } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Box, IconButton, List, ListItem, ListItemIcon, ListItemText, Collapse, Typography, Drawer, Button } from "@mui/material";
 import { ChevronLeft, ChevronRight, Brightness4, Brightness7 } from "@mui/icons-material";
 import ExpandLess from '@mui/icons-material/ExpandLess';
@@ -9,7 +9,7 @@ import axios from "axios";
 import "./Sidebar.css";
 import iconMapping from './icons/index';
 import Logo from '../Images/Logo.svg';
-import { FaBars  } from "react-icons/fa6";
+import { FaBars } from "react-icons/fa6";
 // import { AiOutlinePlusCircle } from "react-icons/ai";
 import { FaPlusCircle } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
@@ -123,39 +123,39 @@ function Sidebar() {
   }, [theme]);
 
 
-   //Logout
-   const { logindata, setLoginData } = useContext(LoginContext);
+  //Logout
+  const { logindata, setLoginData } = useContext(LoginContext);
 
-   const history = useNavigate();
- 
-   const logoutuser = async () => {
-     let token = localStorage.getItem("usersdatatoken");
-     const url = `${LOGIN_API}/common/login/logout/`;
- 
-     const requestOptions = {
-       method: "POST",
-       headers: {
-         "Content-Type": "application/json",
-         Authorization: token,
-       },
-     };
- 
-     const res = await fetch(url, requestOptions);
- 
-     const data = await res.json();
- 
-     if (data.status === 200) {
-       console.log("user logout");
-       localStorage.removeItem("usersdatatoken");
-       Cookies.remove("userToken");
-       setLoginData(false);
- 
-       history("/login");
-     } else {
-       console.log("error");
-     }
-   };
-   const [data, setData] = useState(false);
+  const history = useNavigate();
+
+  const logoutuser = async () => {
+    let token = localStorage.getItem("usersdatatoken");
+    const url = `${LOGIN_API}/common/login/logout/`;
+
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+    };
+
+    const res = await fetch(url, requestOptions);
+
+    const data = await res.json();
+
+    if (data.status === 200) {
+      console.log("user logout");
+      localStorage.removeItem("usersdatatoken");
+      Cookies.remove("userToken");
+      setLoginData(false);
+
+      history("/login");
+    } else {
+      console.log("error");
+    }
+  };
+  const [data, setData] = useState(false);
   const [loginsData, setloginsData] = useState("");
 
 
@@ -180,7 +180,7 @@ function Sidebar() {
     if (data.message === "Invalid token") {
       // console.log("error page");
       navigate("/login");
-   
+
     } else {
       // console.log("user verify");
       setLoginData(data);
@@ -205,13 +205,13 @@ function Sidebar() {
   useEffect(() => {
     DashboardValid();
     setData(true);
-     
- 
+
+
   }, []);
 
   const [userData, setUserData] = useState("");
   const [username, setUsername] = useState("");
-  const [profilePicture,setProfilePicture] = useState("");   
+  const [profilePicture, setProfilePicture] = useState("");
 
   const fetchUserData = async (id) => {
     const maxLength = 15;
@@ -246,12 +246,12 @@ function Sidebar() {
   };
 
   const getadminsignup = async (id) => {
-    console.log("tset",id)
+    console.log("tset", id)
     const requestOptions = {
       method: "GET",
       redirect: "follow",
     };
-  
+
     const url = `${LOGIN_API}/admin/adminsignup/${id}`;
     console.log(id)
     fetch(url + loginsData, requestOptions)
@@ -262,27 +262,27 @@ function Sidebar() {
 
         setProfilePicture(`${LOGIN_API}/uploads/${profilePicFilename}`);
         console.log(profilePicture)
-       
+
       });
   };
- 
+
 
 
   return (
     <div className="grid-container">
       <header className="header" >
-        <Box component="header" sx={{ p: 2, display: 'flex', gap: 3,  }} >
+        <Box component="header" sx={{ p: 2, display: 'flex', gap: 3, }} >
           <Box className='bar-icon'>
             <FaBars onClick={handleToggleSidebar} style={{ fontSize: '1.8rem' }} />
           </Box>
-         
+
           {/* <Button variant="contained" color="success"  > */}
-          <FaPlusCircle   className="add-icon"  onClick={handleDrawerOpen}/>
+          <FaPlusCircle className="add-icon" onClick={handleDrawerOpen} />
           {/* </Button> */}
           <Box>
             {/* onClick={() => setIsDarkMode(!isDarkMode)} */}
             <IconButton >
-              {isDarkMode ? <Brightness7 onClick={toggleTheme}/> : <Brightness4 onClick={toggleTheme}/>}
+              {isDarkMode ? <Brightness7 onClick={toggleTheme} /> : <Brightness4 onClick={toggleTheme} />}
             </IconButton>
           </Box>
         </Box>
@@ -325,7 +325,7 @@ function Sidebar() {
                       '.menu-icon': {
                         color: '#fff',
                       },
-                      '.menu-text':{
+                      '.menu-text': {
                         color: '#fff',
                       }
                     },
@@ -333,7 +333,7 @@ function Sidebar() {
                     <ListItemIcon sx={{ fontSize: '1.5rem', }} className="menu-icon">
                       {iconMapping[item.icon] ? React.createElement(iconMapping[item.icon]) : null}
                     </ListItemIcon>
-                    {!isCollapsed && <ListItemText primary={item.label} sx={{ ml: -2 }} className="menu-text"/>}
+                    {!isCollapsed && <ListItemText primary={item.label} sx={{ ml: -2 }} className="menu-text" />}
                     {!isCollapsed && item.submenu.length > 0 && (
                       <ListItemIcon sx={{ justifyContent: 'end' }}>
                         {openMenu === item._id ? <ExpandLess className="menu-icon" /> : <ExpandMore className="menu-icon" />}
@@ -356,7 +356,7 @@ function Sidebar() {
                               '.menu-icon': {
                                 color: '#fff',
                               },
-                              '.menu-text':{
+                              '.menu-text': {
                                 color: '#fff',
                               }
 
@@ -365,7 +365,7 @@ function Sidebar() {
                             <ListItemIcon sx={{ fontSize: '1.2rem', }} className="menu-icon" >
                               {iconMapping[subItem.icon] ? React.createElement(iconMapping[subItem.icon]) : null}
                             </ListItemIcon>
-                            {!isCollapsed && <ListItemText primary={subItem.label} sx={{ ml: -2 }} className="menu-text"/>}
+                            {!isCollapsed && <ListItemText primary={subItem.label} sx={{ ml: -2 }} className="menu-text" />}
                           </ListItem>
                         ))}
                       </List>
@@ -380,9 +380,12 @@ function Sidebar() {
                   <Link to="#" className="logout-link">
                     <div className="info" >
                       <div>
-                        <img src={user} alt="user" className="user-icon" style={{ height: "50px", width: "50px" }} />
-                        <img src={profilePicture} alt="user" className="user-icon" style={{ height: "50px", width: "50px" }} />
-                        
+                        <img
+                          src={profilePicture || user}
+                          alt="user"
+                          className="user-icon"
+                          style={{ height: "55px", width: "55px",borderRadius: "50%" }}
+                        />
                       </div>
                       <span className="hidden-text" >
                         <b>{username}</b>
@@ -390,19 +393,19 @@ function Sidebar() {
                       </span>
 
                       <div>
-                      <AiOutlineLogout  
-                        className="logout-icon"
-                        onClick={() => {
-                          logoutuser();
-                        }}
-                      />
-                    </div>
+                        <AiOutlineLogout
+                          className="logout-icon"
+                          onClick={() => {
+                            logoutuser();
+                          }}
+                        />
+                      </div>
                     </div>
 
-                 
+
                   </Link>
                 </li>
-               
+
               </ul>
             </div>
           </Box>
@@ -421,7 +424,7 @@ function Sidebar() {
         </Box>
       </main>
       <Drawer anchor="left" open={isDrawerOpen} onClose={handleDrawerClose} >
-        <Box sx={{ width: 300, p: 2,height:'100%' }} className="newSidebar" >
+        <Box sx={{ width: 300, p: 2, height: '100%' }} className="newSidebar" >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant="h6" fontWeight='bold'>New Sidebar Content</Typography>
             <RxCross2 onClick={handleDrawerClose} style={{ cursor: 'pointer' }} />
@@ -441,7 +444,7 @@ function Sidebar() {
                   '.menu-icon': {
                     color: '#fff',
                   },
-                  '.menu-text':{
+                  '.menu-text': {
                     color: '#fff',
                   }
                 },
@@ -449,7 +452,7 @@ function Sidebar() {
                 <ListItemIcon sx={{ fontSize: '1.5rem', color: '#2c85de' }} className="menu-icon">
                   {iconMapping[item.icon] ? React.createElement(iconMapping[item.icon]) : null}
                 </ListItemIcon>
-                <ListItemText primary={item.label} className="menu-text"/>
+                <ListItemText primary={item.label} className="menu-text" />
               </ListItem>
             ))}
           </List>
