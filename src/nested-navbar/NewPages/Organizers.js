@@ -20,7 +20,9 @@ const Organizers = () => {
 
   const fetchOrganizerTemplates = async (accountid) => {
     try {
-      const url = `http://127.0.0.1:7600/workflow/orgaccwise/organizeraccountwise/${isActiveTrue}/${accountid}`;
+      // const url = `http://127.0.0.1:7600/workflow/orgaccwise/organizeraccountwise/${isActiveTrue}/${accountid}`;
+
+      const url = `http://127.0.0.1:7600/workflow/orgaccwise/organizeraccountwise/organizerbyaccount/accid/${accountid}/${isActiveTrue}`;
 
       console.log("|URLLL",url);
       const response = await fetch(url);

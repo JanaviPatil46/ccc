@@ -1153,9 +1153,7 @@ const MyAccount = () => {
                      onChange={(e) => setFirstName(e.target.value)}
                     size="small"
                     fullWidth
-                    InputProps={{
-                      readOnly: true
-                    }}
+                  
                   />
                   <TextField
                     label="Middle name"
@@ -1163,9 +1161,7 @@ const MyAccount = () => {
                     onChange={(e) => setMiddleName(e.target.value)}
                     size="small"
                     fullWidth
-                    InputProps={{
-                      readOnly: true
-                    }}
+                  
                   />
                   <TextField
                     label="Last name"
@@ -1173,9 +1169,7 @@ const MyAccount = () => {
                     onChange={(e) => setLastName(e.target.value)}
                     size="small"
                     fullWidth
-                    InputProps={{
-                      readOnly: true
-                    }}
+               
                   />
                   <TextField
                     label="Phone number"
@@ -1183,9 +1177,7 @@ const MyAccount = () => {
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     size="small"
                     fullWidth
-                    InputProps={{
-                      readOnly: true
-                    }}
+                  
                   />
                 </Box>
                 <Box sx={{ display: "flex", gap: 2 }}>

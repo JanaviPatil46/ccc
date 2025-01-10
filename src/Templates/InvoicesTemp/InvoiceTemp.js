@@ -1124,7 +1124,7 @@ const InvoiceTemp = () => {
                       </TableContainer>
 
                       {/* Summary Section */}
-                      <Box
+                      {/* <Box
                         sx={{
                           display: 'flex',
                           flexDirection: 'column',
@@ -1147,7 +1147,46 @@ const InvoiceTemp = () => {
                         >
                           <strong>Total:</strong> ${totalAmount || '0.00'}
                         </Typography>
-                      </Box>
+                      </Box> */}
+                 <Box 
+                   sx={{
+                     display: 'flex',
+                     justifyContent: 'flex-end', // Aligns the table to the right
+                     width: '100%', // Ensures the Box stretches full width
+                   }}
+                 >
+                   <TableContainer 
+                     sx={{
+                       width: 'auto', // Ensures the table takes only necessary space
+                       maxWidth: '400px', // Optional: Restrict maximum width if needed
+                     }}
+                   >
+                     <Table>
+                       <TableBody>
+                         <TableRow>
+                           <TableCell>
+                             <Typography sx={{ fontWeight: 'bold' }}>Subtotal</Typography>
+                           </TableCell>
+                           <TableCell align="right">${subtotal || '0.00'}</TableCell>
+                         </TableRow>
+                         <TableRow>
+                           <TableCell>
+                             <Typography>Tax</Typography>
+                           </TableCell>
+                           <TableCell align="right">${taxTotal?.toFixed(2) || '0.00'}</TableCell>
+                         </TableRow>
+                         <TableRow>
+                           <TableCell>
+                             <Typography sx={{ fontWeight: 'bold' }}>Total</Typography>
+                           </TableCell>
+                           <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                             ${totalAmount || '0.00'}
+                           </TableCell>
+                         </TableRow>
+                       </TableBody>
+                     </Table>
+                   </TableContainer>
+                 </Box>
 
                       <Box>{clientNote}</Box>
 
